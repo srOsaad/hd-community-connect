@@ -1,0 +1,552 @@
+/* Global values to use below mostly inspired by the page refered */
+
+:root {
+  --brand:          #1C3872;   /* navy: header, headings, buttons */
+  --brand-dark:     #142850;   /* hover states, footer */
+  --brand-light:    #E7EBF3;   /* tints, table headers */
+  --accent:         #004A80;   /* links */
+
+  --ink:            #231F20;   /* body text */
+  --ink-muted:      #54585C;   /* captions, hints, IDs */
+  --ink-inverse:    #FFFFFF;   /* text on dark */
+
+  --surface:        #FFFFFF;   /* page background */
+  --surface-alt:    #F0F3F4;   /* panels, alt rows */
+  --border:         #D5DAE0;   /* decorative lines only */
+  --border-strong:  #7B838C;   /* control outlines (3:1) */
+
+  --font-heading:   "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-body:      "Source Sans 3", system-ui, -apple-system, "Segoe UI",
+                    Roboto, sans-serif;
+
+  --step--1:        0.875rem;  /* type scale */
+  --step-0:         1rem;
+  --step-1:         1.25rem;
+  --step-2:         1.5rem;
+
+  --measure:        65ch;      /* readable line length */
+  --page-max:       72rem;     /* max page width */
+  --radius:         6px;
+  --gap:            1rem;
+}
+
+
+/* Reseting default config */
+
+/* Predictable box sizing */
+* {
+  box-sizing: border-box;
+}
+
+/* Page defaults */
+body {
+  margin: 0;
+  background-color: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+}
+
+/* Logo watermark */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url("../assets/logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 320px;
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+/* Adding restriction for image */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+/* Texts */
+
+/* Serif headings, brand navy */
+h1,
+h2,
+h3,
+h4 {
+  margin: 0 0 0.5em;
+  color: var(--brand);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+/* Cap line length */
+main p,
+main li {
+  max-width: var(--measure);
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+/* Links — underline marks them */
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+/* Hover effect */
+a:hover {
+  color: var(--brand-dark);
+}
+
+/* Keyboard focus ring */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+table:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+
+/* Accessibility helpers */
+
+/* Screen readers only */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Hidden until focused */
+.skip-link {
+  position: absolute;
+  top: -3rem;
+  left: 0.5rem;
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 var(--radius) var(--radius);
+  background-color: var(--brand-dark);
+  color: var(--ink-inverse);
+  text-decoration: none;
+}
+
+/* Appears on focus */
+.skip-link:focus {
+  top: 0;
+}
+
+/* Preventing outline when pressed tab button */
+main:focus {
+  outline: none;
+}
+
+
+/* Header and navigation */
+
+/* Top bar */
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+  padding: 1rem clamp(1rem, 4vw, 2rem);
+  border-bottom: 4px solid var(--brand);
+  background-color: var(--surface);
+}
+
+/* Logo plus name */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--brand);
+  text-decoration: none;
+}
+
+/* Logo image */
+.logo {
+  display: block;
+  width: 48px;
+  height: 48px;
+}
+
+/* Organisation name */
+.brand-name {
+  font-family: var(--font-heading);
+  font-size: var(--step-2);
+  font-weight: 700;
+}
+
+/* Links in a row — always expanded, hamburger only shows up under 40em */
+.site-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav summary {
+  display: none;
+}
+
+/* One nav link */
+.site-nav a {
+  display: block;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* Hover effect */
+.site-nav a:hover {
+  background-color: var(--brand-light);
+  color: var(--brand-dark);
+}
+
+/* Current page — driven by the aria-current attribute already on the link,
+   so there is no id to move from page to page. Marked three ways (colour,
+   weight, underline) so colour is never the only cue. */
+.site-nav a[aria-current="page"] {
+  color: var(--brand);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
+}
+
+
+/* Page body */
+
+/* Centred content column */
+main {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem);
+}
+
+/* Space between sections */
+section {
+  margin-bottom: 2.5rem;
+}
+
+
+/* Tables */
+
+table {
+  overflow-x: auto;
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--surface);
+}
+
+/* Title above table */
+caption {
+  margin-bottom: 0.5rem;
+  color: var(--ink-muted);
+  font-weight: 600;
+  text-align: left;
+}
+
+/* Table cells */
+th,
+td {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border-strong);
+  text-align: left;
+  vertical-align: top;
+}
+
+/* Tinted header row */
+thead th {
+  background-color: var(--brand-light);
+  color: var(--brand-dark);
+}
+
+
+/* Forms */
+
+/* Field group (min-width keeps it from overflowing a flex/grid layout) */
+fieldset {
+  min-width: 0;
+  margin: 0 0 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+
+/* Fieldset title */
+legend {
+  padding: 0 0.5rem;
+  color: var(--brand);
+  font-family: var(--font-heading);
+  font-size: var(--step-1);
+  font-weight: 600;
+}
+
+/* Label above input */
+label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+/* Text fields, dropdowns, textareas */
+input,
+select,
+textarea {
+  width: 100%;
+  max-width: 28rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+}
+
+/* Taller, vertical resize only */
+textarea {
+  min-height: 8rem;
+  resize: both;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+/* Label and input pair */
+.field {
+  margin-bottom: 1.25rem;
+}
+
+/* for radio label */
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 400;
+}
+
+/* Small hint text */
+.hint {
+  margin: 0.25rem 0 0;
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
+
+/* Components */
+
+/* Turns links into a button */
+.btn,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.6rem 1.4rem;
+  border: 2px solid var(--brand);
+  border-radius: var(--radius);
+  background-color: var(--brand);
+  color: var(--ink-inverse);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Hover effect */
+.btn:hover {
+  border-color: var(--brand-dark);
+  background-color: var(--brand-dark);
+}
+
+/* Outlined variant */
+.btn-secondary {
+  background-color: transparent;
+  color: var(--brand);
+}
+
+/* Hover effect */
+.btn-secondary:hover {
+  background-color: var(--brand-light);
+  border-color: var(--brand-dark);
+  color: var(--brand-dark);
+}
+
+/* Row of anything, wraps */
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+/* Content panel */
+.box {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface-alt);
+}
+
+/* Trim inner margins */
+.box> :first-child {
+  margin-top: 0;
+}
+
+.box> :last-child {
+  margin-bottom: 0;
+}
+
+/* For responsiveness */
+.grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+/* Fill the column */
+.grid p,
+.box p {
+  max-width: none;
+}
+
+/* Larger intro paragraph */
+.intro {
+  color: var(--ink-muted);
+  font-size: var(--step-1);
+}
+
+
+/* Footer */
+
+/* Dark footer bar */
+.site-footer {
+  padding: 2rem clamp(1rem, 4vw, 2rem);
+  background-color: var(--brand-dark);
+  color: var(--ink-inverse);
+}
+
+/* Light links on dark */
+.site-footer a {
+  color: var(--brand-light);
+}
+
+/* Hover effect */
+.site-footer a:hover {
+  color: var(--ink-inverse);
+}
+
+/* Jira and GitHub row */
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+/* Copyright and credits */
+.footer-note {
+  max-width: var(--measure);
+  margin: 0 0 0.5rem;
+  color: var(--brand-light);
+  font-size: var(--step--1);
+}
+
+
+/* Reponses from and within 680px */
+
+@media (max-width: 42.5em) {
+  /* Smaller logo */
+  .logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Smaller name */
+  .brand-name {
+    font-size: 1.15rem;
+  }
+
+  /* Hamburger button */
+  .site-header {
+    position: relative;
+  }
+
+  .site-nav summary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .site-nav summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .site-nav summary::before {
+    content: "";
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    box-shadow: 0 -6px currentColor, 0 6px currentColor;
+  }
+
+  /* For hamburger button */
+  .site-nav ul {
+    display: none;
+  }
+
+  .site-nav details[open] ~ ul {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: 0.5rem 0;
+    border-bottom: 4px solid var(--brand);
+    background-color: var(--surface);
+  }
+
+  /* Nav link positioning */
+  .site-nav details[open] ~ ul a {
+    text-align: center;
+  }
+}
