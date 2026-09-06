@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Base</title>
+  <title>Jobs</title>
   <meta name="description" content="One sentence about this page.">
 
   <!-- Google Fonts — credited in the footer -->
@@ -22,8 +22,18 @@
 	}
 	
 	.coloured {
-		color: #1C3872;
+		color: #1C3872; /*from style.css*/
 		font-weight: bold;
+	}
+	
+	.group {
+		gap: 5rem; /*overriding style.css*/
+	}
+	
+	.outline {
+		/*padding: 1.25rem 1.5rem;
+		border: 1px solid var(--border-strong);
+		border-radius: var(--radius);*/
 	}
   </style>
 
@@ -55,57 +65,107 @@
 
   <main id="main">
 
-    <!-- Code from here -->
-	<h1>jobs</h1>
+	<h1>Jobs</h1>
 	<p class="intro">intro text</p>
 	<!-- ol of jobs maybe? -->
 	
-	<section class="group"> <!-- group containing all job boxes -->
+	<div class="group"> <!-- group containing all job boxes -->
 	
-		<div class="box"> <!-- job 1 -->
-		<h2 class="inline">job 1</h2>
-		<p class="inline hint">#10001<p>
-		
+		<!-- job 1 -->
+		<section class="outline">
+		<h2 class="inline">Community Organiser</h2>
+		<p class="inline hint">#100001<p>
 		<p>desc</p>
 		<p>salary</p>
 		<p>reporting line</p>
-		
-		<div class="group">
-		<section> <!-- list of key responsibilities -->
+		<!-- key responsibilities -->
 		<p class="coloured">Key Responsibilities</p>
-		<ul>
+		<ol> <!-- use inline here to remove numbers -->
 			<li>item 1</li>
 			<li>item 2</li>
 			<li>item 3</li>
-		</ul>
-		</section>
-		
-		<section> <!-- list of essential requirements -->
+		</ol>
+		<!-- essential requirements -->
 		<p class="coloured">Essential Requirements</p>
 		<ul>
 			<li>item 1</li>
 			<li>item 2</li>
 			<li>item 3</li>
 		</ul>
-		</section>
-		
-		<section> <!-- list of preferable requirements -->
+		<!-- preferable requirements -->
 		<p class="coloured">Preferable Requirements</p>
 		<ul>
 			<li>item 1</li>
 			<li>item 2</li>
 			<li>item 3</li>
 		</ul>
-
+		<a href="apply.html" class="btn">APPLY</a>
 		</section>
-		</div>
 		
-		<a href="base.html" class="btn">APPLY</a>
-	</section>
+		<!-- job 2 -->
+		<section class="outline">
+		<h2 class="inline">Fundraiser</h2>
+		<p class="inline hint">#100002<p>
+		<p>desc</p>
+		<p>salary</p>
+		<p>reporting line</p>
+		<!-- key responsibilities -->
+		<p class="coloured">Key Responsibilities</p>
+		<ol> <!-- use inline here to remove numbers -->
+			<li>item 1</li>
+			<li>item 2</li>
+			<li>item 3</li>
+		</ol>
+		<!-- essential requirements -->
+		<p class="coloured">Essential Requirements</p>
+		<ul>
+			<li>item 1</li>
+			<li>item 2</li>
+			<li>item 3</li>
+		</ul>
+		<!-- preferable requirements -->
+		<p class="coloured">Preferable Requirements</p>
+		<ul>
+			<li>item 1</li>
+			<li>item 2</li>
+			<li>item 3</li>
+		</ul>
+		<a href="apply.html" class="btn">APPLY</a>
+		</section>
+		
+		<!-- job 3 -->
+		<section class="outline">
+		<h2 class="inline">Media/PR</h2>
+		<p class="inline hint">#100003<p>
+		<p>desc</p>
+		<p>salary</p>
+		<p>reporting line</p>
+		<!-- key responsibilities -->
+		<p class="coloured">Key Responsibilities</p>
+		<ol> <!-- use inline here to remove numbers -->
+			<li>item 1</li>
+			<li>item 2</li>
+			<li>item 3</li>
+		</ol>
+		<!-- essential requirements -->
+		<p class="coloured">Essential Requirements</p>
+		<ul>
+			<li>item 1</li>
+			<li>item 2</li>
+			<li>item 3</li>
+		</ul>
+		<!-- preferable requirements -->
+		<p class="coloured">Preferable Requirements</p>
+		<ul>
+			<li>item 1</li>
+			<li>item 2</li>
+			<li>item 3</li>
+		</ul>
+		<a href="apply.html" class="btn">APPLY</a>
+		</section>
 
-	
-	<section> <!-- job 2 -->
-	</section>
+		
+	</div>
 
   </main>
 
