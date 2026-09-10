@@ -1,4 +1,3 @@
-/* Global values to use below mostly inspired by the page refered */
 
 :root {
   --brand:          #1C3872;   /* navy: header, headings, buttons */
@@ -12,8 +11,8 @@
 
   --surface:        #FFFFFF;   /* page background */
   --surface-alt:    #F0F3F4;   /* panels, alt rows */
-  --border:         #D5DAE0;   /* decorative lines only */
-  --border-strong:  #7B838C;   /* control outlines (3:1) */
+  --border:         #D5DAE0;   
+  --border-strong:  #7B838C;   
 
   --font-heading:   "Source Serif 4", Georgia, "Times New Roman", serif;
   --font-body:      "Source Sans 3", system-ui, -apple-system, "Segoe UI",
