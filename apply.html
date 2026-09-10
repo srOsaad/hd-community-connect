@@ -50,11 +50,14 @@
   </header>
 
   <main id="main">
+    <!-- The title of the apply.html -->
+
     <h1><strong>Join the Community</strong></h1>
     <p class="intro"  >Why should you join our community? We have movie nights, workshops, and social events!</p>
     <h2><strong>Become our CSSO member today</strong></h2>
     <p><em>Fill in your details below to <span class="benefit">access advice</span>, <span class="benefit">support</span>, <span class="benefit">member benefits</span> <br> <span style="opacity:0.5">and more ...</span></em></p>
     <form method="post" action="https://mercury.swin.edu.au/it000000/formtest.php">
+      <!-- Form fields for user information -->
       <fieldset class="field">
         <legend><strong>Who Are Youuuu?</strong></legend>
         <label for="job_reference_number"><strong>Job reference number:</strong></label>
@@ -78,6 +81,8 @@
 
         <label for ="Other" class="choice"><input type="radio" name="Gender" value="Other" id="Other"> Other </label>
       </fieldset>
+
+      <!-- Form fields for user address -->
       <fieldset class="field">
         <legend><strong>Where Do You Liveeee?</strong></legend>
     <label for="streetaddress"><strong>Street address:</strong></label>
@@ -99,6 +104,8 @@
       <label for="postcode"><strong>Postcode:</strong></label>
     <input type="text" name="postcode" id="postcode" pattern="[0-9]{4}" maxlength="4" placeholder="Enter your postcode" title="Please enter your postcode" required>
 </fieldset>
+
+<!-- Form fields for user contact information -->
 <fieldset class="field">
     <legend><strong>Your contact informationnnn?</strong></legend>
     <label for="email"><strong>Email:</strong></label>
@@ -107,6 +114,7 @@
     <label for="phone"><strong>Phone:</strong></label>
     <input type="tel" name="phone" id="phone" pattern="[0-9]{10,12}" maxlength="12" placeholder="Enter your phone number" title="Please enter your phone number" required>
 </fieldset>
+<!-- Form fields for user skills -->
 <fieldset class="field">
   <legend><strong>What skills you have in this field?</strong></legend>
     <label class="choice" for="skill1">
@@ -121,6 +129,7 @@
      <label class ="choice" for="Other_skill">Other skills:</label>
     <textarea name="Other_skill" id="Other_skill" rows="4" cols="50" placeholder="Please enter if you have other skills"></textarea>
 </fieldset>
+<!-- Form submission buttons -->
 <div class="grid">
     <input class="btn" type="submit" value="Submit Application">
     <input class="btn-secondary" type="reset" value="Reset Form">
