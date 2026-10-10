@@ -1,22 +1,15 @@
-<!DOCTYPE html>
-<html lang="en-AU">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php
+/*
+Using header.inc (with nav.inc inside) and footer.inc.
+Page content is unchanged from Part 1 apart from links (.html to .php).
+*/
 
-  <title>Community Connect — Home</title>
-  <meta name="description" content="Community Connect is a not-for-profit supporting community programs, volunteer registration, events, donations and access to support resources.">
+$page_title = "Home";
+$page_description = "Community Connect is a not-for-profit supporting community programs, volunteer registration, events, donations and access to support resources.";
+$current_page = "index";
 
-  <!-- Google Fonts — credited in the footer -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&amp;family=Source+Serif+4:wght@600;700&amp;display=swap">
-  
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-  <link rel="stylesheet" href="css/styles.css">
-
-  <style>
+// Embedded CSS for this page (Part 1 requirement: embedded CSS on every page)
+$page_style = <<<'CSS'
     /* Embedded CSS */
 
     .hero {
@@ -73,33 +66,10 @@
       list-style: none;
       padding: 0;
     }
-  </style>
+CSS;
 
-</head>
-
-<body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-
-  <!-- Header and nav -->
-  <header class="site-header">
-    <a class="brand" href="index.html">
-      <img class="logo" src="assets/logo.png"
-           alt="Community Connect logo" width="48" height="48">
-      <span class="brand-name">Community Connect</span>
-    </a>
-
-    <nav class="site-nav" aria-label="Main navigation">
-      <details>
-        <summary aria-label="Menu"></summary>
-      </details>
-      <ul>
-        <li><a href="index.html" aria-current="page">Home</a></li>
-        <li><a href="jobs.html">Jobs</a></li>
-        <li><a href="apply.html">Apply</a></li>
-        <li><a href="about.html">About</a></li>
-      </ul>
-    </nav>
-  </header>
+include "header.inc";
+?>
 
   <main id="main">
 
@@ -215,45 +185,4 @@
 
   </main>
 
-  <!-- Footer : added all required things and credits -->
-  <footer class="site-footer">
-    <h2 class="visually-hidden">Site information</h2>
-
-    <ul class="footer-links">
-      <li><a href="https://hd-community-connect.atlassian.net/jira/software/projects/CSW/boards/3"
-             target="_blank" rel="noopener noreferrer">Jira project board<span
-             class="visually-hidden"> (opens in a new tab)</span></a></li>
-      <li><a href="https://github.com/srOsaad/hd-community-connect"
-             target="_blank" rel="noopener noreferrer">GitHub repository<span
-             class="visually-hidden"> (opens in a new tab)</span></a></li>
-
-      <li><a href="mailto:106406031@student.swin.edu.au">106406031@student.swin.edu.au</a></li>
-      <li><a href="mailto:106052926@student.swin.edu.au">106052926@student.swin.edu.au</a></li>
-      <li><a href="mailto:106424716@student.swin.edu.au">106424716@student.swin.edu.au</a></li>
-      <li><a href="mailto:106514329@student.swin.edu.au">106514329@student.swin.edu.au</a></li>
-    </ul>
-
-    <p class="footer-note">
-      &copy; 2026 Community Connect. A student project by Group HD for
-      Web Technology, Swinburne University of Technology.
-      Community Connect is a fictional organisation created for assessment purposes.
-    </p>
-
-    <!-- add anything you didn't make yourself to this list -->
-    <p class="footer-note">
-      Acknowledgements: logo generated with Google Gemini.
-      "What Is a Community?" quotation adapted from the Wikipedia article
-      <a href="https://en.wikipedia.org/wiki/Community"
-         target="_blank" rel="noopener noreferrer">Community<span
-         class="visually-hidden"> (opens in a new tab)</span></a>,
-      licensed under CC BY-SA 4.0.
-      Colour scheme adapted from the Australian Services Union
-      <a href="https://www.asu.org.au/ASU_NSW/About/community_sector.aspx"
-         target="_blank" rel="noopener noreferrer">Social and
-      Community Services<span class="visually-hidden"> (opens in a new tab)</span></a> page. Typefaces Source Serif 4 and Source Sans 3 by
-      Adobe, served via Google Fonts under the SIL Open Font License.
-    </p>
-  </footer>
-
-</body>
-</html>
+<?php include "footer.inc"; ?>
