@@ -54,7 +54,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-image: url("../assets/logo.png");
+  background-image: url("images/logo.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 320px;
@@ -223,7 +223,7 @@ main:focus {
   color: var(--brand-dark);
 }
 
-/* Current page — driven by the aria-current attribute already on the link,
+/* Current page - driven by the aria-current attribute already on the link,
    so there is no id to move from page to page. Marked three ways (colour,
    weight, underline) so colour is never the only cue. */
 .site-nav a[aria-current="page"] {
@@ -232,6 +232,23 @@ main:focus {
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 0.35em;
+}
+
+/* Staff login / log out link: set apart from the pages applicants use */
+.site-nav .nav-staff {
+  align-self: center;
+  margin-left: 0.75rem;
+}
+
+.site-nav .nav-staff a {
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--border-strong);
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
+.site-nav .nav-staff a:hover {
+  border-color: var(--brand-dark);
 }
 
 
@@ -356,6 +373,27 @@ input[type="checkbox"] {
   margin: 0.25rem 0 0;
   color: var(--ink-muted);
   font-size: var(--step--1);
+}
+
+/* Feedback messages (login, forms, management) */
+.message {
+  max-width: var(--measure);
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid;
+  border-radius: var(--radius);
+}
+
+.message-error {
+  border-color: #B00020;
+  background-color: #FDECEE;
+  color: #7A0016;
+}
+
+.message-success {
+  border-color: #1E7A3B;
+  background-color: #E8F5EC;
+  color: #145228;
 }
 
 
@@ -548,5 +586,15 @@ input[type="checkbox"] {
   /* Nav link positioning */
   .site-nav details[open] ~ ul a {
     text-align: center;
+  }
+
+  /* Staff link sits in the column like the other links on small screens */
+  .site-nav .nav-staff {
+    align-self: stretch;
+    margin-left: 0;
+  }
+
+  .site-nav .nav-staff a {
+    border: none;
   }
 }
