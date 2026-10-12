@@ -21,22 +21,22 @@ if (!$conn) {
 }
 
 /* ---------- Sanitise ---------- */
-$job_ref     = strtoupper(sanitise_input($_POST['job_reference_number']));
-$first_name  = sanitise_input($_POST['first_name']);
-$last_name   = sanitise_input($_POST['last_name']);
-$DOB         = sanitise_input($_POST['DateOfBirth']);
-$gender      = isset($_POST['Gender']) ? sanitise_input($_POST['Gender']) : "";
-$street      = sanitise_input($_POST['streetaddress']);
-$suburb      = sanitise_input($_POST['suburb_town']);
-$state       = strtoupper(sanitise_input($_POST['state']));
-$postcode    = sanitise_input($_POST['postcode']);
-$email       = sanitise_input($_POST['email']);
-$phone       = sanitise_input($_POST['phone']);
-$other_skills = isset($_POST['other_skills']) ? sanitise_input($_POST['other_skills']) : "";
+$job_ref     = strtoupper(clean_input($_POST['job_reference_number']));
+$first_name  = clean_input($_POST['first_name']);
+$last_name   = clean_input($_POST['last_name']);
+$DOB         = clean_input($_POST['DateOfBirth']);
+$gender      = isset($_POST['Gender']) ? clean_input($_POST['Gender']) : "";
+$street      = clean_input($_POST['streetaddress']);
+$suburb      = clean_input($_POST['suburb_town']);
+$state       = strtoupper(clean_input($_POST['state']));
+$postcode    = clean_input($_POST['postcode']);
+$email       = clean_input($_POST['email']);
+$phone       = clean_input($_POST['phone']);
+$other_skill = isset($_POST['Other_skill']) ? clean_input($_POST['Other_skill']) : "";
 
 $skills_arr = [];
 if (isset($_POST['skills']) && is_array($_POST['skills'])) {
-    foreach ($_POST['skills'] as $s) $skills_arr[] = sanitise_input($s);
+    foreach ($_POST['skills'] as $s) $skills_arr[] = clean_input($s);
 }
 
 /* ---------- Validate ---------- */
@@ -95,9 +95,9 @@ if (!preg_match('/^[0-9]{10}$/', $phone))
     $errors[] = "Phone number must be exactly 10 digits";
 
 // Skills: at least one, or something in other skills
-if (count($skills_arr) === 0 && $other_skills === "")
+if (count($skills_arr) === 0 && $other_skill === "")
     $errors[] = "Please select at least one skill, or describe your skills in the other skills box.";
-if (strlen($other_skills) > 1000)
+if (strlen($other_skill) > 1000)
     $errors[] = "Other skills must be 1000 characters or fewer.";
 if ($errors) {
     render_page("Application Error", "Please fix the following problems", $errors, true);
@@ -143,7 +143,7 @@ $stmt = mysqli_prepare($conn,
      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 mysqli_stmt_bind_param($stmt, "sssssssssssss",
     $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
-    $state, $postcode, $email, $phone, $skills_str, $other_skills);
+    $state, $postcode, $email, $phone, $skills_str, $other_skill);
 
 if (mysqli_stmt_execute($stmt)) {
     $eoi_number = mysqli_insert_id($conn);
