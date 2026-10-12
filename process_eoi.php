@@ -37,4 +37,98 @@ if (isset($_POST['skills']) && is_array($_POST['skills'])) {
     foreach ($_POST['skills'] as $s) $skills_arr[] = sanitise_input($s);
 }
 
+// Job reference: exactly 6 alphanumeric characters
+if (!preg_match('/^[A-Za-z0-9]{6}$/', $job_ref))
+    $errors[] = "Job reference number must be exactly 6 alphanumeric characters.";
+
+// Names: max 20 alpha characters (letters, hyphen, apostrophe, space allowed)
+if ($first_name === "" || !preg_match("/^[A-Za-z\s]{0,20}$/", $first_name))
+    $errors[] = "First name must be 1-20 letters only.";
+if ($last_name === "" || !preg_match("/^[A-Za-z\s]{0,20}$/", $last_name))
+    $errors[] = "Last name must be 1-20 letters only.";
+
+// DOB: dd/mm/yyyy, real date, age 15-80
+$dob_sql = null;
+if (!preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $DOB, $m) || !checkdate((int)$m[2], (int)$m[1], (int)$m[3])) {
+    $errors[] = "Date of birth must be a valid date in dd/mm/yyyy format.";
+} else {
+    $dob_sql = "$m[3]-$m[2]-$m[1]";
+    $age = (new DateTime($dob_sql))->diff(new DateTime('today'))->y;
+    if ($age < 15 || $age > 80) $errors[] = "Applicants must be aged between 15 and 80.";
+}
+
+// Gender
+$valid_genders = ['Male','Female','Other'];
+if (!in_array($gender, $valid_genders, true))
+    $errors[] = "Please select a gender option.";
+
+// Address
+if ($street === "" || strlen($street) > 40) $errors[] = "Street address is required";
+if ($suburb === "" || strlen($suburb) > 40) $errors[] = "Suburb/town is required";
+
+// State + postcode (4 digits, first digit must match state)
+$valid_states = ['VIC','NSW','QLD','NT','WA','SA','TAS','ACT'];
+if (!in_array($state, $valid_states, true)) {
+    $errors[] = "Please select a valid state.";
+}
+if (!preg_match('/^\d{4}$/', $postcode)) {
+    $errors[] = "Postcode must be exactly 4 digits.";
+} elseif (in_array($state, $valid_states, true)) {
+    $first_digit_map = [
+        'VIC' => ['3','8'], 'NSW' => ['1','2'], 'QLD' => ['4','9'], 'NT' => ['0'],
+        'WA'  => ['6'],     'SA'  => ['5'],     'TAS' => ['7'],     'ACT' => ['0'],
+    ];
+    if (!in_array($postcode[0], $first_digit_map[$state], true))
+        $errors[] = "Postcode does not match the selected state.";
+}
+
+// Email (check the raw value, since htmlspecialchars may alter odd characters)
+if (!filter_var(html_entity_decode($email), FILTER_VALIDATE_EMAIL) || strlen($email) > 100)
+    $errors[] = "Please enter a valid email address.";
+
+// Phone: 10 digits or spaces
+if (!preg_match('/^[0-9]{10}$/', $phone))
+    $errors[] = "Phone number must be exactly 10 digits";
+
+// Skills: at least one, or something in other skills
+if (count($skills_arr) === 0 && $other_skills === "")
+    $errors[] = "Please select at least one skill, or describe your skills in the other skills box.";
+if (strlen($other_skills) > 1000)
+    $errors[] = "Other skills must be 1000 characters or fewer.";
+if ($errors) {
+    render_page("Application Error", "Please fix the following problems", $errors, true);
+    exit();
+}
+mysqli_report(MYSQLI_REPORT_OFF);
+$conn = @mysqli_connect($host, $user, $pwd, $sql_db);
+if (!$conn) {
+    render_page("Database Error", "Sorry, we could not process your application", ["Database connection failed. Please try again later."], true);
+    exit();
+}
+
+$create_sql = "CREATE TABLE IF NOT EXISTS eoi (
+    EOInumber     INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    JobReference  CHAR(6)      NOT NULL,
+    FirstName     VARCHAR(20)  NOT NULL,
+    LastName      VARCHAR(20)  NOT NULL,
+    DOB           DATE         NOT NULL,
+    Gender        ENUM('Male','Female','Other') NOT NULL,
+    StreetAddress VARCHAR(40)  NOT NULL,
+    Suburb        VARCHAR(40)  NOT NULL,
+    State         ENUM('VIC','NSW','QLD','NT','WA','SA','TAS','ACT') NOT NULL,
+    Postcode      CHAR(4)      NOT NULL,
+    Email         VARCHAR(40)  NOT NULL,
+    Phone         VARCHAR(10)  NOT NULL,
+    Skills        SET('Problem solving','Communication','Teamwork'),
+    OtherSkills   TEXT,
+    Status        ENUM('New','Current','Final') NOT NULL DEFAULT 'New'
+)";
+if (!mysqli_query($conn, $create_sql)) {
+    render_page("Database Error", "Sorry, we could not process your application",
+        ["Could not prepare the database table."], true);
+    mysqli_close($conn);
+    exit();
+}
+
+
 ?>
