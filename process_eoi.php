@@ -87,7 +87,7 @@ if (!preg_match('/^\d{4}$/', $postcode)) {
 }
 
 // Email (check the raw value, since htmlspecialchars may alter odd characters)
-if (!filter_var(html_entity_decode($email), FILTER_VALIDATE_EMAIL) || strlen($email) > 100)
+if (!filter_var(html_entity_decode($email), FILTER_VALIDATE_EMAIL) || strlen($email) > 150)
     $errors[] = "Please enter a valid email address.";
 
 // Phone: 10 digits or spaces
@@ -121,7 +121,7 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     Suburb        VARCHAR(40)  NOT NULL,
     State         ENUM('VIC','NSW','QLD','NT','WA','SA','TAS','ACT') NOT NULL,
     Postcode      CHAR(4)      NOT NULL,
-    Email         VARCHAR(40)  NOT NULL,
+    Email         VARCHAR(150)  NOT NULL,
     Phone         VARCHAR(10)  NOT NULL,
     Skills        SET('Problem solving','Communication','Teamwork'),
     OtherSkills   TEXT,
@@ -134,7 +134,7 @@ if (!mysqli_query($conn, $create_sql)) {
     exit();
 }
 
-/* ---------- Insert ---------- */
+/* ---------- Checking insert ---------- */
 $skills_str = implode(",", $skills_arr);   // SET needs commas with no spaces
 
 $stmt = mysqli_prepare($conn,
