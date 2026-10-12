@@ -27,7 +27,7 @@ include "header.inc";
     <p class="intro"  >Why should you join our community? We have movie nights, workshops, and social events!</p>
     <h2><strong>Become our CSSO member today</strong></h2>
     <p><em>Fill in your details below to <span class="benefit">access advice</span>, <span class="benefit">support</span>, <span class="benefit">member benefits</span> <br> <span style="opacity:0.5">and more ...</span></em></p>
-    <form method="post" action="https://mercury.swin.edu.au/it000000/formtest.php">
+    <form action="process_eoi.php" method="post" novalidate="novalidate">
       <!-- Form fields for user information -->
       <fieldset class="field">
         <legend><strong>Who Are Youuuu?</strong></legend>
