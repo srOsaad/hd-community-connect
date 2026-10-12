@@ -1,53 +1,24 @@
-<!DOCTYPE html>
-<html lang="en-AU">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php
+/*
+Using header.inc (with nav.inc inside) and footer.inc.
+Page content is unchanged from Part 1 apart from links (.html to .php).
+*/
 
-  <title>Apply for community</title>
-  <meta name="description" content="One sentence about this page.">
+$page_title = "Apply";
+$page_description = "Community Connect is a not-for-profit supporting community programs, volunteer registration, events, donations and access to support resources.";
+$current_page = "apply";
 
-  <!-- Google Fonts — credited in the footer -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&amp;family=Source+Serif+4:wght@600;700&amp;display=swap">
-
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-  <link rel="stylesheet" href="css/styles.css">
-
-  <style>
+// Embedded CSS for this page (Part 1 requirement: embedded CSS on every page)
+$page_style = <<<'CSS'
   .benefit{
     font-weight: bold;
     color: #007bff;
   }
-  </style>
+CSS;
 
-</head>
-
-<body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-
-  <!-- Header and nav -->
-  <header class="site-header">
-    <a class="brand" href="index.html">
-      <img class="logo" src="assets/logo.png" alt="Community Connect logo" width="48" height="48">
-      <span class="brand-name">Community Connect</span>
-    </a>
-
-    <nav class="site-nav" aria-label="Main navigation">
-      <details>
-        <summary aria-label="Menu"></summary>
-      </details>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="jobs.html">Jobs</a></li>
-        <li><a href="apply.html" aria-current="page">Apply</a></li>
-        <li><a href="about.html">About</a></li>
-      </ul>
-    </nav>
-  </header>
+include "header.inc";
+?>
 
   <main id="main">
     <!-- The title of the apply.html -->
@@ -72,18 +43,18 @@
           placeholder="Enter your last name" required>
 
         <label for="DateOfBirth"><strong>Date of birth:</strong></label>
-        <input type="input" pattern = "^\d{2}/\d{2}/\d{4}$" name="DateOfBirth" id="DateOfBirth" required>
+        <input type="input" pattern = "^\d{2}/\d{2}/\d{4}$" name="DateOfBirth" id="DateOfBirth" placeholder="Enter your date of birth (DD/MM/YYYY)" required>
       </fieldset>
       <!-- Form fields for user gender -->
       <fieldset class="field">
         <legend><strong>What is your gender?</strong></legend>
         <label><strong>Gender:</strong></label>
 
-        <label for="Male" class="choice"><input type="radio" name="Gender" id="Male" value="Male"> Male </label>
+        <label for="Male" class="choice"><input type="radio" name="Gender" id="Male" value="Male" required> Male </label>
 
-        <label for="Female" class="choice"><input type="radio" name="Gender" id="Female" value="Female"> Female </label>
+        <label for="Female" class="choice"><input type="radio" name="Gender" id="Female" value="Female" required> Female </label>
 
-        <label for ="Other" class="choice"><input type="radio" name="Gender" value="Other" id="Other"> Other </label>
+        <label for ="Other" class="choice"><input type="radio" name="Gender" value="Other" id="Other" required> Other </label>
         </label>
       </fieldset>
 
@@ -142,41 +113,4 @@
 </form>
   </main>
 
-  <!-- Footer : added all required things and credits -->
-  <footer class="site-footer">
-    <h2 class="visually-hidden">Site information</h2>
-
-    <ul class="footer-links">
-      <li><a href="https://hd-community-connect.atlassian.net/jira/software/projects/CSW/boards/3" target="_blank"
-          rel="noopener noreferrer">Jira project board<span class="visually-hidden"> (opens in a new tab)</span></a>
-      </li>
-      <li><a href="https://github.com/srOsaad/hd-community-connect" target="_blank" rel="noopener noreferrer">GitHub
-          repository<span class="visually-hidden"> (opens in a new tab)</span></a></li>
-
-      <li><a href="mailto:106406031@student.swin.edu.au">106406031@student.swin.edu.au</a></li>
-      <li><a href="mailto:106052926@student.swin.edu.au">106052926@student.swin.edu.au</a></li>
-      <li><a href="mailto:106424716@student.swin.edu.au">106424716@student.swin.edu.au</a></li>
-      <li><a href="mailto:106514329@student.swin.edu.au">106514329@student.swin.edu.au</a></li>
-    </ul>
-
-    <p class="footer-note">
-      &copy; 2026 Community Connect. A student project by Group HD for
-      Web Technology, Swinburne University of Technology.
-      Community Connect is a fictional organisation created for assessment purposes.
-    </p>
-
-    <!-- add anything you didn't make yourself to this list -->
-    <p class="footer-note">
-      Acknowledgements: logo generated with Google Gemini.
-      Colour scheme adapted from the Australian Services Union
-      <a href="https://www.asu.org.au/ASU_NSW/About/community_sector.aspx" target="_blank"
-        rel="noopener noreferrer">Social and
-        Community Services<span class="visually-hidden"> (opens in a new tab)</span></a> page. Typefaces Source Serif 4
-      and Source Sans 3 by
-      Adobe, served via Google Fonts under the SIL Open Font License.
-    </p>
-  </footer>
-
-</body>
-
-</html>
+<?php include "footer.inc"; ?>
