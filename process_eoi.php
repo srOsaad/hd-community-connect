@@ -19,6 +19,8 @@ if (!$conn) {
     }
 }
 }
+
+/* ---------- Sanitise ---------- */
 $job_ref     = strtoupper(sanitise_input($_POST['job_reference_number']));
 $first_name  = sanitise_input($_POST['first_name']);
 $last_name   = sanitise_input($_POST['last_name']);
@@ -37,6 +39,8 @@ if (isset($_POST['skills']) && is_array($_POST['skills'])) {
     foreach ($_POST['skills'] as $s) $skills_arr[] = sanitise_input($s);
 }
 
+/* ---------- Validate ---------- */
+$errors = [];
 // Job reference: exactly 6 alphanumeric characters
 if (!preg_match('/^[A-Za-z0-9]{6}$/', $job_ref))
     $errors[] = "Job reference number must be exactly 6 alphanumeric characters.";
@@ -105,7 +109,7 @@ if (!$conn) {
     render_page("Database Error", "Sorry, we could not process your application", ["Database connection failed. Please try again later."], true);
     exit();
 }
-
+ /* DATA BASE */
 $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     EOInumber     INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     JobReference  CHAR(6)      NOT NULL,
@@ -130,5 +134,29 @@ if (!mysqli_query($conn, $create_sql)) {
     exit();
 }
 
+/* ---------- Insert ---------- */
+$skills_str = implode(",", $skills_arr);   // SET needs commas with no spaces
+
+$stmt = mysqli_prepare($conn,
+    "INSERT INTO eoi (JobReference, FirstName, LastName, DOB, Gender, StreetAddress, Suburb,
+                      State, Postcode, Email, Phone, Skills, OtherSkills)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+mysqli_stmt_bind_param($stmt, "sssssssssssss",
+    $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
+    $state, $postcode, $email, $phone, $skills_str, $other_skills);
+
+if (mysqli_stmt_execute($stmt)) {
+    $eoi_number = mysqli_insert_id($conn);
+    render_page("Application Received", "Thank you, $first_name!",
+        ["Your Expression of Interest has been received.",
+         "Your EOI number is <strong>" . (int)$eoi_number . "</strong>. Please keep it for your records."],
+        false);
+} else {
+    render_page("Database Error", "Sorry, we could not process your application",
+        ["Your application could not be saved. Please try again."], true);
+}
+
+mysqli_stmt_close($stmt);
+mysqli_close($conn);
 
 ?>
