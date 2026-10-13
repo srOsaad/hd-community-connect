@@ -80,7 +80,10 @@
 							</section>";
 					}
 				}
+				else echo "<p>There are no jobs at the moment...</p>";
 			}
+			else echo "<p>There was an error connecting to the database...</p>"
+
 			
 		?>
 		
