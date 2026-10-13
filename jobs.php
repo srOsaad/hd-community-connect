@@ -14,7 +14,7 @@
         href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&amp;family=Source+Serif+4:wght@600;700&amp;display=swap">
   
   <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="styles/styles.css">
 
   <style>
     .inline {
@@ -47,7 +47,7 @@
   <!-- Header and nav -->
   <header class="site-header">
     <a class="brand" href="index.html">
-      <img class="logo" src="assets/logo.png"
+      <img class="logo" src="images/logo.png"
            alt="Community Connect logo" width="48" height="48">
       <span class="brand-name">Community Connect</span>
     </a>
