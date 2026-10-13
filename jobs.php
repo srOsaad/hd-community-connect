@@ -42,28 +42,9 @@
 </head>
 
 <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
 
-  <!-- Header and nav -->
-  <header class="site-header">
-    <a class="brand" href="index.html">
-      <img class="logo" src="images/logo.png"
-           alt="Community Connect logo" width="48" height="48">
-      <span class="brand-name">Community Connect</span>
-    </a>
-
-    <nav class="site-nav" aria-label="Main navigation">
-      <details>
-        <summary aria-label="Menu"></summary>
-      </details>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="jobs.html" aria-current="page">Jobs</a></li>
-        <li><a href="apply.html">Apply</a></li>
-        <li><a href="about.html">About</a></li>
-      </ul>
-    </nav>
-  </header>
+	<!-- header from included file -->
+  <?php include("header.inc"); ?>
 
   <main id="main">
 
@@ -172,40 +153,8 @@
 
   </main>
 
-  <!-- Footer : added all required things and credits -->
-  <footer class="site-footer">
-    <h2 class="visually-hidden">Site information</h2>
-
-    <ul class="footer-links">
-      <li><a href="https://hd-community-connect.atlassian.net/jira/software/projects/CSW/boards/3"
-             target="_blank" rel="noopener noreferrer">Jira project board<span
-             class="visually-hidden"> (opens in a new tab)</span></a></li>
-      <li><a href="https://github.com/srOsaad/hd-community-connect"
-             target="_blank" rel="noopener noreferrer">GitHub repository<span
-             class="visually-hidden"> (opens in a new tab)</span></a></li>
-
-      <li><a href="mailto:106406031@student.swin.edu.au">106406031@student.swin.edu.au</a></li>
-      <li><a href="mailto:106052926@student.swin.edu.au">106052926@student.swin.edu.au</a></li>
-      <li><a href="mailto:106424716@student.swin.edu.au">106424716@student.swin.edu.au</a></li>
-      <li><a href="mailto:106514329@student.swin.edu.au">106514329@student.swin.edu.au</a></li>
-    </ul>
-
-    <p class="footer-note">
-      &copy; 2026 Community Connect. A student project by Group HD for
-      Web Technology, Swinburne University of Technology.
-      Community Connect is a fictional organisation created for assessment purposes.
-    </p>
-
-    <!-- add anything you didn't make yourself to this list -->
-    <p class="footer-note">
-      Acknowledgements: logo generated with Google Gemini.
-      Colour scheme adapted from the Australian Services Union
-      <a href="https://www.asu.org.au/ASU_NSW/About/community_sector.aspx"
-         target="_blank" rel="noopener noreferrer">Social and
-      Community Services<span class="visually-hidden"> (opens in a new tab)</span></a> page. Typefaces Source Serif 4 and Source Sans 3 by
-      Adobe, served via Google Fonts under the SIL Open Font License.
-    </p>
-  </footer>
+	<!-- footer from included file -->
+	<?php include("footer.inc"); ?>
 
 </body>
 </html>
