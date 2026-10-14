@@ -89,8 +89,8 @@
 		
 	</div>
 	
-	<a href="apply.html" class="btn">APPLY</a>
-	<a href="index.html" class="btn-secondary">BACK</a>
+	<a href="apply.php" class="btn">APPLY</a>
+	<a href="index.php" class="btn-secondary">BACK</a>
 	
 	<aside style="float: right"> <!-- more inline css -->
 		<p class="hint">See the apply page for information on how to apply.</p>
