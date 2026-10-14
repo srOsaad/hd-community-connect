@@ -57,6 +57,13 @@
 	<h1>Jobs</h1>
 	<p class="intro">List of currently avaliable positions at community Connect.</p>
 	
+	<!-- search bar -->
+	<form method="get" action="jobs_search.php">
+		<label for="search">Search for a job listing</label>
+		<input type="text" name="search" id="search" required>
+		<input type="submit" value="Search">
+	</form>
+	
 	 <!-- group containing all job boxes -->
 	<div class="group" style="gap: 3rem; /*overriding style.css*/">
 	
