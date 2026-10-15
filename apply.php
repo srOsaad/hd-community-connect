@@ -61,7 +61,7 @@ include "header.inc";
       <fieldset class="field">
         <legend><strong>Where Do You Liveeee?</strong></legend>
     <label for="streetaddress"><strong>Street address:</strong></label>
-    <input type="text" name="streetaddress" id="streetaddress" pattern="[A-Za-z0-9\s]{3,40}" style="width: 400px;" placeholder="Enter your street address" maxlength="40" title="Please enter your street address" required>
+    <input type="text" name="streetaddress" id="streetaddress" pattern="[A-Za-z0-9\s\/,.'\-]{3,40}" style="width: 400px;" placeholder="Enter your street address" maxlength="40" title="Please enter your street address" required>
     <label for="suburb_town"><strong>Suburb/Town:</strong></label>
     <input type="text" name="suburb_town" id="suburb_town" pattern="[A-Za-z\s]{3,40}" placeholder="Enter your suburb or town" style="width: 400px;" maxlength="40" title="Please enter your suburb or town" required>
     <label for="state"><strong>State:</strong></label>
@@ -87,7 +87,7 @@ include "header.inc";
     <input type="email" name="email" id="email" style="width: 400px;" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" maxlength="150" placeholder="Enter your email address" title="Please enter your email address" required>
 
     <label for="phone"><strong>Phone:</strong></label>
-    <input type="tel" name="phone" id="phone" pattern="[0-9]{1,10}" maxlength="10" placeholder="Enter your phone number" title="Please enter your phone number" required>
+    <input type="tel" name="phone" id="phone" pattern="[0-9]{10}" maxlength="10" placeholder="Enter your phone number" title="Please enter your phone number" required>
 </fieldset>
 <!-- Form fields for user skills -->
 <fieldset class="field">
