@@ -13,7 +13,7 @@ function render_page($title, $heading, $messages, $is_error) {
         echo "</ul>";
     } else {
         foreach ($messages as $msg) {
-            echo "<p>" . e($msg) . "</p>";
+            echo "<p>" . $msg . "</p>";
         }
     }
     echo "<p><a href='apply.php'>Return to application form</a></p>";
@@ -185,9 +185,9 @@ mysqli_stmt_bind_param($stmt, "sssssssssssss",
 
 if (mysqli_stmt_execute($stmt)) {
     $eoi_number = mysqli_insert_id($conn);
-    render_page("Application Received", "Thank you, $first_name!",
+    render_page("Application Received", "Thank you, " . e($first_name) . "!",
         ["Your Expression of Interest has been received.",
-         "Your EOI number is " . (int)$eoi_number . ". Please keep it for your records."],
+         "Your EOI number is <strong>" . (int)$eoi_number . "</strong>. Please keep it for your records."],
         false);
 } else {
     render_page("Database Error", "Sorry, we could not process your application",
