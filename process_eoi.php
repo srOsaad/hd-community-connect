@@ -22,8 +22,9 @@ function render_page($title, $heading, $messages, $is_error) {
 
 if (!$conn) {
     echo "<p>" . $db_error_message . "</p>";   // database not reachable
+    exit();
 } else {
-    $required_fields = ['job_reference_number','first_name','last_name','DateOfBirth','Gender','streetaddress','suburb_town',
+    $required_fields = ['job_reference_number','first_name','last_name','DateOfBirth','streetaddress','suburb_town',
                     'state','postcode','email','phone'];
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -71,9 +72,9 @@ if (!preg_match('/^[A-Za-z0-9]{6}$/', $job_ref))
     $errors[] = "Job reference number must be exactly 6 alphanumeric characters.";
 
 // Names: max 20 alpha characters (letters, hyphen, apostrophe, space allowed)
-if ($first_name === "" || !preg_match("/^[A-Za-z\s]{0,20}$/", $first_name))
+if ($first_name === "" || !preg_match("/^[A-Za-z\s]{1,20}$/", $first_name))
     $errors[] = "First name must be 1-20 letters only.";
-if ($last_name === "" || !preg_match("/^[A-Za-z\s]{0,20}$/", $last_name))
+if ($last_name === "" || !preg_match("/^[A-Za-z\s]{1,20}$/", $last_name))
     $errors[] = "Last name must be 1-20 letters only.";
 
 // DOB: dd/mm/yyyy, real date, age 15-80
@@ -82,8 +83,17 @@ if (!preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $DOB, $m) || !checkdate((int)$m[2
     $errors[] = "Date of birth must be a valid date in dd/mm/yyyy format.";
 } else {
     $dob_sql = "$m[3]-$m[2]-$m[1]";
-    $age = (new DateTime($dob_sql))->diff(new DateTime('today'))->y;
-    if ($age < 15 || $age > 80) $errors[] = "Applicants must be aged between 15 and 80.";
+    $dob_date = new DateTime($dob_sql);
+    $today    = new DateTime('today');
+
+    if ($dob_date > $today) {
+        $errors[] = "Date of birth is not valid.";
+    } else {
+        $age = $dob_date->diff($today)->y;
+        if ($age < 15 || $age > 80) {
+            $errors[] = "Applicants must be aged between 15 and 80.";
+        }
+    }
 }
 
 // Gender
@@ -115,7 +125,7 @@ if (!preg_match('/^\d{4}$/', $postcode)) {
 if (!filter_var(html_entity_decode($email), FILTER_VALIDATE_EMAIL) || strlen($email) > 150)
     $errors[] = "Please enter a valid email address.";
 
-// Phone: 10 digits or spaces
+// Phone: 10 digits
 if (!preg_match('/^[0-9]{10}$/', $phone))
     $errors[] = "Phone number must be exactly 10 digits";
 
