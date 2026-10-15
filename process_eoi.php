@@ -2,6 +2,24 @@
 require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
 
+function render_page($title, $heading, $messages, $is_error) {
+    echo "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>$title</title></head><body>";
+    echo "<h1>$heading</h1>";
+    if ($is_error) {
+        echo "<ul style='color:red;'>";
+        foreach ($messages as $msg) {
+            echo "<li>" . e($msg) . "</li>";
+        }
+        echo "</ul>";
+    } else {
+        foreach ($messages as $msg) {
+            echo "<p>" . e($msg) . "</p>";
+        }
+    }
+    echo "<p><a href='apply.php'>Return to application form</a></p>";
+    echo "</body></html>";
+}
+
 if (!$conn) {
     echo "<p>" . $db_error_message . "</p>";   // database not reachable
 } else {
@@ -35,9 +53,16 @@ $phone       = clean_input($_POST['phone']);
 $other_skill = isset($_POST['Other_skill']) ? clean_input($_POST['Other_skill']) : "";
 
 $skills_arr = [];
+// $skills_arr = $_POST['skills'] ?? []; 
+
 if (isset($_POST['skills']) && is_array($_POST['skills'])) {
     foreach ($_POST['skills'] as $s) $skills_arr[] = clean_input($s);
-}
+}    
+
+// echo "<p>Skills array length: " . count($skills_arr) . "</p>";
+// foreach ($skills_arr as $s) {
+//     echo "<p>Skill: " . e($s) . "</p>";
+// }
 
 /* ---------- Validate ---------- */
 $errors = [];
@@ -123,8 +148,8 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     Postcode      CHAR(4)      NOT NULL,
     Email         VARCHAR(150)  NOT NULL,
     Phone         VARCHAR(10)  NOT NULL,
-    Skills        SET('Problem solving','Communication','Teamwork'),
-    OtherSkills   TEXT,
+    Skills        SET('Problem solving','Communication','Teamwork') NOT NULL,
+    OtherSkills   TEXT NULL,
     Status        ENUM('New','Current','Final') NOT NULL DEFAULT 'New'
 )";
 if (!mysqli_query($conn, $create_sql)) {
@@ -141,6 +166,11 @@ $stmt = mysqli_prepare($conn,
     "INSERT INTO eoi (JobReference, FirstName, LastName, DOB, Gender, StreetAddress, Suburb,
                       State, Postcode, Email, Phone, Skills, OtherSkills)
      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+// if (!$stmt) {
+//     echo "Prepare error: " . mysqli_error($conn);   // tạm thời để debug
+//     mysqli_close($conn);
+//     exit();
+// }
 mysqli_stmt_bind_param($stmt, "sssssssssssss",
     $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
     $state, $postcode, $email, $phone, $skills_str, $other_skill);
@@ -149,7 +179,7 @@ if (mysqli_stmt_execute($stmt)) {
     $eoi_number = mysqli_insert_id($conn);
     render_page("Application Received", "Thank you, $first_name!",
         ["Your Expression of Interest has been received.",
-         "Your EOI number is <strong>" . (int)$eoi_number . "</strong>. Please keep it for your records."],
+         "Your EOI number is " . (int)$eoi_number . ". Please keep it for your records."],
         false);
 } else {
     render_page("Database Error", "Sorry, we could not process your application",

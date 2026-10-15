@@ -94,13 +94,13 @@ include "header.inc";
 <fieldset class="field">
   <legend><strong>What skills you have in this field?</strong></legend>
     <label class="choice" for="skill1">
-    <input type="checkbox" name="skills" id="skill1" value="Problem solving"> Problem solving </label>
+    <input type="checkbox" name="skills[]" id="skill1" value="Problem solving"> Problem solving </label>
     
     <label class="choice" for="skill2">
-    <input type="checkbox" name="skills" id="skill2" value="Communication"> Communication </label>
+    <input type="checkbox" name="skills[]" id="skill2" value="Communication"> Communication </label>
 
     <label class="choice" for="skill3">
-    <input type="checkbox" name="skills" id="skill3" value="Teamwork"> Teamwork </label>
+    <input type="checkbox" name="skills[]" id="skill3" value="Teamwork"> Teamwork </label>
     
      <label class ="choice" for="Other_skill">Other skills:</label>
     <textarea name="Other_skill" id="Other_skill" rows="4" cols="50" placeholder="Please enter if you have other skills"></textarea>
