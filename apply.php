@@ -43,7 +43,7 @@ include "header.inc";
           placeholder="Enter your last name" required>
 
         <label for="DateOfBirth"><strong>Date of birth:</strong></label>
-        <input type="input" pattern = "^\d{2}/\d{2}/\d{4}$" name="DateOfBirth" id="DateOfBirth" placeholder="Enter your date of birth (DD/MM/YYYY)" required>
+        <input type="text" pattern = "^\d{2}/\d{2}/\d{4}$" name="DateOfBirth" id="DateOfBirth" placeholder="Enter your date of birth (DD/MM/YYYY)" required>
       </fieldset>
       <!-- Form fields for user gender -->
       <fieldset class="field">
@@ -55,7 +55,6 @@ include "header.inc";
         <label for="Female" class="choice"><input type="radio" name="Gender" id="Female" value="Female" required> Female </label>
 
         <label for ="Other" class="choice"><input type="radio" name="Gender" value="Other" id="Other" required> Other </label>
-        </label>
       </fieldset>
 
       <!-- Form fields for user address -->

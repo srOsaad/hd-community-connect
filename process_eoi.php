@@ -54,16 +54,12 @@ $phone       = clean_input($_POST['phone']);
 $other_skill = isset($_POST['Other_skill']) ? clean_input($_POST['Other_skill']) : "";
 
 $skills_arr = [];
-// $skills_arr = $_POST['skills'] ?? []; 
 
 if (isset($_POST['skills']) && is_array($_POST['skills'])) {
     foreach ($_POST['skills'] as $s) $skills_arr[] = clean_input($s);
 }    
 
-// echo "<p>Skills array length: " . count($skills_arr) . "</p>";
-// foreach ($skills_arr as $s) {
-//     echo "<p>Skill: " . e($s) . "</p>";
-// }
+
 
 /* ---------- Validate ---------- */
 $errors = [];
@@ -115,7 +111,7 @@ if (!preg_match('/^\d{4}$/', $postcode)) {
 } elseif (in_array($state, $valid_states, true)) {
     $first_digit_map = [
         'VIC' => ['3','8'], 'NSW' => ['1','2'], 'QLD' => ['4','9'], 'NT' => ['0'],
-        'WA'  => ['6'],     'SA'  => ['5'],     'TAS' => ['7'],     'ACT' => ['0'],
+        'WA'  => ['6'],     'SA'  => ['5'],     'TAS' => ['7'],     'ACT' => ['0','2'],
     ];
     if (!in_array($postcode[0], $first_digit_map[$state], true))
         $errors[] = "Postcode does not match the selected state.";
@@ -176,11 +172,7 @@ $stmt = mysqli_prepare($conn,
     "INSERT INTO eoi (JobReference, FirstName, LastName, DOB, Gender, StreetAddress, Suburb,
                       State, Postcode, Email, Phone, Skills, OtherSkills)
      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
-// if (!$stmt) {
-//     echo "Prepare error: " . mysqli_error($conn);   // tạm thời để debug
-//     mysqli_close($conn);
-//     exit();
-// }
+
 mysqli_stmt_bind_param($stmt, "sssssssssssss",
     $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
     $state, $postcode, $email, $phone, $skills_str, $other_skill);
