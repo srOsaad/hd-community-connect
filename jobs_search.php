@@ -55,13 +55,28 @@
   <main id="main">
 
 	<h1>Search Jobs</h1>
-	<p class="intro">search results placeholder</p>
 	
 	 <!-- group containing all job boxes -->
-	<div class="group" style="gap: 3rem; /*overriding style.css*/">
+	<div>
 	
 		<?php
-			
+		
+			if ($conn && isset($_GET["search"]))
+			{
+				$search = $_GET["search"]; // sanitise this
+				$query = "SELECT * FROM jobs WHERE title LIKE '%$search%'";
+				$result = mysqli_query($conn, $query);
+				
+				echo "<p class='intro'> Search results for &#34;" . $_GET["search"] . "&#34;</p>";
+				
+				if (mysqli_num_rows($result) > 0)
+				{
+					while ($row = mysqli_fetch_assoc($result))
+					{
+						echo "<p>" . $row["title"] . "</p><br>";
+					}
+				}
+			}
 		?>
 		
 	</div>
