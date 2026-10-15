@@ -172,6 +172,12 @@ $stmt = mysqli_prepare($conn,
     "INSERT INTO eoi (JobReference, FirstName, LastName, DOB, Gender, StreetAddress, Suburb,
                       State, Postcode, Email, Phone, Skills, OtherSkills)
      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+if (!$stmt) {
+    render_page("Database Error", "Sorry, we could not process your application",
+        ["Could not prepare the statement."], true);
+    mysqli_close($conn);
+    exit();
+}
 
 mysqli_stmt_bind_param($stmt, "sssssssssssss",
     $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
