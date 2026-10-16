@@ -74,8 +74,9 @@
 					echo "<ol style='list-style: none;'>"; // inline css
 					while ($row = mysqli_fetch_assoc($result))
 					{
-						echo "<li class='outline'> <h2>" . $row["title"] . "</h2>"; // make wide
-						echo "<p>" . $row["description"] . "</p>";
+						echo "<li class='outline'> <h2 class='inline'>" . $row["title"] . "</h2>" // make wide
+						. "<p class='inline hint'> #" . $row["reference"] . "</p>";
+						echo "<br><br><p>" . $row["description"] . "</p>";
 						echo "</li><br>";
 					}
 					echo "</ol>";

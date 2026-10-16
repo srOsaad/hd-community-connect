@@ -80,7 +80,7 @@
 					{
 						echo "<section class='outline'>
 							<h2 class='inline'>" . $row["title"] . "</h2>
-							<p class='inline hint'> #" . $row["id"] . "</p>
+							<p class='inline hint'> #" . $row["reference"] . "</p>
 							<p>" . $row["description"] . "</p>
 							<p class='coloured'> $" . number_format($row["salary"]) . "</p>
 							<p>" . $row["reporting_line"] . "</p>
