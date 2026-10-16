@@ -35,7 +35,7 @@
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
 		
-		max-width: 20rem;
+		/*min-width: 20rem;*/
 	}
   </style>
   
@@ -71,10 +71,14 @@
 				
 				if (mysqli_num_rows($result) > 0)
 				{
+					echo "<ol style='list-style: none;'>"; // inline css
 					while ($row = mysqli_fetch_assoc($result))
 					{
-						echo "<p>" . $row["title"] . "</p><br>";
+						echo "<li class='outline'> <h2>" . $row["title"] . "</h2>"; // make wide
+						echo "<p>" . $row["description"] . "</p>";
+						echo "</li><br>";
 					}
+					echo "</ol>";
 				}
 			}
 		?>
