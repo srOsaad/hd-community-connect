@@ -1,7 +1,7 @@
 <?php
 session_start();
+require_once "functions.inc";   // gives you e()
 
-// Chặn vào thẳng success.php khi chưa nộp form
 if (empty($_SESSION['apply_success'])) {
     header("Location: apply.php");
     exit();

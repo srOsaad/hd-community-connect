@@ -16,7 +16,7 @@ function render_page($title, $heading, $messages, $is_error) {
             echo "<p>" . $msg . "</p>";
         }
     }
-    echo "<p><a href='apply.php' class="btn">Return to application form</a></p>";
+    echo "<p><a href='apply.php'>Return to application form</a></p>";
     echo "</body></html>";
 }
 
