@@ -16,7 +16,7 @@ function render_page($title, $heading, $messages, $is_error) {
             echo "<p>" . $msg . "</p>";
         }
     }
-    echo "<p><a href='apply.php'>Return to application form</a></p>";
+    echo "<p><a href='apply.php' class="btn">Return to application form</a></p>";
     echo "</body></html>";
 }
 
@@ -184,11 +184,15 @@ mysqli_stmt_bind_param($stmt, "sssssssssssss",
     $state, $postcode, $email, $phone, $skills_str, $other_skill);
 
 if (mysqli_stmt_execute($stmt)) {
-    $eoi_number = mysqli_insert_id($conn);
-    render_page("Application Received", "Thank you, " . e($first_name) . "!",
-        ["Your Expression of Interest has been received.",
-         "Your EOI number is <strong>" . (int)$eoi_number . "</strong>. Please keep it for your records."],
-        false);
+    mysqli_stmt_close($stmt);
+    mysqli_close($conn);
+
+    session_start();
+    $_SESSION['apply_success'] = true;
+    $_SESSION['first_name'] = $first_name;
+
+    header("Location: success.php");
+    exit();
 } else {
     render_page("Database Error", "Sorry, we could not process your application",
         ["Your application could not be saved. Please try again."], true);
