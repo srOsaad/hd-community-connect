@@ -17,7 +17,7 @@ function show($value) {
 # Reads one text value from the URL. If it's missing (or someone sends an array), we just get ""
 function field($source, $key) {
     return (isset($source[$key]) && is_string($source[$key])) ? clean_input($source[$key]) : "";
-}a
+}
 
 $messages = [];   # error messages to show above the results
 
@@ -41,6 +41,22 @@ if ($filter_last !== "" && !preg_match('/^[A-Za-z ]{1,20}$/', $filter_last)) {
 }
 
 $is_filtered = $filter_job !== "" || $filter_first !== "" || $filter_last !== "";
+
+# Columns the manager can sort by.
+$sort_fields = [
+    "EOInumber"    => "EOI number",
+    "JobReference" => "Job reference",
+    "FirstName"    => "First name",
+    "LastName"     => "Last name",
+    "State"        => "State",
+    "Status"       => "Status",
+];
+ 
+$sort = field($_GET, "sort");
+if (!array_key_exists($sort, $sort_fields)) {
+    $sort = "EOInumber";
+}
+$order = field($_GET, "order") === "desc" ? "desc" : "asc";
 
 # The eoi table only exists after the first application is sent, so check for it first
 $has_table = false;
@@ -77,7 +93,9 @@ if ($conn && $has_table) {
     if ($conditions) {
         $sql .= " WHERE " . implode(" AND ", $conditions);
     }
-    $sql .= " ORDER BY EOInumber";
+
+    $order_by = $sort === "State" ? "CAST(State AS CHAR)" : $sort;
+    $sql .= " ORDER BY " . $order_by . " " . strtoupper($order) . ", EOInumber";
 
     $stmt = $conn->prepare($sql);
     if ($stmt) {
@@ -129,20 +147,20 @@ include "header.inc";
   <main id="main">
     <h1>Manage applications</h1>
     <p class="intro">Signed in as <strong><?php echo e($_SESSION["username"]); ?></strong>.</p>
-
+ 
 <?php foreach ($messages as $message) { ?>
     <p class="message message-error" role="alert"><?php echo e($message); ?></p>
 <?php } ?>
-
+ 
 <?php if (!$conn) { ?>
     <p class="message message-error"><?php echo e($db_error_message); ?></p>
-
+ 
 <?php } elseif (!$has_table) { ?>
     <p>No applications have been submitted yet. They will appear here after the first one arrives.</p>
-
+ 
 <?php } else { ?>
     <section aria-labelledby="search-heading">
-      <h2 id="search-heading">Find applications</h2>
+      <h2 id="search-heading">Find and sort applications</h2>
       <form class="search-form" method="get" action="manage.php">
         <div class="field">
           <label for="job_ref">Job reference</label>
@@ -156,25 +174,40 @@ include "header.inc";
           <label for="last_name">Last name</label>
           <input type="text" id="last_name" name="last_name" maxlength="20" value="<?php echo e($filter_last); ?>">
         </div>
+        <div class="field">
+          <label for="sort">Sort by</label>
+          <select id="sort" name="sort">
+<?php foreach ($sort_fields as $column => $label) { ?>
+            <option value="<?php echo $column; ?>"<?php if ($column === $sort) { echo " selected"; } ?>><?php echo $label; ?></option>
+<?php } ?>
+          </select>
+        </div>
+        <div class="field">
+          <label for="order">Order</label>
+          <select id="order" name="order">
+            <option value="asc"<?php if ($order === "asc") { echo " selected"; } ?>>Ascending</option>
+            <option value="desc"<?php if ($order === "desc") { echo " selected"; } ?>>Descending</option>
+          </select>
+        </div>
         <div class="group">
           <input class="btn" type="submit" value="Search">
           <a class="btn-secondary" href="manage.php">Show all</a>
         </div>
       </form>
     </section>
-
+ 
     <section aria-labelledby="results-heading">
       <h2 id="results-heading"><?php echo $is_filtered ? "Search results" : "All applications"; ?></h2>
       <p><?php echo count($eois); ?> application(s) found.</p>
-
+ 
 <?php if (count($eois) === 0 && $is_filtered) { ?>
       <p>No applications match your search.</p>
 <?php } ?>
-
+ 
 <?php if (count($eois) > 0) { ?>
       <div class="table-wrap">
         <table class="eoi-table">
-          <caption>Expressions of interest</caption>
+          <caption>Expressions of interest, sorted by <?php echo $sort_fields[$sort]; ?> (<?php echo $order === "asc" ? "ascending" : "descending"; ?>)</caption>
           <thead>
             <tr>
               <th scope="col">EOI</th>
@@ -214,5 +247,5 @@ include "header.inc";
     </section>
 <?php } ?>
   </main>
-
+ 
 <?php include "footer.inc"; ?>
