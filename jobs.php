@@ -61,7 +61,7 @@
 	<form method="get" action="jobs_search.php">
 		<label for="search">Search for a job listing</label>
 		<input type="text" name="search" id="search" required>
-		<input type="submit" value="Search">
+		<input class="btn" style="width: 8em" type="submit" value="Search">
 	</form>
 	
 	 <!-- group containing all job boxes -->
@@ -88,7 +88,7 @@
 							// button is a form so the job reference can by sent via get
 							echo "<form method='get' action='apply.php'>";
 							echo "<input type='hidden' name='reference' value='100001'>";
-							echo "<input type='submit' value='Apply'>";
+							echo "<input class='btn' type='submit' value='Apply'>";
 							echo "</form>";
 							//echo "<a href=apply.php' class='btn'>APPLY</a>";
 							
