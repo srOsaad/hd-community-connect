@@ -58,11 +58,69 @@ if (!array_key_exists($sort, $sort_fields)) {
 }
 $order = field($_GET, "order") === "desc" ? "desc" : "asc";
 
+$statuses = ["New", "Current", "Final"];
+
+# CSRF token: forms that change data must send this back
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+}
+$token = $_SESSION["csrf_token"];
+
+$success = "";
+if (isset($_SESSION["success"])) {
+    $success = $_SESSION["success"];
+    unset($_SESSION["success"]);
+}
+
+$page_url = "manage.php?" . http_build_query([
+    "job_ref" => $filter_job, "first_name" => $filter_first, "last_name" => $filter_last,
+    "sort" => $sort, "order" => $order,
+]);
+
 # The eoi table only exists after the first application is sent, so check for it first
 $has_table = false;
 if ($conn) {
     $check = mysqli_query($conn, "SHOW TABLES LIKE 'eoi'");
     $has_table = $check && mysqli_num_rows($check) > 0;
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table) {
+    $eoi_number = (int) field($_POST, "eoi_number");
+    $new_status = field($_POST, "status");
+
+    if (!hash_equals($token, field($_POST, "token"))) {
+        $messages[] = "That request could not be verified. Please try again.";
+    } elseif (field($_POST, "action") !== "update_status" || $eoi_number < 1 || !in_array($new_status, $statuses, true)) {
+        $messages[] = "Please choose a valid status.";
+    } else {
+        $stmt = $conn->prepare("SELECT Status FROM eoi WHERE EOInumber = ?");
+        $stmt->bind_param("i", $eoi_number);
+        $stmt->execute();
+        $current = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$current) {
+            $messages[] = "EOI $eoi_number doesn't exist.";
+        } elseif ($current["Status"] === $new_status) {
+            $_SESSION["success"] = "EOI $eoi_number already had the status $new_status.";
+        } else {
+            $stmt = $conn->prepare("UPDATE eoi SET Status = ? WHERE EOInumber = ?");
+            $stmt->bind_param("si", $new_status, $eoi_number);
+            if ($stmt->execute()) {
+                $_SESSION["success"] = "EOI $eoi_number is now $new_status.";
+            } else {
+                error_log("Status update failed: " . $stmt->error);
+                $messages[] = "The status could not be changed. Please try again.";
+            }
+            $stmt->close();
+        }
+
+        # Redirect so refreshing doesn't send the form again
+        if (isset($_SESSION["success"])) {
+            header("Location: " . $page_url);
+            exit();
+        }
+    }
 }
 
 # Get the applications, oldest first. Each filled search box adds a condition,
@@ -140,6 +198,22 @@ $page_style = <<<'CSS'
     .eoi-table td {
       font-size: var(--step--1);
     }
+
+    .status-form {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .status-form select {
+      width: auto;
+      padding: 0.3rem 0.4rem;
+    }
+
+    .btn-small {
+      min-height: 36px;
+      padding: 0.3rem 0.8rem;
+      font-size: var(--step--1);
+    }
 CSS;
 
 include "header.inc";
@@ -148,6 +222,10 @@ include "header.inc";
     <h1>Manage applications</h1>
     <p class="intro">Signed in as <strong><?php echo e($_SESSION["username"]); ?></strong>.</p>
  
+<?php if ($success !== "") { ?>
+    <p class="message message-success" role="status"><?php echo e($success); ?></p>
+<?php } ?>
+
 <?php foreach ($messages as $message) { ?>
     <p class="message message-error" role="alert"><?php echo e($message); ?></p>
 <?php } ?>
@@ -237,7 +315,20 @@ include "header.inc";
                 <br>Other: <?php echo show($row["OtherSkills"]); ?>
 <?php } ?>
               </td>
-              <td><?php echo show($row["Status"]); ?></td>
+              <td>
+                <form class="status-form" method="post" action="<?php echo e($page_url); ?>">
+                  <input type="hidden" name="action" value="update_status">
+                  <input type="hidden" name="token" value="<?php echo $token; ?>">
+                  <input type="hidden" name="eoi_number" value="<?php echo (int) $row["EOInumber"]; ?>">
+                  <label class="visually-hidden" for="status-<?php echo (int) $row["EOInumber"]; ?>">Status for EOI <?php echo (int) $row["EOInumber"]; ?></label>
+                  <select id="status-<?php echo (int) $row["EOInumber"]; ?>" name="status">
+<?php foreach ($statuses as $status) { ?>
+                    <option<?php if ($status === $row["Status"]) { echo " selected"; } ?>><?php echo $status; ?></option>
+<?php } ?>
+                  </select>
+                  <input class="btn btn-small" type="submit" value="Update">
+                </form>
+              </td>
             </tr>
 <?php } ?>
           </tbody>
