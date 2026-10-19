@@ -77,6 +77,11 @@
 						echo "<li class='outline'> <h2 class='inline'>" . $row["title"] . "</h2>" // make wide
 						. "<p class='inline hint'> #" . $row["reference"] . "</p>";
 						echo "<br><br><p>" . $row["description"] . "</p>";
+						// button reused from jobs.php
+						echo "<form method='get' action='apply.php'>";
+						echo "<input type='hidden' name='reference' value='" . $row["reference"] . "'>";
+						echo "<input class='btn' type='submit' value='Apply'>";
+						echo "</form>";
 						echo "</li><br>";
 					}
 					echo "</ol>";
@@ -85,9 +90,6 @@
 		?>
 		
 	</div>
-	
-	<a href="apply.php" class="btn">APPLY</a>
-	<a href="index.php" class="btn-secondary">BACK</a>
 	
 	<aside style="float: right"> <!-- more inline css -->
 		<p class="hint">See the apply page for information on how to apply.</p>
