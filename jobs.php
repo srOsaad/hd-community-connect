@@ -87,7 +87,7 @@
 							
 							// button is a form so the job reference can by sent via get
 							echo "<form method='get' action='apply.php'>";
-							echo "<input type='hidden' name='reference' value='100001'>";
+							echo "<input type='hidden' name='reference' value='" . $row["reference"] . "'>";
 							echo "<input class='btn' type='submit' value='Apply'>";
 							echo "</form>";
 							//echo "<a href=apply.php' class='btn'>APPLY</a>";
