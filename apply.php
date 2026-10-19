@@ -89,6 +89,17 @@ include "header.inc";
     <label for="phone"><strong>Phone:</strong></label>
     <input type="tel" name="phone" id="phone" pattern="[0-9]{10}" maxlength="10" placeholder="Enter your phone number" title="Please enter your phone number" required>
 </fieldset>
+<!-- Form fields for job apply -->
+<fieldset class="field">
+<legend><strong>Which Job you want to applyyyy?</strong></legend>
+<label for="job"><strong>Job:</strong></label>
+    <select id="job" name="job" required>
+        <option value="">Please select job you want to apply</option>
+        <option value="community">Community Organiser</option>
+        <option value="fund">Fundraiser</option>
+        <option value="media">Media/PR </option>
+    </select>
+</fieldset>
 <!-- Form fields for user skills -->
 <fieldset class="field">
   <legend><strong>What skills you have in this field?</strong></legend>
