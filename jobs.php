@@ -83,8 +83,18 @@
 							<p class='inline hint'> #" . $row["reference"] . "</p>
 							<p>" . $row["description"] . "</p>
 							<p class='coloured'> $" . number_format($row["salary"]) . "</p>
-							<p>" . $row["reporting_line"] . "</p>
-							</section>";
+							<p>" . $row["reporting_line"] . "</p>";
+							
+							// button is a form so the job reference can by sent via get
+							echo "<form method='get' action='apply.php'>";
+							echo "<input type='hidden' name='reference' value='100001'>";
+							echo "<input type='submit' value='Apply'>";
+							echo "</form>";
+							//echo "<a href=apply.php' class='btn'>APPLY</a>";
+							
+							echo "</section>";
+							
+
 					}
 				}
 				else echo "<p>There are no jobs at the moment...</p>";
@@ -95,9 +105,6 @@
 		?>
 		
 	</div>
-	
-	<a href="apply.php" class="btn">APPLY</a>
-	<a href="index.php" class="btn-secondary">BACK</a>
 	
 	<aside style="float: right"> <!-- more inline css -->
 		<p class="hint">See the apply page for information on how to apply.</p>
