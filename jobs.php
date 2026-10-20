@@ -79,8 +79,8 @@
 					while ($row = mysqli_fetch_assoc($result))
 					{
 						echo "<section class='outline'>
-							<h2 class='inline'>" . $row["title"] . "</h2>
-							<p class='inline hint'> #" . $row["reference"] . "</p>
+							<h2>" . $row["title"] . "</h2>
+							<p class='hint'> #" . $row["reference"] . "</p><br>
 							<p>" . $row["description"] . "</p>
 							<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
 							<p>" . $row["reporting_line"] . "</p>";
@@ -88,13 +88,11 @@
 							// responsibilities
 							echo "<p class='coloured'>Key Responsibilities:</p>
 							<ul>";
-							$separated = explode("\n", $row["responsibilities"]); // get length of this
-							
-							for ($i = 0; $i < 3; $i++) // hardcoded count fix later maybe
+							$separated = explode("\n", $row["responsibilities"]); // separate text by newline
+							for ($i = 0; $i < count($separated); $i++)
 							{
 								echo "<li>" . $separated[$i] . "</li>";
 							}
-							
 							echo "</ul>";
 							
 							// button is a form so the job reference can by sent via get
