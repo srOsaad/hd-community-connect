@@ -35,7 +35,7 @@
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
 		
-		/*min-width: 20rem;*/
+		max-width: 20rem;
 	}
   </style>
   

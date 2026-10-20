@@ -27,7 +27,7 @@
 	}
 	
 	.group {
-		/*gap: 5rem;*/ /*overriding style.css*/
+		/*gap: 5rem;*/ /*overriding style.css*/	
 	}
 	
 	.outline {
@@ -55,7 +55,7 @@
   <main id="main">
 
 	<h1>Jobs</h1>
-	<p class="intro">List of currently avaliable positions at community Connect.</p>
+	<p class="intro">List of currently avaliable positions at Community Connect.</p>
 	
 	<!-- search bar -->
 	<form method="get" action="jobs_search.php">
@@ -65,7 +65,7 @@
 	</form>
 	
 	 <!-- group containing all job boxes -->
-	<div class="group" style="gap: 3rem; /*overriding style.css*/">
+	<div class="group" style="gap: 2rem;/*overriding style.css*/">
 	
 		<?php
 			
@@ -82,8 +82,20 @@
 							<h2 class='inline'>" . $row["title"] . "</h2>
 							<p class='inline hint'> #" . $row["reference"] . "</p>
 							<p>" . $row["description"] . "</p>
-							<p class='coloured'> $" . number_format($row["salary"]) . "</p>
+							<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
 							<p>" . $row["reporting_line"] . "</p>";
+							
+							// responsibilities
+							echo "<p class='coloured'>Key Responsibilities:</p>
+							<ul>";
+							$separated = explode("\n", $row["responsibilities"]); // get length of this
+							
+							for ($i = 0; $i < 3; $i++) // hardcoded count fix later maybe
+							{
+								echo "<li>" . $separated[$i] . "</li>";
+							}
+							
+							echo "</ul>";
 							
 							// button is a form so the job reference can by sent via get
 							echo "<form method='get' action='apply.php'>";
