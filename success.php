@@ -15,22 +15,26 @@ $page_description = "Community Connect is a not-for-profit supporting community 
 $current_page = "Success apply page";
 
 $page_style = <<<'CSS'
-  .benefit{
-    font-weight: bold;
-    color: #007bff;
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;   /* better on mobile browsers */
+  }
+
+  main {
+    flex: 1 0 auto;       /* take all remaining height */
+    width: 100%;          /* needed, see note below */
   }
 CSS;
 
 include "header.inc";
 ?>
 <main id="main">
-<h1>Thank you, <?php echo e($first_name); ?>!</h1>
-<h2>Your application has been received.</h2>
-<form>
-<div class="grid">
-    <input  href='index.php' class="btn" type="submit" value="Back to home">
-    </div>
-</form>
-
+  <h1>Thank you, <?php echo e($first_name); ?>!</h1>
+  <h2>Your application has been received.</h2>
+  <div class="group">
+    <a class="btn" href="index.php">Back to home</a>
+  </div>
 </main>
 <?php include "footer.inc"; ?>

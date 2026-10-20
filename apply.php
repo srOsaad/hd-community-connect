@@ -122,6 +122,13 @@ include "header.inc";
      <label class ="choice" for="Other_skill">Other skills:</label>
     <textarea name="Other_skill" id="Other_skill" rows="4" cols="50" placeholder="Please enter if you have other skills"></textarea>
 </fieldset>
+<fieldset class="field">
+<legend><strong>Create your password hereeee</strong></legend>
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" autocomplete="new-password">
+    <label for="confirm_password">Confirm password</label>
+    <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password">
+</fieldset>
 <!-- Form submission buttons -->
 <div class="grid">
     <input class="btn" type="submit" value="Submit Application">

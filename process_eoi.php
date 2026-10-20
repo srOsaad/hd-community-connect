@@ -13,7 +13,7 @@ function render_page($title, $heading, $messages, $is_error) {
         echo "</ul>";
     } else {
         foreach ($messages as $msg) {
-            echo "<p>" . $msg . "</p>";
+            echo "<p>" . e($msg) . "</p>";
         }
     }
     echo "<p><a href='apply.php'>Return to application form</a></p>";
