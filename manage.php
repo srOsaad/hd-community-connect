@@ -84,13 +84,13 @@ if ($conn) {
     $has_table = $check && mysqli_num_rows($check) > 0;
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table && field($_POST, "action") === "update_status") {
     $eoi_number = (int) field($_POST, "eoi_number");
     $new_status = field($_POST, "status");
 
     if (!hash_equals($token, field($_POST, "token"))) {
         $messages[] = "That request could not be verified. Please try again.";
-    } elseif (field($_POST, "action") !== "update_status" || $eoi_number < 1 || !in_array($new_status, $statuses, true)) {
+    } elseif ($eoi_number < 1 || !in_array($new_status, $statuses, true)) {
         $messages[] = "Please choose a valid status.";
     } else {
         $stmt = $conn->prepare("SELECT Status FROM eoi WHERE EOInumber = ?");
@@ -116,6 +116,47 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table) {
         }
 
         # Redirect so refreshing doesn't send the form again
+        if (isset($_SESSION["success"])) {
+            header("Location: " . $page_url);
+            exit();
+        }
+    }
+}
+
+$delete_job = "";
+$delete_count = 0;
+
+$action = field($_POST, "action");
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table && ($action === "confirm_delete" || $action === "delete")) {
+    $job_ref = strtoupper(field($_POST, "job_ref"));
+
+    if (!hash_equals($token, field($_POST, "token"))) {
+        $messages[] = "That request could not be verified. Please try again.";
+    } elseif (!preg_match('/^[A-Z0-9]{6}$/', $job_ref)) {
+        $messages[] = "A job reference is exactly 6 letters or numbers.";
+    } elseif ($action === "confirm_delete") {
+        $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM eoi WHERE JobReference = ?");
+        $stmt->bind_param("s", $job_ref);
+        $stmt->execute();
+        $delete_count = (int) $stmt->get_result()->fetch_assoc()["total"];
+        $stmt->close();
+
+        if ($delete_count === 0) {
+            $messages[] = "There are no applications for job $job_ref.";
+        } else {
+            $delete_job = $job_ref;
+        }
+    } else {
+        $stmt = $conn->prepare("DELETE FROM eoi WHERE JobReference = ?");
+        $stmt->bind_param("s", $job_ref);
+        if ($stmt->execute()) {
+            $_SESSION["success"] = "Deleted " . $stmt->affected_rows . " application(s) for job $job_ref.";
+        } else {
+            error_log("EOI delete failed: " . $stmt->error);
+            $messages[] = "The applications could not be deleted. Please try again.";
+        }
+        $stmt->close();
+
         if (isset($_SESSION["success"])) {
             header("Location: " . $page_url);
             exit();
@@ -214,6 +255,37 @@ $page_style = <<<'CSS'
       padding: 0.3rem 0.8rem;
       font-size: var(--step--1);
     }
+
+    .btn-danger,
+    .btn-danger:hover {
+      border-color: #B00020;
+      background-color: #B00020;
+    }
+
+    .confirm-box {
+      max-width: var(--measure);
+      margin-bottom: 1.5rem;
+      padding: 1rem 1.25rem;
+      border: 2px solid #B00020;
+      border-radius: var(--radius);
+    }
+
+    .delete-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 1rem;
+      align-items: end;
+    }
+
+    .delete-form .btn {
+      margin-bottom: 1.25rem;
+    }
+
+    .delete-form .btn,
+    .confirm-box .btn {
+      width: auto;
+      margin-right: 0.5rem;
+    }
 CSS;
 
 include "header.inc";
@@ -237,6 +309,20 @@ include "header.inc";
     <p>No applications have been submitted yet. They will appear here after the first one arrives.</p>
  
 <?php } else { ?>
+<?php if ($delete_job !== "") { ?>
+    <section class="confirm-box" aria-labelledby="confirm-heading">
+      <h2 id="confirm-heading">Delete applications for job <?php echo e($delete_job); ?>?</h2>
+      <p>This will permanently delete <strong><?php echo $delete_count; ?></strong> application(s). It can't be undone.</p>
+      <form method="post" action="<?php echo e($page_url); ?>">
+        <input type="hidden" name="action" value="delete">
+        <input type="hidden" name="token" value="<?php echo $token; ?>">
+        <input type="hidden" name="job_ref" value="<?php echo e($delete_job); ?>">
+        <input class="btn btn-danger" type="submit" value="Yes, delete them">
+        <a class="btn-secondary" href="<?php echo e($page_url); ?>">Cancel</a>
+      </form>
+    </section>
+<?php } ?>
+
     <section aria-labelledby="search-heading">
       <h2 id="search-heading">Find and sort applications</h2>
       <form class="search-form" method="get" action="manage.php">
@@ -273,7 +359,20 @@ include "header.inc";
         </div>
       </form>
     </section>
- 
+
+    <section aria-labelledby="delete-heading">
+      <h2 id="delete-heading">Delete applications for a job</h2>
+      <form class="delete-form" method="post" action="<?php echo e($page_url); ?>">
+        <input type="hidden" name="action" value="confirm_delete">
+        <input type="hidden" name="token" value="<?php echo $token; ?>">
+        <div class="field">
+          <label for="delete_ref">Job reference</label>
+          <input type="text" id="delete_ref" name="job_ref" maxlength="6" required>
+        </div>
+        <input class="btn btn-danger" type="submit" value="Delete">
+      </form>
+    </section>
+
     <section aria-labelledby="results-heading">
       <h2 id="results-heading"><?php echo $is_filtered ? "Search results" : "All applications"; ?></h2>
       <p><?php echo count($eois); ?> application(s) found.</p>
