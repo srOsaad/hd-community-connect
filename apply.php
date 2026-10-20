@@ -4,6 +4,11 @@
 Using header.inc (with nav.inc inside) and footer.inc.
 Page content is unchanged from Part 1 apart from links (.html to .php).
 */
+require_once "db_connect.inc";
+require_once "functions.inc";
+require_once "jobs.inc";
+$job_map = get_job_map($conn);
+
 
 $page_title = "Apply";
 $page_description = "Community Connect is a not-for-profit supporting community programs, volunteer registration, events, donations and access to support resources.";
@@ -18,6 +23,8 @@ $page_style = <<<'CSS'
 CSS;
 
 include "header.inc";
+
+
 ?>
 
   <main id="main">
@@ -92,13 +99,13 @@ include "header.inc";
 <!-- Form fields for job apply -->
 <fieldset class="field">
 <legend><strong>Which Job you want to applyyyy?</strong></legend>
-<label for="job"><strong>Job:</strong></label>
-    <select id="job" name="job" required>
-        <option value="">Please select job you want to apply</option>
-        <option value="community">Community Organiser</option>
-        <option value="fund">Fundraiser</option>
-        <option value="media">Media/PR </option>
-    </select>
+<label for="job"><strong>Jobs:</strong></label>
+<select id="job" name="job" required>
+    <option value="">Please select job you want to apply</option>
+    <?php foreach ($job_map as $title => $serial): ?>
+        <option value="<?= (int)$serial ?>"><?= e($title) ?></option>
+    <?php endforeach; ?>
+</select>
 </fieldset>
 <!-- Form fields for user skills -->
 <fieldset class="field">

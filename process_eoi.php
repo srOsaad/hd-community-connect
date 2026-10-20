@@ -24,7 +24,7 @@ if (!$conn) {
     echo "<p>" . $db_error_message . "</p>";   // database not reachable
     exit();
 } else {
-    $required_fields = ['job_reference_number','first_name','last_name','DateOfBirth','streetaddress','suburb_town',
+    $required_fields = ['job','first_name','last_name','DateOfBirth','streetaddress','suburb_town',
                     'state','postcode','email','phone'];
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -40,7 +40,10 @@ if (!$conn) {
 }
 
 /* ---------- Sanitise ---------- */
-$job_ref     = strtoupper(clean_input($_POST['job_reference_number']));
+$job_number  = (int)$_POST['job'];
+$job_ref     = isset($_POST['job_reference_number'])
+                ? strtoupper(clean_input($_POST['job_reference_number']))
+                : (string)$job_number;
 $first_name  = clean_input($_POST['first_name']);
 $last_name   = clean_input($_POST['last_name']);
 $DOB         = clean_input($_POST['DateOfBirth']);
@@ -52,7 +55,6 @@ $postcode    = clean_input($_POST['postcode']);
 $email       = clean_input($_POST['email']);
 $phone       = clean_input($_POST['phone']);
 $other_skill = isset($_POST['Other_skill']) ? clean_input($_POST['Other_skill']) : "";
-
 $skills_arr = [];
 
 if (isset($_POST['skills']) && is_array($_POST['skills'])) {
@@ -65,7 +67,7 @@ if (isset($_POST['skills']) && is_array($_POST['skills'])) {
 $errors = [];
 // Job reference: exactly 6 alphanumeric characters
 if (!preg_match('/^[A-Za-z0-9]{6}$/', $job_ref))
-    $errors[] = "Job reference number must be exactly 6 alphanumeric characters.";
+    $errors[] = "Please select a valid job referrence.";
 
 // Names: max 20 alpha characters (letters, hyphen, apostrophe, space allowed)
 if ($first_name === "" || !preg_match("/^[A-Za-z\s]{1,20}$/", $first_name))
@@ -140,9 +142,25 @@ if (!$conn) {
     render_page("Database Error", "Sorry, we could not process your application", ["Database connection failed. Please try again later."], true);
     exit();
 }
+
+$job_stmt = mysqli_prepare($conn, "SELECT 1 FROM job_table WHERE serial_number = ?");
+mysqli_stmt_bind_param($job_stmt, "i", $job_number);
+mysqli_stmt_execute($job_stmt);
+mysqli_stmt_store_result($job_stmt);
+$job_exists = mysqli_stmt_num_rows($job_stmt) > 0;
+mysqli_stmt_close($job_stmt);
+
+if (!$job_exists) {
+    render_page("Application Error", "Please fix the following problems",
+        ["Please select a valid job."], true);
+    mysqli_close($conn);
+    exit();
+}
+
  /* DATA BASE */
 $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     EOInumber     INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    job_number    INT UNSIGNED NOT NULL,
     JobReference  CHAR(6)      NOT NULL,
     FirstName     VARCHAR(20)  NOT NULL,
     LastName      VARCHAR(20)  NOT NULL,
@@ -169,9 +187,9 @@ if (!mysqli_query($conn, $create_sql)) {
 $skills_str = implode(",", $skills_arr);   // SET needs commas with no spaces
 
 $stmt = mysqli_prepare($conn,
-    "INSERT INTO eoi (JobReference, FirstName, LastName, DOB, Gender, StreetAddress, Suburb,
+    "INSERT INTO eoi (job_number, JobReference, FirstName, LastName, DOB, Gender, StreetAddress, Suburb,
                       State, Postcode, Email, Phone, Skills, OtherSkills)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 if (!$stmt) {
     render_page("Database Error", "Sorry, we could not process your application",
         ["Could not prepare the statement."], true);
@@ -179,12 +197,24 @@ if (!$stmt) {
     exit();
 }
 
-mysqli_stmt_bind_param($stmt, "sssssssssssss",
-    $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
+mysqli_stmt_bind_param($stmt, "isssssssssssss",
+    $job_number, $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
     $state, $postcode, $email, $phone, $skills_str, $other_skill);
 
 if (mysqli_stmt_execute($stmt)) {
     mysqli_stmt_close($stmt);
+
+    $upd = mysqli_prepare($conn,
+        "UPDATE job_table SET applicant_count = COALESCE(applicant_count, 0) + 1
+         WHERE serial_number = ?");
+    if ($upd) {
+        mysqli_stmt_bind_param($upd, "i", $job_number);
+        mysqli_stmt_execute($upd);
+        mysqli_stmt_close($upd);
+    } else {
+        error_log("job_table update failed: " . mysqli_error($conn));
+    }
+
     mysqli_close($conn);
 
     session_start();
