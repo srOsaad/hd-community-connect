@@ -80,15 +80,35 @@
 					{
 						echo "<section class='outline'>
 							<h2>" . $row["title"] . "</h2>
-							<p class='hint'> #" . $row["reference"] . "</p><br>
-							<p>" . $row["description"] . "</p>
+							<p class='hint'> #" . $row["reference"] . "</p>
 							<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
+							<p>" . $row["description"] . "</p>
 							<p>" . $row["reporting_line"] . "</p>";
 							
 							// responsibilities
 							echo "<p class='coloured'>Key Responsibilities:</p>
 							<ul>";
 							$separated = explode("\n", $row["responsibilities"]); // separate text by newline
+							for ($i = 0; $i < count($separated); $i++)
+							{
+								echo "<li>" . $separated[$i] . "</li>";
+							}
+							echo "</ul>";
+							
+							// essential
+							echo "<p class='coloured'>Essential Requirements:</p>
+							<ul>";
+							$separated = explode("\n", $row["essential"]); // separate text by newline
+							for ($i = 0; $i < count($separated); $i++)
+							{
+								echo "<li>" . $separated[$i] . "</li>";
+							}
+							echo "</ul>";
+							
+							// preferred
+							echo "<p class='coloured'>Prefered Requirements:</p>
+							<ul>";
+							$separated = explode("\n", $row["preferred"]); // separate text by newline
 							for ($i = 0; $i < count($separated); $i++)
 							{
 								echo "<li>" . $separated[$i] . "</li>";
