@@ -41,6 +41,7 @@
   
     <!-- php includes -->
 	<?php
+	session_start();
 	require_once "db_connect.inc";   // gives you $conn
 	require_once "functions.inc";    // gives you clean_input() and e()
 	?>
@@ -66,6 +67,9 @@
 				$query = "SELECT * FROM jobs WHERE reference = " . $_GET["reference"];
 				$result = mysqli_query($conn, $query);
 				
+				// for apply page
+				$_SESSION["reference"] = $_GET["reference"];
+				
 				if (mysqli_num_rows($result) > 0)
 				{
 					echo "<ol style='list-style: none;'>"; // inline css
@@ -78,12 +82,7 @@
 							<p>" . $row["description"] . "</p>
 							<p>" . $row["reporting_line"] . "</p>";
 							
-							// button reused from jobs.php
-							echo "<form method='get' action='apply.php' style='max-width: 16rem'>";
-							echo "<input type='hidden' name='reference' value='" . $row["reference"] . "'>";
-							echo "<input class='btn' type='submit' value='Apply'>";
-							echo "</form>";
-							echo "</li><br>";
+							echo "<a class='btn' href='apply.php'>Apply Now</a>";
 							
 							echo "<section class='group'>";
 							
