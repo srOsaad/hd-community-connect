@@ -34,6 +34,8 @@
 		padding: 1.25rem 1.5rem;
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
+		
+		min-width: 21rem;
 	}
   </style>
   
@@ -56,7 +58,8 @@
 	<div>
 	
 		<?php
-		
+			// add error handling for this
+			
 			if ($conn && isset($_GET["reference"]))
 			{
 				$search = $_GET["reference"]; // sanitise this
@@ -68,13 +71,23 @@
 					echo "<ol style='list-style: none;'>"; // inline css
 					while ($row = mysqli_fetch_assoc($result))
 					{
-						echo "<section class='outline'>
+						echo "<section>
 							<h1>" . $row["title"] . "</h1>
 							<p class='hint'> #" . $row["reference"] . "</p>
 							<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
 							<p>" . $row["description"] . "</p>
 							<p>" . $row["reporting_line"] . "</p>";
 							
+							// button reused from jobs.php
+							echo "<form method='get' action='apply.php' style='max-width: 16rem'>";
+							echo "<input type='hidden' name='reference' value='" . $row["reference"] . "'>";
+							echo "<input class='btn' type='submit' value='Apply'>";
+							echo "</form>";
+							echo "</li><br>";
+							
+							echo "<section class='group'>";
+							
+							echo "<div class='outline'>";
 							// responsibilities
 							echo "<p class='coloured'>Key Responsibilities:</p>
 							<ul>";
@@ -84,8 +97,10 @@
 								echo "<li>" . $separated[$i] . "</li>";
 							}
 							echo "</ul>";
+							echo "</div>";
 							
 							// essential
+							echo "<div class='outline'>";
 							echo "<p class='coloured'>Essential Requirements:</p>
 							<ul>";
 							$separated = explode("\n", $row["essential"]); // separate text by newline
@@ -94,8 +109,10 @@
 								echo "<li>" . $separated[$i] . "</li>";
 							}
 							echo "</ul>";
+							echo "</div>";
 							
 							// preferred
+							echo "<div class='outline'>";
 							echo "<p class='coloured'>Prefered Requirements:</p>
 							<ul>";
 							$separated = explode("\n", $row["preferred"]); // separate text by newline
@@ -103,14 +120,7 @@
 							{
 								echo "<li>" . $separated[$i] . "</li>";
 							}
-							echo "</ul><br>";
-							
-						// button reused from jobs.php
-						echo "<form method='get' action='apply.php'>";
-						echo "<input type='hidden' name='reference' value='" . $row["reference"] . "'>";
-						echo "<input class='btn' type='submit' value='Apply'>";
-						echo "</form>";
-						echo "</li><br>";
+							echo "</ul><br></div></section>";
 					}
 					echo "</ol>";
 				}
