@@ -35,7 +35,7 @@
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
 		
-		max-width: 20rem;
+		max-width: 21rem;
 	}
   </style>
   
@@ -53,16 +53,20 @@
   <?php include("header.inc"); ?>
 
   <main id="main">
+		<a href="userlogin.php" class="inline btn" style="float: right;">Applied Jobs</a>
 
 	<h1>Jobs</h1>
 	<p class="intro">List of currently avaliable positions at Community Connect.</p>
 	
+
+	
 	<!-- search bar -->
-	<form method="get" action="jobs_search.php">
+	<form method="get" action="jobs_search.php" class="inline">
 		<label for="search">Search for a job listing</label>
 		<input type="text" name="search" id="search" required>
 		<input class="btn" style="width: 8em" type="submit" value="Search">
 	</form>
+	
 	
 	 <!-- group containing all job boxes -->
 	<div class="group" style="gap: 2rem;/*overriding style.css*/">
