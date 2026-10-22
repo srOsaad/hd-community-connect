@@ -75,15 +75,20 @@
 					echo "<ol style='list-style: none;'>"; // inline css
 					while ($row = mysqli_fetch_assoc($result))
 					{
-						echo "<li class='outline'> <h2 class='inline'>" . $row["title"] . "</h2>" // make wide
-						. "<p class='inline hint'> #" . $row["reference"] . "</p>";
-						echo "<br><br><p>" . $row["description"] . "</p>";
-						// button reused from jobs.php
-						echo "<form method='get' action='apply.php'>";
-						echo "<input type='hidden' name='reference' value='" . $row["reference"] . "'>";
-						echo "<input class='btn' type='submit' value='Apply'>";
-						echo "</form>";
-						echo "</li><br>";
+						echo "<section class='outline'>
+							<h2>" . $row["title"] . "</h2>
+							<p class='hint'> #" . $row["reference"] . "</p>
+							<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
+							<p>" . $row["description"] . "</p>
+							<p>" . $row["reporting_line"] . "</p>";
+							
+							// button is a form so the job reference can by sent via get
+							echo "<form method='get' action='job_full.php'>";
+							echo "<input type='hidden' name='reference' value='" . $row["reference"] . "'>";
+							echo "<input class='btn' type='submit' value='Read More'>";
+							echo "</form>";
+							
+							echo "</section>";
 					}
 					echo "</ol>";
 				}
