@@ -82,7 +82,10 @@
 							<p>" . $row["description"] . "</p>
 							<p>" . $row["reporting_line"] . "</p>";
 							
+							echo "<div class='group'>";
 							echo "<a class='btn' href='apply.php'>Apply Now</a>";
+							echo "<a class='btn-secondary' href='userlogin.php'>Applied Jobs</a>";
+							echo "</div>";
 							
 							echo "<section class='group'>";
 							

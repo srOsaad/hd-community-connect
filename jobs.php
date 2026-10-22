@@ -54,7 +54,7 @@
   <?php include("header.inc"); ?>
 
   <main id="main">
-		<a href="userlogin.php" class="inline btn" style="float: right;">Applied Jobs</a>
+		
 
 	<h1>Jobs</h1>
 	<p class="intro">List of currently avaliable positions at Community Connect.</p>
@@ -68,6 +68,7 @@
 		<input class="btn" style="width: 8em" type="submit" value="Search">
 	</form>
 	
+	<a href="userlogin.php" class="inline btn-secondary" style="float: right;">Applied Jobs</a>
 	
 	 <!-- group containing all job boxes -->
 	<div class="group" style="gap: 2rem;/*overriding style.css*/">
@@ -89,36 +90,6 @@
 							<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
 							<p>" . $row["description"] . "</p>
 							<p>" . $row["reporting_line"] . "</p>";
-							
-							// responsibilities
-							echo "<p class='coloured'>Key Responsibilities:</p>
-							<ul>";
-							$separated = explode("\n", $row["responsibilities"]); // separate text by newline
-							for ($i = 0; $i < count($separated); $i++)
-							{
-								echo "<li>" . $separated[$i] . "</li>";
-							}
-							echo "</ul>";
-							
-							// essential
-							echo "<p class='coloured'>Essential Requirements:</p>
-							<ul>";
-							$separated = explode("\n", $row["essential"]); // separate text by newline
-							for ($i = 0; $i < count($separated); $i++)
-							{
-								echo "<li>" . $separated[$i] . "</li>";
-							}
-							echo "</ul>";
-							
-							// preferred
-							echo "<p class='coloured'>Prefered Requirements:</p>
-							<ul>";
-							$separated = explode("\n", $row["preferred"]); // separate text by newline
-							for ($i = 0; $i < count($separated); $i++)
-							{
-								echo "<li>" . $separated[$i] . "</li>";
-							}
-							echo "</ul>";
 							
 							// button is a form so the job reference can by sent via get
 							echo "<form method='get' action='job_full.php'>";
