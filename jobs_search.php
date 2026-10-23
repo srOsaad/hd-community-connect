@@ -93,9 +93,11 @@
 							echo "</section>";
 					}
 				}
+				else echo "<p>No job listings found. Search for something else or check back later.</p>";
 				
 				echo "</div>";
 			}
+			else echo "<p>There was an error connecting to the database...</p>";
 		?>
 		
 	</div>
