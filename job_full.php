@@ -63,7 +63,7 @@
 			
 			if ($conn && isset($_GET["reference"]))
 			{
-				$search = $_GET["reference"]; // sanitise this
+				$search = clean_input($_GET["reference"]);
 				$query = "SELECT * FROM jobs WHERE reference = " . $_GET["reference"];
 				$result = mysqli_query($conn, $query);
 				

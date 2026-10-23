@@ -64,7 +64,7 @@
 		
 			if ($conn && isset($_GET["search"]))
 			{
-				$search = $_GET["search"]; // sanitise this
+				$search = clean_input($_GET["search"]);
 				$query = "SELECT * FROM jobs WHERE title LIKE '%$search%'";
 				$result = mysqli_query($conn, $query);
 				
