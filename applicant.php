@@ -9,9 +9,8 @@ session_start();
 require_once 'db_connect.inc';   // $conn
 require_once 'functions.inc';    // clean_input(), e()
 
-// ---- TEMPORARY TEST LINE: pretend you are applicant 47 (Status New). ----
-// Try 46 to see Processing (no Edit button). DELETE this line when done.
-$_SESSION['eoi_id'] = 47;
+// CONNECT TO PROCESS EOI TO SHOW USER INPUT1`
+$_SESSION['eoi_id'] = mysqli_insert_id($conn);
 
 $genders = ['Male', 'Female', 'Other'];
 $states  = ['VIC', 'NSW', 'QLD', 'NT', 'WA', 'SA', 'TAS', 'ACT'];
@@ -48,7 +47,7 @@ if ($app) {
 $editing = false;
 
 if ($app) {
-    $locked = ($app['Status'] === 'Processing');   // only Processing can't be edited
+    $locked = in_array($app['Status'], ['Processing', 'Rejected'], true);    // only Processing,Rejected can't be edited
 
     $form = $app;
     $form['Skills'] = $app['Skills'] === '' ? [] : explode(',', $app['Skills']);
@@ -85,7 +84,7 @@ if ($app) {
             $stmt = mysqli_prepare($conn,
                 "UPDATE eoi SET FirstName=?, LastName=?, DOB=?, Gender=?, StreetAddress=?, Suburb=?,
                         State=?, Postcode=?, Email=?, Phone=?, Skills=?, OtherSkills=?
-                 WHERE EOInumber=? AND Status <> 'Processing'");
+                 WHERE EOInumber=? AND Status NOT IN ('Processing', 'Rejected')");
             mysqli_stmt_bind_param($stmt, 'ssssssssssssi',
                 $form['FirstName'], $form['LastName'], $form['DOB'], $form['Gender'],
                 $form['StreetAddress'], $form['Suburb'], $form['State'], $form['Postcode'],
@@ -136,7 +135,7 @@ include 'header.inc';
     <p><strong><?= e($app['Status']) ?></strong></p>
 
     <?php if ($locked): ?>
-        <p>Your application is being processed and can't be edited right now.</p>
+        <p>Your application is <?= e(strtolower($app['Status'])) ?></p>
     <?php endif; ?>
 
     <h2>Job Reference</h2>
