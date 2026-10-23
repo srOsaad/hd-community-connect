@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Jobs</title>
-  <meta name="description" content="Results for jobs search.">
+  <meta name="description" content="Full job listing.">
 
   <!-- Google Fonts — credited in the footer -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,15 +26,10 @@
 		font-weight: bold;
 	}
 	
-	.group {
-		/*gap: 5rem;*/ /*overriding style.css*/
-	}
-	
 	.outline {
 		padding: 1.25rem 1.5rem;
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
-		
 		min-width: 21rem;
 	}
   </style>
@@ -45,92 +40,85 @@
 	require_once "db_connect.inc";   // gives you $conn
 	require_once "functions.inc";    // gives you clean_input() and e()
 	?>
-
 </head>
-
 <body>
-
 	<!-- header from included file -->
   <?php include("header.inc"); ?>
 
   <main id="main">
-	
-	 <!-- group containing all job boxes -->
-	<div>
-	
-		<?php
-			// add error handling for this
-			
-			if ($conn && isset($_GET["reference"]))
+	<?php
+	if ($conn && isset($_GET["reference"]))
+	{
+		$search = clean_input($_GET["reference"]);
+		$query = "SELECT * FROM jobs WHERE reference = " . $_GET["reference"]; // get job listing from reference number
+		$result = mysqli_query($conn, $query);
+		$_SESSION["reference"] = $_GET["reference"]; // set the current job reference for the session, for other pages
+				
+		if (mysqli_num_rows($result) > 0)
+		{
+			while ($row = mysqli_fetch_assoc($result))
 			{
-				$search = clean_input($_GET["reference"]);
-				$query = "SELECT * FROM jobs WHERE reference = " . $_GET["reference"];
-				$result = mysqli_query($conn, $query);
+				// display the first section of information for the job listing
+				echo "<section>
+					<h1>" . $row["title"] . "</h1>
+					<p class='hint'> #" . $row["reference"] . "</p>
+					<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
+					<p>" . $row["description"] . "</p>
+					<p>" . $row["reporting_line"] . "</p>";
+					
+				// this div contains two buttons, so they can be displayed spaced as the group class
+				echo "<div class='group'>" .
+					"<a class='btn' href='apply.php'>Apply Now</a>" .
+					"<a class='btn-secondary' href='userlogin.php'>Applied Jobs</a>" .
+					"</div>";
 				
-				// for apply page
-				$_SESSION["reference"] = $_GET["reference"];
+				// the group containing the 3 lists
+				echo "<section class='group'>";
 				
-				if (mysqli_num_rows($result) > 0)
+				// responsibilities list
+				echo "<div class='outline'>" .
+					"<p class='coloured'>Key Responsibilities:</p>" .
+					"<ul>";
+				$separated = explode("\n", $row["responsibilities"]); // separate text by newline
+				for ($i = 0; $i < count($separated); $i++)
 				{
-					echo "<ol style='list-style: none;'>"; // inline css
-					while ($row = mysqli_fetch_assoc($result))
-					{
-						echo "<section>
-							<h1>" . $row["title"] . "</h1>
-							<p class='hint'> #" . $row["reference"] . "</p>
-							<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
-							<p>" . $row["description"] . "</p>
-							<p>" . $row["reporting_line"] . "</p>";
-							
-							echo "<div class='group'>";
-							echo "<a class='btn' href='apply.php'>Apply Now</a>";
-							echo "<a class='btn-secondary' href='userlogin.php'>Applied Jobs</a>";
-							echo "</div>";
-							
-							echo "<section class='group'>";
-							
-							echo "<div class='outline'>";
-							// responsibilities
-							echo "<p class='coloured'>Key Responsibilities:</p>
-							<ul>";
-							$separated = explode("\n", $row["responsibilities"]); // separate text by newline
-							for ($i = 0; $i < count($separated); $i++)
-							{
-								echo "<li>" . $separated[$i] . "</li>";
-							}
-							echo "</ul>";
-							echo "</div>";
-							
-							// essential
-							echo "<div class='outline'>";
-							echo "<p class='coloured'>Essential Requirements:</p>
-							<ul>";
-							$separated = explode("\n", $row["essential"]); // separate text by newline
-							for ($i = 0; $i < count($separated); $i++)
-							{
-								echo "<li>" . $separated[$i] . "</li>";
-							}
-							echo "</ul>";
-							echo "</div>";
-							
-							// preferred
-							echo "<div class='outline'>";
-							echo "<p class='coloured'>Prefered Requirements:</p>
-							<ul>";
-							$separated = explode("\n", $row["preferred"]); // separate text by newline
-							for ($i = 0; $i < count($separated); $i++)
-							{
-								echo "<li>" . $separated[$i] . "</li>";
-							}
-							echo "</ul><br></div></section>";
-					}
-					echo "</ol>";
+					echo "<li>" . $separated[$i] . "</li>";
 				}
+				echo "</ul>" .
+				"</div>";
+				
+				// essential requirements list
+				echo "<div class='outline'>" .
+					"<p class='coloured'>Key Responsibilities:</p>" .
+					"<ul>";
+				$separated = explode("\n", $row["essential"]); // separate text by newline
+				for ($i = 0; $i < count($separated); $i++)
+				{
+					echo "<li>" . $separated[$i] . "</li>";
+				}
+				echo "</ul>" .
+					"</div>";
+				
+				// preferred requirements list
+				echo "<div class='outline'>" .
+					"<p class='coloured'>Key Responsibilities:</p>" .
+					"<ul>";
+				$separated = explode("\n", $row["preferred"]); // separate text by newline
+				for ($i = 0; $i < count($separated); $i++)
+				{
+					echo "<li>" . $separated[$i] . "</li>";
+				}
+				echo "</ul>" .
+					"</div>";
+					
+				echo "</ul>
+					</div>
+					</section>";
 			}
-		?>
-		
-	</div>
-
+		}
+	}
+	?>
+	
   </main>
 
 	<!-- footer from included file -->
