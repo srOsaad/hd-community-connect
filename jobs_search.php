@@ -70,9 +70,11 @@
 				
 				echo "<p class='intro'> Search results for &#34;" . $_GET["search"] . "&#34;</p>";
 				
+				echo "<div class='group' style='gap: 2rem;/*overriding style.css*/'>";
+				
+				
 				if (mysqli_num_rows($result) > 0)
 				{
-					echo "<ol style='list-style: none;'>"; // inline css
 					while ($row = mysqli_fetch_assoc($result))
 					{
 						echo "<section class='outline'>
@@ -90,8 +92,9 @@
 							
 							echo "</section>";
 					}
-					echo "</ol>";
 				}
+				
+				echo "</div>";
 			}
 		?>
 		
