@@ -14,7 +14,7 @@
         href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&amp;family=Source+Serif+4:wght@600;700&amp;display=swap">
   
   <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="styles/styles.css">
 
   <style>
     .inline {
@@ -26,186 +26,86 @@
 		font-weight: bold;
 	}
 	
-	.group {
-		/*gap: 5rem;*/ /*overriding style.css*/
-	}
-	
 	.outline {
 		padding: 1.25rem 1.5rem;
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
-		
-		max-width: 20rem;
+		max-width: 21rem;
 	}
   </style>
-
+  
+    <!-- php includes -->
+	<?php
+	session_start();
+	require_once "db_connect.inc";   // gives you $conn
+	require_once "functions.inc";    // gives you clean_input() and e()
+	?>
 </head>
-
 <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
+	<!-- header from included file -->
+	<?php include("header.inc"); ?>
 
-  <!-- Header and nav -->
-  <header class="site-header">
-    <a class="brand" href="index.html">
-      <img class="logo" src="assets/logo.png"
-           alt="Community Connect logo" width="48" height="48">
-      <span class="brand-name">Community Connect</span>
-    </a>
-
-    <nav class="site-nav" aria-label="Main navigation">
-      <details>
-        <summary aria-label="Menu"></summary>
-      </details>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="jobs.html" aria-current="page">Jobs</a></li>
-        <li><a href="apply.html">Apply</a></li>
-        <li><a href="about.html">About</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <main id="main">
-
+	<main id="main">
+	
 	<h1>Jobs</h1>
-	<p class="intro">List of currently avaliable positions at community Connect.</p>
-	
-	<div class="group" style="gap: 3rem; /*overriding style.css*/"> <!-- group containing all job boxes -->
-	
-		<!-- job 1 -->
-		<section class="outline">
-			<h2 class="inline">Community Organiser</h2>
-			<p class="inline hint">#100001<p>
-			<p>Community Organisers are in charge of planning and coordinating community events.</p>
-			<p class="coloured">$70,000</p>
-			<p>Reports to: Manager</p>
-			<!-- key responsibilities -->
-			<p class="coloured">Key Responsibilities</p>
-			<ol style="list-style-type: square"> <!-- use inline here to remove numbers -->
-				<li>Event Planning and Coordination</li>
-				<li>Collaboration and Networking</li>
-				<li>Public Speaking and Facilitation</li>
-			</ol>
-			<!-- essential requirements -->
-			<p class="coloured">Essential Requirements</p>
-			<ul>
-				<li>Effective Communication</li>
-				<li>Strategic Planning</li>
-				<li>Legislative & Policy Knowledge</li>
-			</ul>
-			<!-- preferable requirements -->
-			<p class="coloured">Preferable Requirements</p>
-			<ul>
-				<li>Problem-Solving</li>
-				<li>Time Management</li>
-				<li>Team Leadership</li>
-			</ul>
-		</section>
+	<p class="intro">List of currently avaliable positions at Community Connect.</p>
 		
-		<!-- job 2 -->
-		<section class="outline">
-			<h2 class="inline">Fundraiser</h2>
-			<p class="inline hint">#100002<p>
-			<p>Fundraisers work to organise and run fundraising events as well as managing funds raised.</p>
-			<p class="coloured">$94,000</p>
-			<p>Manager/Treasurer</p>
-			<!-- key responsibilities -->
-			<p class="coloured">Key Responsibilities</p>
-			<ol style="list-style-type: square"> <!-- use inline here to remove numbers -->
-				<li>Keep financial records</li>
-				<li>Fundraising events</li>
-				<li>Communicating with the public</li>
-			</ol>
-			<!-- essential requirements -->
-			<p class="coloured">Essential Requirements</p>
-			<ul>
-				<li>Communication skills</li>
-				<li>Budget Management</li>
-				<li>Data Analysis and Fundraising</li>
-			</ul>
-			<!-- preferable requirements -->
-			<p class="coloured">Preferable Requirements</p>
-			<ul>
-				<li>Networking</li>
-				<li>Strategic thinking</li>
-				<li>Persistence and resilience</li>
-			</ul>
-		</section>
+	<!-- search bar -->
+	<form method="get" action="jobs_search.php" class="inline">
+		<label for="search">Search for a job listing</label>
+		<input type="text" name="search" id="search" required>
+		<input class="btn" style="width: 8em" type="submit" value="Search">
+	</form>
+	
+	<!-- applied jobs button, goes to login page -->
+	<a href="userlogin.php" class="inline btn-secondary" style="float: right;">Applied Jobs</a>
+	
+	 <!-- group containing all job boxes -->
+	<div class="group" style="gap: 2rem;/*overriding style.css*/">
+	
+		<?php
+		if ($conn)
+		{
+			$query = "SELECT * FROM jobs"; // retrieve all job listing
+			$result = mysqli_query($conn, $query);
+			
+			if (mysqli_num_rows($result) > 0)
+			{
+				while ($row = mysqli_fetch_assoc($result))
+				{
+					// only title, reference number, salary, description, and reporting line are shown on this page
+					echo "<section class='outline'>
+						<h2>" . $row["title"] . "</h2>
+						<p class='hint'> #" . $row["reference"] . "</p>
+						<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
+						<p>" . $row["description"] . "</p>
+						<p>" . $row["reporting_line"] . "</p>";
+						
+					// button is a form so the job reference can by sent via get
+					echo "<form method='get' action='job_full.php'>" .
+						"<input type='hidden' name='reference' value='" . $row["reference"] . "'>" .
+						"<input class='btn' type='submit' value='Read More'>" .
+						"</form>";
+					
+					echo "</section>";
+				}
+			}
+			else echo "<p>There are no jobs at the moment...</p>"; // if db connected, but no listings
+		}
+		else echo "<p>There was an error connecting to the database...</p>" // if db failed to connect
+
+		?>
 		
-		<!-- job 3 -->
-		<section class="outline">
-			<h2 class="inline">Media/PR</h2>
-			<p class="inline hint">#100003<p>
-			<p>PR is in charge of working with branding and social media.</p>
-			<p class="coloured">$90,000</p>
-			<p>Branding/management</p>
-			<!-- key responsibilities -->
-			<p class="coloured">Key Responsibilities</p>
-			<ol style="list-style-type: square"> <!-- use inline here to remove numbers -->
-				<li>Media Relations</li>
-				<li>Brand Management</li>
-				<li>Social Media Management</li>
-			</ol>
-			<!-- essential requirements -->
-			<p class="coloured">Essential Requirements</p>
-			<ul>
-				<li>Effective Communication</li>
-				<li>Communication</li>
-				<li>Research and Analysis</li>
-			</ul>
-			<!-- preferable requirements -->
-			<p class="coloured">Preferable Requirements</p>
-			<ul>
-				<li>Cultural Awareness</li>
-				<li>Networking</li>
-				<li>Graphic Design</li>
-			</ul>
-		</section>		
 	</div>
 	
-	<a href="apply.html" class="btn">APPLY</a>
-	<a href="index.html" class="btn-secondary">BACK</a>
-	
-	<aside style="float: right"> <!-- more inline css -->
-		<p class="hint">See the apply page for information on how to apply.</p>
+	<aside class="hint" style="float: right">
+		<p>See the apply page for information on how to apply.</p>
 	</aside>
 
   </main>
 
-  <!-- Footer : added all required things and credits -->
-  <footer class="site-footer">
-    <h2 class="visually-hidden">Site information</h2>
-
-    <ul class="footer-links">
-      <li><a href="https://hd-community-connect.atlassian.net/jira/software/projects/CSW/boards/3"
-             target="_blank" rel="noopener noreferrer">Jira project board<span
-             class="visually-hidden"> (opens in a new tab)</span></a></li>
-      <li><a href="https://github.com/srOsaad/hd-community-connect"
-             target="_blank" rel="noopener noreferrer">GitHub repository<span
-             class="visually-hidden"> (opens in a new tab)</span></a></li>
-
-      <li><a href="mailto:106406031@student.swin.edu.au">106406031@student.swin.edu.au</a></li>
-      <li><a href="mailto:106052926@student.swin.edu.au">106052926@student.swin.edu.au</a></li>
-      <li><a href="mailto:106424716@student.swin.edu.au">106424716@student.swin.edu.au</a></li>
-      <li><a href="mailto:106514329@student.swin.edu.au">106514329@student.swin.edu.au</a></li>
-    </ul>
-
-    <p class="footer-note">
-      &copy; 2026 Community Connect. A student project by Group HD for
-      Web Technology, Swinburne University of Technology.
-      Community Connect is a fictional organisation created for assessment purposes.
-    </p>
-
-    <!-- add anything you didn't make yourself to this list -->
-    <p class="footer-note">
-      Acknowledgements: logo generated with Google Gemini.
-      Colour scheme adapted from the Australian Services Union
-      <a href="https://www.asu.org.au/ASU_NSW/About/community_sector.aspx"
-         target="_blank" rel="noopener noreferrer">Social and
-      Community Services<span class="visually-hidden"> (opens in a new tab)</span></a> page. Typefaces Source Serif 4 and Source Sans 3 by
-      Adobe, served via Google Fonts under the SIL Open Font License.
-    </p>
-  </footer>
+	<!-- footer from included file -->
+	<?php include("footer.inc"); ?>
 
 </body>
 </html>
