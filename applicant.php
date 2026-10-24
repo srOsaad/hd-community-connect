@@ -9,8 +9,7 @@ session_start();
 require_once 'db_connect.inc';   // $conn
 require_once 'functions.inc';    // clean_input(), e()
 
-// CONNECT TO PROCESS EOI TO SHOW USER INPUT1`
-$_SESSION['eoi_id'] = mysqli_insert_id($conn);
+    
 
 $genders = ['Male', 'Female', 'Other'];
 $states  = ['VIC', 'NSW', 'QLD', 'NT', 'WA', 'SA', 'TAS', 'ACT'];

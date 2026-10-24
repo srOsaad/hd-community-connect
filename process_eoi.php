@@ -202,6 +202,7 @@ mysqli_stmt_bind_param($stmt, "isssssssssssss",
     $state, $postcode, $email, $phone, $skills_str, $other_skill);
 
 if (mysqli_stmt_execute($stmt)) {
+    $new_eoi_id = mysqli_insert_id($conn);
     mysqli_stmt_close($stmt);
 
     $upd = mysqli_prepare($conn,
@@ -220,6 +221,7 @@ if (mysqli_stmt_execute($stmt)) {
     session_start();
     $_SESSION['apply_success'] = true;
     $_SESSION['first_name'] = $first_name;
+    $_SESSION['eoi_id'] = $new_eoi_id;
 
     header("Location: success.php");
     exit();
