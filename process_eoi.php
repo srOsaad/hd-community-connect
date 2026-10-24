@@ -174,7 +174,7 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     Phone         VARCHAR(10)  NOT NULL,
     Skills        SET('Problem solving','Communication','Teamwork') NOT NULL,
     OtherSkills   TEXT NULL,
-    Status        ENUM('New','Current','Final') NOT NULL DEFAULT 'New'
+    Status        ENUM('New','Processing','Accepted','Rejected') NOT NULL DEFAULT 'New'
 )";
 if (!mysqli_query($conn, $create_sql)) {
     render_page("Database Error", "Sorry, we could not process your application",
