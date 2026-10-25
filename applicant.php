@@ -93,6 +93,7 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
               'State','Postcode','Email','Phone','OtherSkills'] as $f) {
         $form[$f] = post_value($f);
     }
+    $form['State'] = strtoupper($form['State']);
     $form['Skills'] = allowed_skills($_POST['Skills'] ?? []);
 
     $d = DateTime::createFromFormat('!Y-m-d', $form['DOB']);
