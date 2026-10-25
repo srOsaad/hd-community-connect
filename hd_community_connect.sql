@@ -47,7 +47,7 @@ CREATE TABLE `eoi` (
   `Email` varchar(150) NOT NULL,
   `Phone` varchar(10) NOT NULL,
   `Skills` set('Problem solving','Communication','Teamwork') NOT NULL,
-  `OtherSkills` text DEFAULT NULL,
+  `OtherSkills` text NOT NULL,
   `Status` enum('New','Current','Final') NOT NULL DEFAULT 'New',
   PRIMARY KEY (`EOInumber`),
   UNIQUE KEY `ApplicationID` (`ApplicationID`),
@@ -109,7 +109,8 @@ CREATE TABLE `contributions` (
   `description` varchar(255) NOT NULL,
   PRIMARY KEY (`contribution_id`),
   KEY `member_id` (`member_id`),
-  CONSTRAINT `contributions_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `members` (`member_id`) ON DELETE CASCADE
+  CONSTRAINT `contributions_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `members` (`member_id`) ON DELETE CASCADE,
+  CONSTRAINT `project_part_1_or_2` CHECK (`project_part` in (1,2))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `jobs` (`job_id`, `title`, `reference`, `description`, `salary`, `reporting_line`) VALUES

@@ -139,7 +139,7 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     Email         VARCHAR(150) NOT NULL,
     Phone         VARCHAR(10)  NOT NULL,
     Skills        SET('Problem solving','Communication','Teamwork') NOT NULL,
-    OtherSkills   TEXT NULL,
+    OtherSkills   TEXT NOT NULL,
     Status        ENUM('New','Current','Final') NOT NULL DEFAULT 'New',
     UNIQUE KEY job_email (JobReference, Email),
     INDEX (FirstName),
