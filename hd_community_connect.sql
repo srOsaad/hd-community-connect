@@ -12,7 +12,7 @@ DROP TABLE IF EXISTS `group_info`;
 CREATE TABLE `jobs` (
   `job_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `title` varchar(128) NOT NULL,
-  `reference` varchar(6) NOT NULL,
+  `reference` char(6) NOT NULL,
   `description` text NOT NULL,
   `salary` decimal(10,2) NOT NULL,
   `reporting_line` text NOT NULL,
