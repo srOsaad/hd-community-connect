@@ -12,6 +12,7 @@ Set these before including this file:
 // Every page needs the session so nav.inc can show the right staff links
 // Pages that redirect start it earlier themselves if it has not started.
 require_once "session.inc";
+require_once "functions.inc";
 
 if (!headers_sent()) {
     header("X-Frame-Options: DENY");
@@ -27,8 +28,8 @@ $page_description = $page_description ?? "Community Connect, a not-for-profit co
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Community Connect - <?php echo htmlspecialchars($page_title); ?></title>
-  <meta name="description" content="<?php echo htmlspecialchars($page_description); ?>">
+  <title>Community Connect - <?php echo e($page_title); ?></title>
+  <meta name="description" content="<?php echo e($page_description); ?>">
 
   <!-- Google Fonts: credited in the footer -->
   <link rel="preconnect" href="https://fonts.googleapis.com">

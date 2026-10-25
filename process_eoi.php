@@ -5,7 +5,6 @@ require_once "error.inc";
 require_once "session.inc";
 
 function keep_form_values() {
-    require_once "session.inc";
     $fields = ['job_reference_number', 'first_name', 'last_name', 'DateOfBirth', 'Gender', 'streetaddress',
                'suburb_town', 'state', 'postcode', 'email', 'phone', 'Other_skill'];
     $old = [];
@@ -226,7 +225,6 @@ if ($saved) {
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
 
-    require_once "session.inc";
     session_regenerate_id(true);
     unset($_SESSION['apply_old']);
     $_SESSION['apply_success'] = true;

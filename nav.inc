@@ -21,7 +21,7 @@ if ($is_logged_in) {
 
 // Staff link, styled separately (class "nav-staff"): [file, link text, $current_page value]
 if ($is_logged_in) {
-    $staff_link = ["logout.php?who=staff&amp;token=" . urlencode($_SESSION["csrf_token"] ?? ""), "Log Out (" . htmlspecialchars($_SESSION["username"]) . ")", "logout"];
+    $staff_link = ["logout.php?who=staff&amp;token=" . urlencode($_SESSION["csrf_token"] ?? ""), "Log Out (" . e($_SESSION["username"]) . ")", "logout"];
 } else {
     $staff_link = ["stafflogin.php", "Staff Login", "stafflogin"];
 }

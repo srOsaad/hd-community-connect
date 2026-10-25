@@ -84,8 +84,9 @@ $list_query = [
 $page_url = "manage.php?" . http_build_query($list_query + ["page" => $page]);
 
 $has_table = eoi_table_exists($conn);
+$action = field($_POST, "action");
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && field($_POST, "action") === "update_status") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && $action === "update_status") {
     $eoi_number = (int) field($_POST, "eoi_number");
     $new_status = field($_POST, "status");
 
@@ -109,7 +110,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && field($_POST, "action
 $delete_job = "";
 $delete_count = 0;
 
-$action = field($_POST, "action");
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && ($action === "confirm_delete" || $action === "delete")) {
     $job_ref = strtoupper(field($_POST, "job_ref"));
 
