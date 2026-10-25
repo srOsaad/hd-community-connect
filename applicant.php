@@ -131,6 +131,7 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $form['StreetAddress'], $form['Suburb'], $form['State'], $form['Postcode'],
             $form['Email'], $form['Phone'], $skills, $form['OtherSkills'], $id);
         $ok = mysqli_stmt_execute($stmt);
+        $duplicate_email = !$ok && mysqli_stmt_errno($stmt) === 1062;
         $changed = mysqli_stmt_affected_rows($stmt);
         mysqli_stmt_close($stmt);
 
@@ -156,7 +157,8 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         if (!$locked) {
-            $errors[] = 'Sorry, we could not save your changes. Please try again later.';
+            $errors[] = $duplicate_email ? 'Another application for this job already uses this email address.'
+                                         : 'Sorry, we could not save your changes. Please try again later.';
         }
     }
 }

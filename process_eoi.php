@@ -135,11 +135,12 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     Suburb        VARCHAR(255) NOT NULL,
     State         ENUM('VIC','NSW','QLD','NT','WA','SA','TAS','ACT') NOT NULL,
     Postcode      CHAR(4)      NOT NULL,
-    Email         VARCHAR(1000) NOT NULL,
+    Email         VARCHAR(150) NOT NULL,
     Phone         VARCHAR(10)  NOT NULL,
     Skills        SET('Problem solving','Communication','Teamwork') NOT NULL,
     OtherSkills   TEXT NULL,
     Status        ENUM('New','Current','Final') NOT NULL DEFAULT 'New',
+    UNIQUE KEY job_email (JobReference, Email),
     INDEX (FirstName),
     INDEX (LastName),
     INDEX (Status),
@@ -192,12 +193,21 @@ $saved = false;
 for ($try = 0; $try < 5 && !$saved; $try++) {
     $application_id = make_application_id();
     $saved = mysqli_stmt_execute($stmt);
+    if (!$saved && mysqli_stmt_errno($stmt) === 1062 && strpos(mysqli_stmt_error($stmt), "job_email") !== false) {
+        $already_applied = true;
+        break;
+    }
     if (!$saved && mysqli_stmt_errno($stmt) !== 1062) {
         break;
     }
     if (!$saved) {
         usleep(1000);
     }
+}
+if ($already_applied) {
+    mysqli_rollback($conn);
+    keep_form_values();
+    show_application_error(["You have already applied for this job with this email address."]);
 }
 $new_eoi_id = $saved ? mysqli_insert_id($conn) : 0;
 
