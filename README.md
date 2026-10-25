@@ -16,7 +16,7 @@ applications online, and HR managers review and manage applications.
 | Shahryar Rahman Saad (Sam) | 106406031 | Project lead, index.html | Shared includes, staff access control, index.php, manage.php, manager registration, shared error page |
 | Gia Nghia Le (Tom) | 106424716 | Communication lead, apply.html | apply.php, process_eoi.php, applicant page |
 | Shashwat Chhabra (Shash) | 106514329 | Project documentation, about.html | about.php, staff and applicant login and logout |
-| Declan Elliott | 106052926 | QA, jobs.html | jobs.php, job_full.php, jobs_search.php |
+| Declan Elliott | 106052926 | QA, jobs.html | jobs.php, job_details.php, jobs_search.php |
 
 ### Running the site locally
 1. Copy the project folder into XAMPP's `htdocs` folder and start Apache and MySQL.
@@ -36,7 +36,7 @@ Database settings are in `settings.php` (XAMPP defaults: user `root`, no passwor
 | Page | Purpose |
 | --- | --- |
 | `index.php` | Home page |
-| `jobs.php`, `jobs_search.php`, `job_full.php` | Job listings, search and full job details from the `jobs` table |
+| `jobs.php`, `jobs_search.php`, `job_details.php` | Job listings, search and full job details from the `jobs` table |
 | `apply.php`, `process_eoi.php`, `success.php` | Job application form, server-side validation and saving, confirmation with the application ID |
 | `userlogin.php`, `applicant.php` | Applicants log in with their application ID and password to check status and edit while it is still New |
 | `about.php` | Team page from the `group_info`, `members` and `contributions` tables |

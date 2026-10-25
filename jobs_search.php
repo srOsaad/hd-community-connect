@@ -76,7 +76,7 @@ include("header.inc");
 					<p>" . $row["reporting_line"] . "</p>";
 
 					// button is a form so the job reference can by sent via get
-					echo "<form method='get' action='job_full.php'>" .
+					echo "<form method='get' action='job_details.php'>" .
 						"<input type='hidden' name='reference' value='" . e($row["reference"]) . "'>" .
 						"<input class='btn' type='submit' value='Read More'>" .
 						"</form>";
