@@ -260,6 +260,7 @@ if ($saved) {
     $_SESSION['apply_success'] = true;
     $_SESSION['first_name'] = $first_name;
     $_SESSION['eoi_id'] = $new_eoi_id;
+    $_SESSION['applicant_last_activity'] = time();
     $_SESSION['application_id'] = $application_id;
 
     header("Location: success.php");

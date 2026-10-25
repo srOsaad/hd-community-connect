@@ -34,6 +34,14 @@ if ($id < 1) {
     exit;
 }
 
+$applicant_timeout = 30 * 60;
+if (isset($_SESSION['applicant_last_activity']) && time() - $_SESSION['applicant_last_activity'] > $applicant_timeout) {
+    unset($_SESSION['eoi_id'], $_SESSION['application_id'], $_SESSION['applicant_last_activity']);
+    header('Location: userlogin.php?expired=1');
+    exit;
+}
+$_SESSION['applicant_last_activity'] = time();
+
 if (!$conn) {
     show_database_error('userlogin.php', 'Back to check application');
 }

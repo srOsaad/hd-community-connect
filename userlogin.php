@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             session_regenerate_id(true);
             $_SESSION['eoi_id'] = $eoi_number;
+            $_SESSION['applicant_last_activity'] = time();
             header('Location: applicant.php');
             exit();
 
@@ -76,6 +77,10 @@ include 'header.inc';
 
 <main id="main">
   <h1>Check your application</h1>
+
+  <?php if (isset($_GET['expired'])) { ?>
+    <p class="message message-error">You were logged out after 30 minutes of inactivity. Please log in again.</p>
+  <?php } ?>
 
   <?php if ($error != '') { ?>
     <p class="message message-error"><?php echo $error; ?></p>
