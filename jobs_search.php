@@ -11,7 +11,7 @@ if (!$conn)
 }
 
 $page_title = "Search Jobs";
-$page_description = "Results for jobs search.";
+$page_description = "Search Community Connect job openings by title.";
 $current_page = "jobs";
 
 $page_style = <<<'CSS'
