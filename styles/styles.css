@@ -540,8 +540,24 @@ input[type="checkbox"] {
 
 
 @media (min-width: 47.5625em) and (max-width: 60em) {
+  .brand-name {
+    font-size: var(--step-1);
+  }
+
+  .site-nav ul {
+    gap: 0;
+  }
+
   .site-nav a {
-    padding: 0.5rem 0.55rem;
+    padding: 0.5rem 0.4rem;
+  }
+
+  .site-nav .nav-staff {
+    margin-left: 0.25rem;
+  }
+
+  .site-nav .nav-staff a {
+    padding: 0.35rem 0.6rem;
   }
 }
 
