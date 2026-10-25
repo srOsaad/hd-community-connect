@@ -15,6 +15,7 @@ $job_map = get_job_map($conn);
 
 require_once "session.inc";
 $old = isset($_SESSION['apply_old']) && is_array($_SESSION['apply_old']) ? $_SESSION['apply_old'] : [];
+unset($_SESSION['apply_old']);
 
 function old_value($key) {
     global $old;
@@ -149,7 +150,7 @@ include "header.inc";
 <!-- Form submission buttons -->
 <div class="grid">
     <input class="btn" type="submit" value="Submit Application">
-    <input class="btn-secondary" type="reset" value="Reset Form">
+    <a class="btn-secondary" href="apply.php">Reset Form</a>
     </div>
 </form>
   </main>
