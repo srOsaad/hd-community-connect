@@ -70,7 +70,8 @@ if ($filter_status !== "" && !in_array($filter_status, $statuses, true)) {
     $messages[] = "Please choose a valid status.";
     $filter_status = "";
 }
-$is_filtered = $is_filtered || $filter_status !== "";
+$filter_invalid = count($messages) > 0;
+$is_filtered = $is_filtered || $filter_status !== "" || $filter_invalid;
 
 # CSRF token: forms that change data must send this back
 if (empty($_SESSION["csrf_token"])) {
@@ -191,7 +192,7 @@ if ($conn && $has_table) {
 $total_count = array_sum($status_counts);
 
 $eois = [];
-if ($conn && $has_table) {
+if ($conn && $has_table && !$filter_invalid) {
     $conditions = [];
     $types = "";
     $params = [];
@@ -214,12 +215,12 @@ if ($conn && $has_table) {
     if ($filter_first !== "") {
         $conditions[] = "FirstName LIKE ?";      # LIKE with % on both sides means "contains"
         $types .= "s";
-        $params[] = "%" . $filter_first . "%";
+        $params[] = like_pattern($filter_first);
     }
     if ($filter_last !== "") {
         $conditions[] = "LastName LIKE ?";
         $types .= "s";
-        $params[] = "%" . $filter_last . "%";
+        $params[] = like_pattern($filter_last);
     }
 
     $sql = "SELECT * FROM eoi";
@@ -427,7 +428,9 @@ include "header.inc";
       <h2 id="results-heading"><?php echo $is_filtered ? "Search results" : "All applications"; ?></h2>
       <p><?php echo count($eois); ?> application(s) found.</p>
  
-<?php if (count($eois) === 0 && $is_filtered) { ?>
+<?php if ($filter_invalid) { ?>
+      <p>Fix the search above to see results.</p>
+<?php } elseif (count($eois) === 0 && $is_filtered) { ?>
       <p>No applications match your search.</p>
 <?php } ?>
  

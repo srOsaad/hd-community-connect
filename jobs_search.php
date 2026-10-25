@@ -54,7 +54,7 @@ include("header.inc");
 	}
 	elseif ($conn)
 	{
-		$like = "%" . $search . "%";
+		$like = like_pattern(html_entity_decode($search, ENT_QUOTES, "UTF-8"));
 		$stmt = mysqli_prepare($conn, "SELECT * FROM jobs WHERE title LIKE ? ORDER BY reference"); // retrieve job listings based on search from user
 		mysqli_stmt_bind_param($stmt, "s", $like);
 		mysqli_stmt_execute($stmt);

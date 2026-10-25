@@ -45,4 +45,8 @@ function allowed_skills($values) {
     }
     return array_values(array_intersect(skill_options(), array_filter($values, "is_string")));
 }
+
+function like_pattern($text) {
+    return "%" . addcslashes($text, "\\%_") . "%";
+}
 ?>
