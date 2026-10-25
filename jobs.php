@@ -2,6 +2,12 @@
 session_start();
 require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
+require_once "error.inc";
+
+if (!$conn)
+{
+	show_database_error();
+}
 
 $page_title = "Jobs";
 $page_description = "The jobs listing page.";
@@ -80,7 +86,6 @@ include("header.inc");
 			}
 			else echo "<p>There are no jobs at the moment...</p>"; // if db connected, but no listings
 		}
-		else echo "<p>There was an error connecting to the database...</p>"; // if db failed to connect
 
 		?>
 

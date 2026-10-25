@@ -2,6 +2,11 @@
 require_once "auth.inc";
 require_once "db_connect.inc";
 require_once "functions.inc";
+require_once "error.inc";
+
+if (!$conn) {
+    show_database_error("manage.php", "Back to manage");
+}
 
 if (empty($_SESSION["csrf_token"])) {
     $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
@@ -29,10 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } elseif ($password !== $confirm) {
             $errors[] = "Passwords do not match.";
         }
-    }
-
-    if (!$errors && !$conn) {
-        $errors[] = $db_error_message;
     }
 
     if (!$errors) {

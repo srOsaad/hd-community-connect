@@ -2,6 +2,12 @@
 session_start();
 require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
+require_once "error.inc";
+
+if (!$conn)
+{
+	show_database_error();
+}
 
 $page_title = "Search Jobs";
 $page_description = "Results for jobs search.";
@@ -83,7 +89,6 @@ include("header.inc");
 			echo "</div>";
 			mysqli_stmt_close($stmt);
 		}
-		else echo "<p>There was an error connecting to the database...</p>"; // if failed to connect to db
 		?>
 
 	<aside style="float: right">

@@ -1,6 +1,11 @@
 <?php
 session_start();
 require_once 'db_connect.inc';
+require_once 'error.inc';
+
+if (!$conn) {
+    show_database_error();
+}
 
 $error = '';
 $max_attempts = 5;

@@ -7,6 +7,11 @@ Shows every job application saved by process_eoi.php.
 require_once "auth.inc";          # keep this first, it sends anyone not logged in back to the login page
 require_once "db_connect.inc";    # connects to the database ($conn)
 require_once "functions.inc";     # our helpers: clean_input() and e()
+require_once "error.inc";
+
+if (!$conn) {
+    show_database_error();
+}
 
 # The form data was already escaped by clean_input() before saving,
 # so we undo that first, otherwise "&" would show up as "&amp;" on the page
@@ -338,10 +343,7 @@ include "header.inc";
     <p class="message message-error" role="alert"><?php echo e($message); ?></p>
 <?php } ?>
  
-<?php if (!$conn) { ?>
-    <p class="message message-error"><?php echo e($db_error_message); ?></p>
- 
-<?php } elseif (!$has_table) { ?>
+<?php if (!$has_table) { ?>
     <p>No applications have been submitted yet. They will appear here after the first one arrives.</p>
  
 <?php } else { ?>

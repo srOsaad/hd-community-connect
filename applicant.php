@@ -8,6 +8,7 @@ session_start();
 
 require_once 'db_connect.inc';   // $conn
 require_once 'functions.inc';    // clean_input(), e()
+require_once 'error.inc';
 
     
 
@@ -28,12 +29,20 @@ if ($id < 1) {
     exit;
 }
 
+if (!$conn) {
+    show_database_error('userlogin.php', 'Back to check application');
+}
+
 if ($conn && $id > 0) {
     $stmt = mysqli_prepare($conn, 'SELECT * FROM eoi WHERE EOInumber = ?');
     mysqli_stmt_bind_param($stmt, 'i', $id);
     mysqli_stmt_execute($stmt);
     $app = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt)) ?: null;
     mysqli_stmt_close($stmt);
+}
+
+if (!$app) {
+    show_error_page('Application not found', ['We could not find an application with this ID.'], 'userlogin.php', 'Check another application', 404);
 }
 
 // Job title for the page heading (JobReference in eoi = reference in jobs)
@@ -128,11 +137,7 @@ include 'header.inc';
 <main id="main">
     <h1>Your Application<?= $job_title !== '' ? ' for ' . e($job_title) : '' ?></h1>
 
-<?php if (!$app): ?>
-
-    <p>No application was found for this ID.</p>
-
-<?php elseif (!$editing): ?>
+<?php if (!$editing): ?>
 
     <!-- ===== VIEW: headings + paragraphs ===== -->
     <?php if ($notice): ?><p class="success"><?= e($notice) ?></p><?php endif; ?>

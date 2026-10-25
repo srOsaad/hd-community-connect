@@ -1,6 +1,11 @@
 <?php
 require_once "db_connect.inc";
 require_once "functions.inc";
+require_once "error.inc";
+
+if (!$conn) {
+    show_database_error();
+}
 
 $group = null;
 $members = [];
@@ -27,6 +32,10 @@ if ($conn) {
     }
 }
 
+if (!$group || !$members) {
+    show_error_page("Team information unavailable", ["Team information is not available right now. Please try again later."]);
+}
+
 $page_title = "About the Team";
 $page_description = "Meet the HD team behind Community Connect and how the project was built.";
 $current_page = "about";
@@ -37,9 +46,6 @@ include "header.inc";
   <main id="main">
     <h1>About the Team</h1>
 
-<?php if (!$group || !$members) { ?>
-    <p class="message message-error">Team information is not available right now.</p>
-<?php } else { ?>
     <p class="intro"><?php echo e($group["intro"]); ?></p>
 
     <section>
@@ -118,7 +124,6 @@ include "header.inc";
         </tbody>
       </table>
     </section>
-<?php } ?>
   </main>
 
 <?php include "footer.inc"; ?>

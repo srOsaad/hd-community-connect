@@ -1,28 +1,10 @@
 <?php
 require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
+require_once "error.inc";
 
 function render_page($title, $heading, $messages, $is_error) {
-    $page_title = $title;
-    $page_description = "Community Connect job application.";
-    $current_page = "apply";
-    include "header.inc";
-    echo "<main id=\"main\">";
-    echo "<h1>" . e($heading) . "</h1>";
-    if ($is_error) {
-        echo "<div class=\"message message-error\" role=\"alert\"><ul>";
-        foreach ($messages as $msg) {
-            echo "<li>" . e($msg) . "</li>";
-        }
-        echo "</ul></div>";
-    } else {
-        foreach ($messages as $msg) {
-            echo "<p>" . e($msg) . "</p>";
-        }
-    }
-    echo "<p><a class=\"btn\" href=\"apply.php\">Return to application form</a></p>";
-    echo "</main>";
-    include "footer.inc";
+    show_error_page($heading, $messages, "apply.php", "Return to application form", $title === "Database Error" ? 503 : 400);
 }
 
 function make_application_id() {
@@ -33,8 +15,7 @@ function make_application_id() {
 }
 
 if (!$conn) {
-    echo "<p>" . $db_error_message . "</p>";   // database not reachable
-    exit();
+    show_database_error("apply.php", "Return to application form");
 } else {
     $required_fields = ['job_reference_number','first_name','last_name','DateOfBirth','streetaddress','suburb_town',
                     'state','postcode','email','phone','password','confirm_password'];

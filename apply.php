@@ -6,6 +6,11 @@ Page content is unchanged from Part 1 apart from links (.html to .php).
 require_once "db_connect.inc";
 require_once "functions.inc";
 require_once "jobs.inc";
+require_once "error.inc";
+
+if (!$conn) {
+    show_database_error();
+}
 $job_map = get_job_map($conn);
 
 if (session_status() === PHP_SESSION_NONE) {
