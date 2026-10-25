@@ -27,14 +27,14 @@ include "header.inc";
     <h1>Search Jobs</h1>
 
     <?php
-    $search = isset($_GET["search"]) ? clean_input($_GET["search"]) : "";
+    $search = field($_GET, "search");
     ?>
 
     <?php job_search_form($search); ?>
 
     <?php
     if ($search === "") {
-        echo "<p>Enter a job title to search.</p>";
+        echo "<p>Enter a job title or reference to search.</p>";
     } else {
         $jobs = find_jobs($conn, $search); // retrieve job listings based on search from user
 

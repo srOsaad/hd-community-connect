@@ -14,15 +14,24 @@ function get_job_map($conn) {
     return $map;
 }
 
-function find_jobs($conn, $title_search = "") {
-    if ($title_search === "") {
+function find_jobs($conn, $search = "") {
+    if ($search === "") {
         $result = mysqli_query($conn, "SELECT * FROM jobs ORDER BY reference");
         return $result ? mysqli_fetch_all($result, MYSQLI_ASSOC) : [];
     }
 
-    $like = like_pattern(html_entity_decode($title_search, ENT_QUOTES, "UTF-8"));
-    $stmt = db_prepare($conn, "SELECT * FROM jobs WHERE title LIKE ? ORDER BY reference");
-    mysqli_stmt_bind_param($stmt, "s", $like);
+    $text = html_entity_decode($search, ENT_QUOTES, "UTF-8");
+    $words = array_slice(preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY), 0, 10);
+    $conditions = [];
+    $params = [];
+    foreach ($words as $word) {
+        $conditions[] = "title LIKE ?";
+        $params[] = like_pattern($word);
+    }
+    $params[] = $text;
+
+    $stmt = db_prepare($conn, "SELECT * FROM jobs WHERE (" . implode(" AND ", $conditions) . ") OR reference = ? ORDER BY reference");
+    mysqli_stmt_bind_param($stmt, str_repeat("s", count($params)), ...$params);
     mysqli_stmt_execute($stmt);
     $jobs = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
     mysqli_stmt_close($stmt);
@@ -38,8 +47,8 @@ function job_facts($row) {
 
 function job_search_form($value = "") {
     echo "<form method='get' action='search.php' class='job-search'>" .
-        "<label for='search'>Search for a job title</label>" .
-        "<input type='text' name='search' id='search' value='" . show($value) . "' required>" .
+        "<label for='search'>Search by job title or reference</label>" .
+        "<input type='text' name='search' id='search' maxlength='128' value='" . show($value) . "' required>" .
         "<input class='btn' type='submit' value='Search'>" .
         "</form>";
 }
