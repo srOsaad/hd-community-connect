@@ -30,6 +30,13 @@ if ($result) {
     }
 }
 
+$quotes = array_filter($members, function ($m) {
+    return trim((string) $m["quote_text"]) !== "";
+});
+$facts = array_filter($members, function ($m) {
+    return trim((string) $m["fun_fact"]) !== "";
+});
+
 if (!$group || !$members) {
     show_error_page("Team information unavailable", ["Team information is not available right now. Please try again later."]);
 }
@@ -87,18 +94,20 @@ include "header.inc";
       </dl>
     </section>
 
+<?php if ($quotes) { ?>
     <section>
       <h2>Quotes</h2>
       <p>Something each of us enjoys or feels strongly about.</p>
       <div class="grid">
-<?php foreach ($members as $m) { ?>
+<?php foreach ($quotes as $m) { ?>
         <blockquote class="box" lang="en">
           <p class="quote">"<?php echo e($m["quote_text"]); ?>"</p>
-          <footer><cite><?php echo e($m["quote_by"]); ?></cite>, chosen by <?php echo e($m["full_name"]); ?></footer>
+          <footer><?php if (trim((string) $m["quote_by"]) !== "") { ?><cite><?php echo e($m["quote_by"]); ?></cite>, chosen<?php } else { ?>Chosen<?php } ?> by <?php echo e($m["full_name"]); ?></footer>
         </blockquote>
 <?php } ?>
       </div>
     </section>
+<?php } ?>
 
     <section>
       <h2>The team</h2>
@@ -110,6 +119,7 @@ include "header.inc";
       </figure>
     </section>
 
+<?php if ($facts) { ?>
     <section>
       <h2>Fun facts</h2>
       <table>
@@ -121,7 +131,7 @@ include "header.inc";
           </tr>
         </thead>
         <tbody>
-<?php foreach ($members as $m) { ?>
+<?php foreach ($facts as $m) { ?>
           <tr>
             <td><?php echo e($m["full_name"]); ?><?php if ($m["nickname"]) { echo " (" . e($m["nickname"]) . ")"; } ?></td>
             <td><?php echo e($m["fun_fact"]); ?></td>
@@ -130,6 +140,7 @@ include "header.inc";
         </tbody>
       </table>
     </section>
+<?php } ?>
   </main>
 
 <?php include "footer.inc"; ?>
