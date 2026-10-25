@@ -101,7 +101,7 @@ if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $DOB, $m) && checkdate((int) $m[2]
 
 $errors = array_merge($errors, validate_application([
     'first_name' => $first_name, 'last_name' => $last_name,
-    'dob' => $dob_date, 'dob_message' => "Date of birth must be a valid date in dd/mm/yyyy format.",
+    'dob' => $dob_date, 'dob_message' => "Date of birth must be a valid date in the format DD/MM/YYYY.",
     'gender' => $gender, 'street' => $street, 'suburb' => $suburb,
     'state' => $state, 'postcode' => $postcode, 'email' => $email, 'phone' => $phone,
     'skills' => $skills_arr, 'other_skills' => $other_skill,
