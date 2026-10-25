@@ -43,7 +43,7 @@ include "header.inc";
     $search = isset($_GET["search"]) ? clean_input($_GET["search"]) : "";
     ?>
 
-    <form method="get" action="jobs_search.php" class="search-again">
+    <form method="get" action="search.php" class="search-again">
         <label for="search">Search for a job title</label>
         <input type="text" name="search" id="search" value="<?php echo $search; ?>" required>
         <input class="btn" style="width: 8em" type="submit" value="Search">

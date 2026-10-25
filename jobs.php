@@ -52,7 +52,7 @@ include "header.inc";
 
     <div class="job-tools">
         <!-- search bar -->
-        <form method="get" action="jobs_search.php">
+        <form method="get" action="search.php">
             <label for="search">Search for a job title</label>
             <input type="text" name="search" id="search" required>
             <input class="btn" style="width: 8em" type="submit" value="Search">
