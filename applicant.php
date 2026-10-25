@@ -97,7 +97,7 @@ if ($app) {
         }
         $form['Skills'] = array_values(array_intersect($skill_options, (array) ($_POST['Skills'] ?? [])));
 
-        $d = DateTime::createFromFormat('Y-m-d', $form['DOB']);
+        $d = DateTime::createFromFormat('!Y-m-d', $form['DOB']);
         if (!preg_match('/^[A-Za-z\s]{1,20}$/', $form['FirstName'])) $errors[] = 'First name must be 1-20 letters only.';
         if (!preg_match('/^[A-Za-z\s]{1,20}$/', $form['LastName']))  $errors[] = 'Last name must be 1-20 letters only.';
         if (!$d || $d->format('Y-m-d') !== $form['DOB'] || $d > new DateTime('today')) {

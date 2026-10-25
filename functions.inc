@@ -3,6 +3,8 @@
 Helps with a safety check of data transfer between frontend and backend
 */
 
+date_default_timezone_set("Australia/Melbourne");
+
 # Clean user input (form or URL): trim, strip slashes, escape HTML.
 function clean_input($data) {
     if (!is_string($data)) {
