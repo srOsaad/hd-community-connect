@@ -152,7 +152,6 @@ $create_users_sql = "CREATE TABLE IF NOT EXISTS users (
     password_hash    VARCHAR(255) NOT NULL,
     failed_attempts  INT UNSIGNED NOT NULL DEFAULT 0,
     lockout_until    DATETIME     NULL,
-    lockout_minutes  INT UNSIGNED NOT NULL DEFAULT 15,
     FOREIGN KEY (eoi_number) REFERENCES eoi(EOInumber) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 if (!mysqli_query($conn, $create_sql) || !mysqli_query($conn, $create_users_sql)) {

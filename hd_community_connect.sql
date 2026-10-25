@@ -64,7 +64,6 @@ CREATE TABLE `users` (
   `password_hash` varchar(255) NOT NULL,
   `failed_attempts` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `lockout_until` datetime DEFAULT NULL,
-  `lockout_minutes` int(10) UNSIGNED NOT NULL DEFAULT 15,
   PRIMARY KEY (`eoi_number`),
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`eoi_number`) REFERENCES `eoi` (`EOInumber`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -74,7 +73,6 @@ CREATE TABLE `staff` (
   `password_hash` varchar(255) NOT NULL,
   `failed_attempts` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `lockout_until` datetime DEFAULT NULL,
-  `lockout_minutes` int(10) UNSIGNED NOT NULL DEFAULT 15,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -206,16 +204,16 @@ INSERT INTO `eoi` (`EOInumber`, `ApplicationID`, `JobReference`, `FirstName`, `L
 (5, '38137561325102026', '100003', 'Sam', 'Lee', '1998-09-09', 'Other', '21 Rundle Mall', 'Adelaide', 'SA', '5000', 'sam.lee@example.com', '0456789012', 'Communication,Teamwork', 'Canva, social media', 'New'),
 (6, '41837561325102026', '100003', 'Olivia', 'Smith', '2003-12-01', 'Female', '7 Hay St', 'Perth', 'WA', '6000', 'olivia.s@example.com', '0467890123', 'Teamwork', '', 'Current');
 
-INSERT INTO `users` (`eoi_number`, `password_hash`, `failed_attempts`, `lockout_until`, `lockout_minutes`) VALUES
-(1, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL, 15),
-(2, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL, 15),
-(3, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL, 15),
-(4, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL, 15),
-(5, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL, 15),
-(6, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL, 15);
+INSERT INTO `users` (`eoi_number`, `password_hash`, `failed_attempts`, `lockout_until`) VALUES
+(1, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL),
+(2, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL),
+(3, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL),
+(4, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL),
+(5, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL),
+(6, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL);
 
-INSERT INTO `staff` (`username`, `password_hash`, `failed_attempts`, `lockout_until`, `lockout_minutes`) VALUES
-('admin', '$2y$10$a5DOvGwSWi.i0oKgKjQYYe3l.iTtsjsFAanUlmYkP.iZyw1C.GctS', 0, NULL, 15);
+INSERT INTO `staff` (`username`, `password_hash`, `failed_attempts`, `lockout_until`) VALUES
+('admin', '$2y$10$a5DOvGwSWi.i0oKgKjQYYe3l.iTtsjsFAanUlmYkP.iZyw1C.GctS', 0, NULL);
 
 INSERT INTO `group_info` (`group_id`, `group_name`, `intro`, `lecture_time`, `lecture_staff`, `tutorial_time`, `tutorial_staff`, `photo_path`, `photo_alt`, `photo_caption`) VALUES
 (1, 'HD', 'Community Connect''s site was designed and built by a four-person student team over Semester 2, 2026. This page introduces who we are, what each of us contributed, and a little about us outside of the project.', 'Monday 4:30pm to 5:30pm', 'Dr Atie Kia', 'Tuesday 12:30pm to 2:30pm', 'Razeen Hashmi', 'images/HD-team-photo.jpg', 'The HD team standing together on campus', 'The HD team: Sam, Tom, Shash and Declan.');

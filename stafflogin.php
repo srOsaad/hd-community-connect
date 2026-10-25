@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !csrf_ok()) {
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
 
     $found_username = check_login($conn,
-        "SELECT username, password_hash, failed_attempts, lockout_until, lockout_minutes FROM staff WHERE username = ? FOR UPDATE",
+        "SELECT username, password_hash, failed_attempts, lockout_until FROM staff WHERE username = ? FOR UPDATE",
         $username, "staff", "username", $password);
 
     if ($found_username !== null) {

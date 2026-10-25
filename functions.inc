@@ -83,9 +83,11 @@ function csrf_ok() {
     return hash_equals(csrf_token(), $sent);
 }
 
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_MINUTES = 15;
+
 function check_login($conn, $find_sql, $find_value, $table, $id_column, $password) {
     $dummy_hash = '$2y$10$E4UH1PSby88iafe4viaiduqs8xxqYnEwXvd2IlIAk6LrRF5ilhA5e';
-    $max_attempts = 5;
 
     mysqli_begin_transaction($conn);
     $stmt = mysqli_prepare($conn, $find_sql);
@@ -93,7 +95,7 @@ function check_login($conn, $find_sql, $find_value, $table, $id_column, $passwor
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "s", $find_value);
         mysqli_stmt_execute($stmt);
-        mysqli_stmt_bind_result($stmt, $id, $hash, $attempts, $lock_until, $lock_minutes);
+        mysqli_stmt_bind_result($stmt, $id, $hash, $attempts, $lock_until);
         $found = (bool) mysqli_stmt_fetch($stmt);
         mysqli_stmt_close($stmt);
     }
@@ -104,8 +106,8 @@ function check_login($conn, $find_sql, $find_value, $table, $id_column, $passwor
     if ($found && !$is_locked) {
         $attempts = $correct ? 0 : $attempts + 1;
         $lock_time = null;
-        if ($attempts >= $max_attempts) {
-            $lock_time = date("Y-m-d H:i:s", time() + $lock_minutes * 60);
+        if ($attempts >= MAX_LOGIN_ATTEMPTS) {
+            $lock_time = date("Y-m-d H:i:s", time() + LOCKOUT_MINUTES * 60);
             $attempts = 0;
         }
         $stmt = mysqli_prepare($conn, "UPDATE $table SET failed_attempts = ?, lockout_until = ? WHERE $id_column = ?");
@@ -130,7 +132,7 @@ function show_errors($messages) {
 }
 
 function failed_login_message($what) {
-    return "Incorrect " . $what . " or password. After 5 failed attempts, logging in is paused for 15 minutes.";
+    return "Incorrect " . $what . " or password. After " . MAX_LOGIN_ATTEMPTS . " failed attempts, logging in is paused for " . LOCKOUT_MINUTES . " minutes.";
 }
 
 function validate_password($password, $confirm) {

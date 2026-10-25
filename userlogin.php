@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !csrf_ok()) {
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
 
     $eoi_number = check_login($conn,
-        "SELECT u.eoi_number, u.password_hash, u.failed_attempts, u.lockout_until, u.lockout_minutes
+        "SELECT u.eoi_number, u.password_hash, u.failed_attempts, u.lockout_until
          FROM users u JOIN eoi e ON e.EOInumber = u.eoi_number WHERE e.ApplicationID = ? FOR UPDATE",
         $application_id, "users", "eoi_number", $password);
 
