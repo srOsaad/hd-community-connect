@@ -30,4 +30,17 @@ function job_card($row) {
 
 	echo "</section>";
 }
+
+function job_list($heading, $text) {
+	echo "<div class='outline'>" .
+		"<h2 class='coloured'>" . e($heading) . "</h2>" .
+		"<ul>";
+	$separated = explode("\n", trim((string) $text)); // separate text by newline
+	foreach ($separated as $item)
+	{
+		echo "<li>" . show($item) . "</li>";
+	}
+	echo "</ul>" .
+		"</div>";
+}
 ?>

@@ -17,10 +17,7 @@ $skill_options = skill_options();
 $errors = [];
 $locked_notice = '';
 
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-$token = $_SESSION['csrf_token'];
+$token = csrf_token();
 $notice = $_SESSION['flash'] ?? '';
 unset($_SESSION['flash']);
 
@@ -240,15 +237,7 @@ include 'header.inc';
     <!-- Edit mode: form -->
     <p>Status: <strong><?= show($app['Status']) ?></strong></p>
 
-    <?php if ($errors): ?>
-        <div class="message message-error" role="alert">
-            <ul>
-            <?php foreach ($errors as $err): ?>
-                <li><?= e($err) ?></li>
-            <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
+    <?php show_errors($errors); ?>
 
     <form method="post" action="applicant.php" novalidate="novalidate">
         <input type="hidden" name="token" value="<?= e($token) ?>">

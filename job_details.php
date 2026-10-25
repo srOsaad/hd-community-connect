@@ -3,6 +3,7 @@ require_once "session.inc";
 require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
 require_once "error.inc";
+require_once "jobs.inc";
 
 $page_description = "Full details of a job at Community Connect, including responsibilities and requirements.";
 $current_page = "jobs";
@@ -70,40 +71,13 @@ include("header.inc");
 		echo "<section class='group lists'>";
 
 		// responsibilities list
-		echo "<div class='outline'>" .
-			"<h2 class='coloured'>Key Responsibilities</h2>" .
-			"<ul>";
-		$separated = explode("\n", trim((string) $row["responsibilities"])); // separate text by newline
-		for ($i = 0; $i < count($separated); $i++)
-		{
-			echo "<li>" . show($separated[$i]) . "</li>";
-		}
-		echo "</ul>" .
-		"</div>";
+		job_list("Key Responsibilities", $row["responsibilities"]);
 
 		// essential requirements list
-		echo "<div class='outline'>" .
-			"<h2 class='coloured'>Essential Requirements</h2>" .
-			"<ul>";
-		$separated = explode("\n", trim((string) $row["essential"])); // separate text by newline
-		for ($i = 0; $i < count($separated); $i++)
-		{
-			echo "<li>" . show($separated[$i]) . "</li>";
-		}
-		echo "</ul>" .
-			"</div>";
+		job_list("Essential Requirements", $row["essential"]);
 
 		// preferred requirements list
-		echo "<div class='outline'>" .
-			"<h2 class='coloured'>Preferred Requirements</h2>" .
-			"<ul>";
-		$separated = explode("\n", trim((string) $row["preferred"])); // separate text by newline
-		for ($i = 0; $i < count($separated); $i++)
-		{
-			echo "<li>" . show($separated[$i]) . "</li>";
-		}
-		echo "</ul>" .
-			"</div>";
+		job_list("Preferred Requirements", $row["preferred"]);
 
 		echo "</section>
 			</section>";

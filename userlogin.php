@@ -15,8 +15,6 @@ if (!$conn) {
 }
 
 $error = '';
-$max_attempts = 5;
-$dummy_hash = '$2y$10$E4UH1PSby88iafe4viaiduqs8xxqYnEwXvd2IlIAk6LrRF5ilhA5e';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && !csrf_ok()) {
     $error = 'That request could not be verified. Please try again.';
@@ -24,33 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !csrf_ok()) {
     $application_id = is_string($_POST['application_id'] ?? null) ? trim($_POST['application_id']) : '';
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
 
-    mysqli_begin_transaction($conn);
-    $stmt = mysqli_prepare($conn,
+    $eoi_number = check_login($conn,
         "SELECT u.eoi_number, u.password_hash, u.failed_attempts, u.lockout_until, u.lockout_minutes
-         FROM users u JOIN eoi e ON e.EOInumber = u.eoi_number WHERE e.ApplicationID = ? FOR UPDATE");
-    $found = false;
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "s", $application_id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_bind_result($stmt, $eoi_number, $hash, $attempts, $lock_until, $lock_minutes);
-        $found = (bool) mysqli_stmt_fetch($stmt);
-        mysqli_stmt_close($stmt);
-    }
+         FROM users u JOIN eoi e ON e.EOInumber = u.eoi_number WHERE e.ApplicationID = ? FOR UPDATE",
+        $application_id, "users", "eoi_number", $password);
 
-    $is_locked = $found && $lock_until !== null && strtotime($lock_until) > time();
-
-    if ($is_locked) {
-        $error = failed_login_message('application ID');
-
-    } elseif (password_verify($password, $found ? $hash : $dummy_hash) && $found) {
-        // Correct: clear the failed count and lockout, then log in as a user
-        $stmt = mysqli_prepare($conn,
-            "UPDATE users SET failed_attempts = 0, lockout_until = NULL WHERE eoi_number = ?");
-        mysqli_stmt_bind_param($stmt, "i", $eoi_number);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-        mysqli_commit($conn);
-
+    if ($eoi_number !== null) {
+        // Correct: log in as a user
         session_regenerate_id(true);
         $_SESSION['eoi_id'] = $eoi_number;
         $_SESSION['application_id'] = $application_id;
@@ -58,27 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !csrf_ok()) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         header('Location: applicant.php');
         exit();
-
-    } else {
-        $error = failed_login_message('application ID');
-
-        if ($found) {
-            $attempts = $attempts + 1;
-            $lock_time = null;
-
-            if ($attempts >= $max_attempts) {
-                $lock_time = date('Y-m-d H:i:s', time() + $lock_minutes * 60);
-                $attempts = 0;
-            }
-
-            $stmt = mysqli_prepare($conn,
-                "UPDATE users SET failed_attempts = ?, lockout_until = ? WHERE eoi_number = ?");
-            mysqli_stmt_bind_param($stmt, "isi", $attempts, $lock_time, $eoi_number);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
-        }
     }
-    mysqli_commit($conn);
+    $error = failed_login_message('application ID');
 }
 
 $page_title = 'Check Your Application';

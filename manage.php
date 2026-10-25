@@ -69,10 +69,7 @@ $filter_invalid = count($messages) > 0;
 $is_filtered = $is_filtered || $filter_status !== "" || $filter_invalid;
 
 # CSRF token: forms that change data must send this back
-if (empty($_SESSION["csrf_token"])) {
-    $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
-}
-$token = $_SESSION["csrf_token"];
+$token = csrf_token();
 
 $success = "";
 if (isset($_SESSION["success"])) {
@@ -332,15 +329,7 @@ include "header.inc";
     <p class="message message-success" role="status"><?php echo e($success); ?></p>
 <?php } ?>
 
-<?php if ($messages) { ?>
-    <div class="message message-error" role="alert">
-      <ul>
-<?php foreach ($messages as $message) { ?>
-        <li><?php echo e($message); ?></li>
-<?php } ?>
-      </ul>
-    </div>
-<?php } ?>
+<?php show_errors($messages); ?>
  
 <?php if (!$has_table) { ?>
     <p>No applications have been submitted yet. They will appear here after the first one arrives.</p>

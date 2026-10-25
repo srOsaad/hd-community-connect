@@ -13,15 +13,7 @@ function show_error_page($heading, $messages = [], $back_href = "index.php", $ba
 ?>
   <main id="main">
     <h1><?php echo e($heading); ?></h1>
-<?php if ($messages) { ?>
-    <div class="message message-error" role="alert">
-      <ul>
-<?php foreach ($messages as $message) { ?>
-        <li><?php echo e($message); ?></li>
-<?php } ?>
-      </ul>
-    </div>
-<?php } ?>
+<?php show_errors($messages); ?>
     <div class="group">
       <a class="btn" href="<?php echo e($back_href); ?>"><?php echo e($back_text); ?></a>
 <?php if ($back_href !== "index.php") { ?>

@@ -8,10 +8,7 @@ if (!$conn) {
     show_database_error("manage.php", "Back to Manage");
 }
 
-if (empty($_SESSION["csrf_token"])) {
-    $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
-}
-$token = $_SESSION["csrf_token"];
+$token = csrf_token();
 
 $errors = [];
 $success = "";
@@ -77,15 +74,7 @@ include "header.inc";
     <p class="message message-success" role="status"><?php echo e($success); ?></p>
 <?php } ?>
 
-<?php if ($errors) { ?>
-    <div class="message message-error" role="alert">
-      <ul>
-<?php foreach ($errors as $error) { ?>
-        <li><?php echo e($error); ?></li>
-<?php } ?>
-      </ul>
-    </div>
-<?php } ?>
+<?php show_errors($errors); ?>
 
     <form method="post" action="staffregister.php" novalidate>
       <input type="hidden" name="token" value="<?php echo $token; ?>">
