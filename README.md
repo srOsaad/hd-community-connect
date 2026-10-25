@@ -48,6 +48,7 @@ Shared files: `header.inc`, `nav.inc`, `footer.inc`, `settings.php`, `db_connect
 | Table | Holds |
 | --- | --- |
 | `jobs` | Job listings |
+| `job_requirements` | Each job's responsibilities, essential and preferred requirements |
 | `eoi` | Applications (expressions of interest) |
 | `users` | Applicant logins, one per application |
 | `staff` | HR manager logins |
