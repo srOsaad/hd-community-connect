@@ -11,24 +11,22 @@ $group = null;
 $members = [];
 $contributions = [];
 
-if ($conn) {
-    $result = mysqli_query($conn, "SELECT * FROM group_info LIMIT 1");
-    if ($result) {
-        $group = mysqli_fetch_assoc($result);
-    }
-    
-    $result = mysqli_query($conn, "SELECT * FROM members ORDER BY sort_order");
-    if ($result) {
-        $members = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    }
+$result = mysqli_query($conn, "SELECT * FROM group_info LIMIT 1");
+if ($result) {
+    $group = mysqli_fetch_assoc($result);
+}
 
-    $result = mysqli_query($conn,
-        "SELECT member_id, project_part, description FROM contributions
-         ORDER BY member_id, project_part, contribution_id");
-    if ($result) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $contributions[$row["member_id"]][] = "Part " . $row["project_part"] . ": " . $row["description"];
-        }
+$result = mysqli_query($conn, "SELECT * FROM members ORDER BY sort_order");
+if ($result) {
+    $members = mysqli_fetch_all($result, MYSQLI_ASSOC);
+}
+
+$result = mysqli_query($conn,
+    "SELECT member_id, project_part, description FROM contributions
+     ORDER BY member_id, project_part, contribution_id");
+if ($result) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $contributions[$row["member_id"]][] = "Part " . $row["project_part"] . ": " . $row["description"];
     }
 }
 

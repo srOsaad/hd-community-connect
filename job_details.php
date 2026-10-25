@@ -4,16 +4,12 @@ require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
 require_once "error.inc";
 
-$page_description = "Full job listing.";
+$page_description = "Full details of a job at Community Connect, including responsibilities and requirements.";
 $current_page = "jobs";
 
 $page_style = <<<'CSS'
-    .inline {
-		display: inline;
-	}
-
 	.coloured {
-		color: #1C3872; /*from style.css*/
+		color: var(--brand);
 		font-weight: bold;
 	}
 

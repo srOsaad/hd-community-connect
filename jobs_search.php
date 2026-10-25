@@ -3,6 +3,7 @@ require_once "session.inc";
 require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
 require_once "error.inc";
+require_once "jobs.inc";
 
 if (!$conn)
 {
@@ -31,7 +32,7 @@ $page_style = <<<'CSS'
 	}
 
 	.coloured {
-		color: #1C3872; /*from style.css*/
+		color: var(--brand);
 		font-weight: bold;
 	}
 
@@ -39,7 +40,7 @@ $page_style = <<<'CSS'
 		padding: 1.25rem 1.5rem;
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
-		max-width: 20rem;
+		max-width: 21rem;
 		display: flex;
 		flex-direction: column;
 	}
@@ -87,23 +88,10 @@ include("header.inc");
 		{
 			while ($row = mysqli_fetch_assoc($result))
 			{
-				// only title, reference number, salary, description, and reporting line are shown on this page
-				echo "<section class='outline'>
-					<h2>" . show($row["title"]) . "</h2>
-					<p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
-					<p>" . show($row["description"]) . "</p>
-					<p>" . show($row["reporting_line"]) . "</p>";
-
-					// button is a form so the job reference can by sent via get
-					echo "<form method='get' action='job_details.php'>" .
-						"<input type='hidden' name='reference' value='" . e($row["reference"]) . "'>" .
-						"<input class='btn' type='submit' value='Read More'>" .
-						"</form>";
-
-					echo "</section>";
-				}
+				job_card($row);
 			}
-			else echo "<p>No job listings found. Search for something else or check back later.</p>"; // if db connected, but no listings
+		}
+		else echo "<p>No job listings found. Search for something else or check back later.</p>"; // if db connected, but no listings
 
 		echo "</div>";
 		mysqli_stmt_close($stmt);

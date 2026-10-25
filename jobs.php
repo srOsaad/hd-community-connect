@@ -3,6 +3,7 @@ require_once "session.inc";
 require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
 require_once "error.inc";
+require_once "jobs.inc";
 
 if (!$conn)
 {
@@ -19,7 +20,7 @@ $page_style = <<<'CSS'
 	}
 
 	.coloured {
-		color: #1C3872; /*from style.css*/
+		color: var(--brand);
 		font-weight: bold;
 	}
 
@@ -31,7 +32,7 @@ $page_style = <<<'CSS'
 		display: flex;
 		flex-direction: column;
 	}
-	
+
 	.outline form {
 		margin-top: auto;
 	}
@@ -47,7 +48,7 @@ include("header.inc");
 
 	<!-- search bar -->
 	<form method="get" action="jobs_search.php" class="inline">
-		<label for="search">Search for a job listing</label>
+		<label for="search">Search for a job title</label>
 		<input type="text" name="search" id="search" required>
 		<input class="btn" style="width: 8em" type="submit" value="Search">
 	</form>
@@ -59,34 +60,17 @@ include("header.inc");
 	<div class="group" style="gap: 2rem;/*overriding style.css*/">
 
 		<?php
-		if ($conn)
+		$query = "SELECT * FROM jobs ORDER BY reference"; // retrieve all job listing
+		$result = mysqli_query($conn, $query);
+
+		if ($result && mysqli_num_rows($result) > 0)
 		{
-			$query = "SELECT * FROM jobs ORDER BY reference"; // retrieve all job listing
-			$result = mysqli_query($conn, $query);
-
-			if ($result && mysqli_num_rows($result) > 0)
+			while ($row = mysqli_fetch_assoc($result))
 			{
-				while ($row = mysqli_fetch_assoc($result))
-				{
-					// only title, reference number, salary, description, and reporting line are shown on this page
-					echo "<section class='outline'>
-						<h2>" . show($row["title"]) . "</h2>
-						<p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
-						<p>" . show($row["description"]) . "</p>
-						<p>" . show($row["reporting_line"]) . "</p>";
-
-					// button is a form so the job reference can by sent via get
-					echo "<form method='get' action='job_details.php'>" .
-						"<input type='hidden' name='reference' value='" . e($row["reference"]) . "'>" .
-						"<input class='btn' type='submit' value='Read More'>" .
-						"</form>";
-
-					echo "</section>";
-				}
+				job_card($row);
 			}
-			else echo "<p>There are no jobs at the moment...</p>"; // if db connected, but no listings
 		}
-
+		else echo "<p>There are no jobs at the moment.</p>"; // if db connected, but no listings
 		?>
 
 	</div>

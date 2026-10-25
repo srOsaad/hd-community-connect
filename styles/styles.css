@@ -1,4 +1,4 @@
-/* Global values to use below mostly inspired by the page refered */
+/* Global values to use below mostly inspired by the page referred */
 
 :root {
   --brand:          #1C3872;   /* navy: header, headings, buttons */
@@ -31,7 +31,7 @@
 }
 
 
-/* Reseting default config */
+/* Resetting default config */
 
 /* Predictable box sizing */
 * {
@@ -58,7 +58,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-image: url("images/logo.png");
+  background-image: url("../images/logo.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 320px;
@@ -198,7 +198,7 @@ main:focus {
   font-weight: 700;
 }
 
-/* Links in a row — always expanded, hamburger only shows up under 40em */
+/* Links in a row; the hamburger only shows up at 760px and below */
 .site-nav ul {
   display: flex;
   flex-wrap: wrap;
@@ -351,7 +351,7 @@ textarea {
 /* Taller, vertical resize only */
 textarea {
   min-height: 8rem;
-  resize: both;
+  resize: vertical;
 }
 
 input[type="submit"],
@@ -541,7 +541,7 @@ input[type="checkbox"] {
   }
 }
 
-/* Reponses from and within 760px */
+/* Responses at 760px and below */
 
 @media (max-width: 47.5em) {
   /* Smaller logo */

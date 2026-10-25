@@ -12,8 +12,8 @@ $application_id = $_SESSION['application_id'] ?? "";
 unset($_SESSION['apply_success'], $_SESSION['first_name']);
 
 $page_title = "Success";
-$page_description = "Community Connect is a not-for-profit supporting community programs, volunteer registration, events, donations and access to support resources.";
-$current_page = "Success apply page";
+$page_description = "Your Community Connect job application has been received.";
+$current_page = "apply";
 
 include "header.inc";
 ?>

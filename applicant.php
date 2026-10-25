@@ -1,6 +1,6 @@
 <?php
 // applicant.php - shows ONE applicant's own row from the eoi table.
-//   Default view -> data shown as headings + paragraphs, with an Edit button
+//   Default view -> details list, with an Edit button
 //                   (no button when Current or Final)
 //   ?edit=1      -> editable form with Save / Cancel
 
@@ -9,8 +9,6 @@ require_once 'session.inc';
 require_once 'db_connect.inc';   // $conn
 require_once 'functions.inc';    // clean_input(), e()
 require_once 'error.inc';
-
-    
 
 $genders = ['Male', 'Female', 'Other'];
 $states  = ['VIC', 'NSW', 'QLD', 'NT', 'WA', 'SA', 'TAS', 'ACT'];
@@ -64,80 +62,72 @@ if (!$app) {
 
 // Job title for the page heading (JobReference in eoi = reference in jobs)
 $job_title = '';
-if ($app) {
-    $stmt = mysqli_prepare($conn, 'SELECT title FROM jobs WHERE reference = ?');
-    $jn = $app['JobReference'];
-    mysqli_stmt_bind_param($stmt, 's', $jn);
-    mysqli_stmt_execute($stmt);
-    $job = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-    mysqli_stmt_close($stmt);
-    $job_title = $job['title'] ?? '';
+$stmt = mysqli_prepare($conn, 'SELECT title FROM jobs WHERE reference = ?');
+$jn = $app['JobReference'];
+mysqli_stmt_bind_param($stmt, 's', $jn);
+mysqli_stmt_execute($stmt);
+$job = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
+$job_title = $job['title'] ?? '';
+
+$locked = in_array($app['Status'], ['Current', 'Final'], true);    // only Current,Final can't be edited
+
+$form = $app;
+$form['Skills'] = $app['Skills'] === '' ? [] : explode(',', $app['Skills']);
+
+// Edit mode is only available when not locked
+$editing = !$locked && (isset($_GET['edit']) || $_SERVER['REQUEST_METHOD'] === 'POST');
+
+if ($locked && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $locked_notice = 'Your changes were not saved because your application is now ' . strtolower($app['Status']) . '.';
 }
 
-$editing = false;
-
-if ($app) {
-    $locked = in_array($app['Status'], ['Current', 'Final'], true);    // only Current,Final can't be edited
-
-    $form = $app;
-    $form['Skills'] = $app['Skills'] === '' ? [] : explode(',', $app['Skills']);
-
-    // Edit mode is only available when not locked
-    if (!$locked && (isset($_GET['edit']) || $_SERVER['REQUEST_METHOD'] === 'POST')) {
-        $editing = true;
+// Save
+if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $sent_token = is_string($_POST['token'] ?? null) ? $_POST['token'] : '';
+    if (!hash_equals($token, $sent_token)) {
+        $errors[] = 'That request could not be verified. Please try again.';
     }
 
-    if ($locked && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $locked_notice = 'Your changes were not saved because your application is now ' . strtolower($app['Status']) . '.';
+    foreach (['FirstName','LastName','DOB','Gender','StreetAddress','Suburb',
+              'State','Postcode','Email','Phone','OtherSkills'] as $f) {
+        $form[$f] = post_value($f);
+    }
+    $form['Skills'] = allowed_skills($_POST['Skills'] ?? []);
+
+    $d = DateTime::createFromFormat('!Y-m-d', $form['DOB']);
+    if ($d && $d->format('Y-m-d') !== $form['DOB']) {
+        $d = null;
     }
 
-    // Save
-    if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $sent_token = is_string($_POST['token'] ?? null) ? $_POST['token'] : '';
-        if (!hash_equals($token, $sent_token)) {
-            $errors[] = 'That request could not be verified. Please try again.';
+    $errors = array_merge($errors, validate_application([
+        'first_name' => $form['FirstName'], 'last_name' => $form['LastName'],
+        'dob' => $d ?: null, 'dob_message' => 'Please enter a valid date of birth.',
+        'gender' => $form['Gender'], 'street' => $form['StreetAddress'], 'suburb' => $form['Suburb'],
+        'state' => $form['State'], 'postcode' => $form['Postcode'], 'email' => $form['Email'],
+        'phone' => $form['Phone'], 'skills' => $form['Skills'], 'other_skills' => $form['OtherSkills'],
+    ]));
+
+    if (!$errors) {
+        $skills = implode(',', $form['Skills']);
+        // Status is re-checked in SQL, so a Current application can't be changed
+        $stmt = mysqli_prepare($conn,
+            "UPDATE eoi SET FirstName=?, LastName=?, DOB=?, Gender=?, StreetAddress=?, Suburb=?,
+                    State=?, Postcode=?, Email=?, Phone=?, Skills=?, OtherSkills=?
+             WHERE EOInumber=? AND Status NOT IN ('Current', 'Final')");
+        mysqli_stmt_bind_param($stmt, 'ssssssssssssi',
+            $form['FirstName'], $form['LastName'], $form['DOB'], $form['Gender'],
+            $form['StreetAddress'], $form['Suburb'], $form['State'], $form['Postcode'],
+            $form['Email'], $form['Phone'], $skills, $form['OtherSkills'], $id);
+        $ok = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        if ($ok) {
+            $_SESSION['flash'] = 'Your application has been updated.';
+            header('Location: applicant.php');
+            exit;
         }
-
-        foreach (['FirstName','LastName','DOB','Gender','StreetAddress','Suburb',
-                  'State','Postcode','Email','Phone','OtherSkills'] as $f) {
-            $form[$f] = post_value($f);
-        }
-        $form['Skills'] = allowed_skills($_POST['Skills'] ?? []);
-
-        $d = DateTime::createFromFormat('!Y-m-d', $form['DOB']);
-        if ($d && $d->format('Y-m-d') !== $form['DOB']) {
-            $d = null;
-        }
-
-        $errors = array_merge($errors, validate_application([
-            'first_name' => $form['FirstName'], 'last_name' => $form['LastName'],
-            'dob' => $d ?: null, 'dob_message' => 'Please enter a valid date of birth.',
-            'gender' => $form['Gender'], 'street' => $form['StreetAddress'], 'suburb' => $form['Suburb'],
-            'state' => $form['State'], 'postcode' => $form['Postcode'], 'email' => $form['Email'],
-            'phone' => $form['Phone'], 'skills' => $form['Skills'], 'other_skills' => $form['OtherSkills'],
-        ]));
-
-        if (!$errors) {
-            $skills = implode(',', $form['Skills']);
-            // Status is re-checked in SQL, so a Current application can't be changed
-            $stmt = mysqli_prepare($conn,
-                "UPDATE eoi SET FirstName=?, LastName=?, DOB=?, Gender=?, StreetAddress=?, Suburb=?,
-                        State=?, Postcode=?, Email=?, Phone=?, Skills=?, OtherSkills=?
-                 WHERE EOInumber=? AND Status NOT IN ('Current', 'Final')");
-            mysqli_stmt_bind_param($stmt, 'ssssssssssssi',
-                $form['FirstName'], $form['LastName'], $form['DOB'], $form['Gender'],
-                $form['StreetAddress'], $form['Suburb'], $form['State'], $form['Postcode'],
-                $form['Email'], $form['Phone'], $skills, $form['OtherSkills'], $id);
-            $ok = mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
-
-            if ($ok) {
-                $_SESSION['flash'] = 'Your application has been updated.';
-                header('Location: applicant.php');
-                exit;
-            }
-            $errors[] = 'Sorry, we could not save your changes. Please try again later.';
-        }
+        $errors[] = 'Sorry, we could not save your changes. Please try again later.';
     }
 }
 

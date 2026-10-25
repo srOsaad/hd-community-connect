@@ -31,7 +31,7 @@ if (isset($_GET['reference']) && is_string($_GET['reference'])) {
 
 
 $page_title = "Apply";
-$page_description = "Community Connect is a not-for-profit supporting community programs, volunteer registration, events, donations and access to support resources.";
+$page_description = "Apply for a position at Community Connect.";
 $current_page = "apply";
 
 // Embedded CSS for this page (Part 1 requirement: embedded CSS on every page)

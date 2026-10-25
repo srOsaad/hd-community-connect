@@ -1,7 +1,7 @@
 <?php
 /*
 footer.inc: shared site footer and closing tags for every page.
-For team: Add anything you didn't make itself to the acknowledgements below.
+For team: Add anything you didn't make yourself to the acknowledgements below.
 */
 ?>
   <!-- Footer : project links, contact and acknowledgements -->

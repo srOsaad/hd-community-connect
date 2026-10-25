@@ -92,13 +92,10 @@ $page_url = "manage.php?" . http_build_query([
 ]);
 
 # The eoi table only exists after the first application is sent, so check for it first
-$has_table = false;
-if ($conn) {
-    $check = mysqli_query($conn, "SHOW TABLES LIKE 'eoi'");
-    $has_table = $check && mysqli_num_rows($check) > 0;
-}
+$check = mysqli_query($conn, "SHOW TABLES LIKE 'eoi'");
+$has_table = $check && mysqli_num_rows($check) > 0;
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table && field($_POST, "action") === "update_status") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && field($_POST, "action") === "update_status") {
     $eoi_number = (int) field($_POST, "eoi_number");
     $new_status = field($_POST, "status");
 
@@ -141,7 +138,7 @@ $delete_job = "";
 $delete_count = 0;
 
 $action = field($_POST, "action");
-if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table && ($action === "confirm_delete" || $action === "delete")) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && ($action === "confirm_delete" || $action === "delete")) {
     $job_ref = strtoupper(field($_POST, "job_ref"));
 
     if (!hash_equals($token, field($_POST, "token"))) {
@@ -178,10 +175,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table && ($action ===
     }
 }
 
-# Get the applications, oldest first. Each filled search box adds a condition,
-# and the values go in as ? placeholders so they can't change the SQL
 $status_counts = array_fill_keys($statuses, 0);
-if ($conn && $has_table) {
+if ($has_table) {
     $result = mysqli_query($conn, "SELECT Status, COUNT(*) AS total FROM eoi GROUP BY Status");
     if ($result) {
         while ($count_row = mysqli_fetch_assoc($result)) {
@@ -191,8 +186,10 @@ if ($conn && $has_table) {
 }
 $total_count = array_sum($status_counts);
 
+# Get the applications, oldest first. Each filled search box adds a condition,
+# and the values go in as ? placeholders so they can't change the SQL
 $eois = [];
-if ($conn && $has_table && !$filter_invalid) {
+if ($has_table && !$filter_invalid) {
     $conditions = [];
     $types = "";
     $params = [];
