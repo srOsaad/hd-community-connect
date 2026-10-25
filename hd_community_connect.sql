@@ -52,7 +52,6 @@ CREATE TABLE `eoi` (
   PRIMARY KEY (`EOInumber`),
   UNIQUE KEY `ApplicationID` (`ApplicationID`),
   UNIQUE KEY `job_email` (`JobReference`,`Email`),
-  KEY `fk_eoi_job` (`JobReference`),
   KEY `FirstName` (`FirstName`),
   KEY `LastName` (`LastName`),
   KEY `Status` (`Status`),

@@ -145,7 +145,7 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     INDEX (FirstName),
     INDEX (LastName),
     INDEX (Status),
-    FOREIGN KEY (JobReference) REFERENCES jobs(reference) ON UPDATE CASCADE
+    CONSTRAINT fk_eoi_job FOREIGN KEY (JobReference) REFERENCES jobs(reference) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 $create_users_sql = "CREATE TABLE IF NOT EXISTS users (
     eoi_number       INT UNSIGNED NOT NULL PRIMARY KEY,
