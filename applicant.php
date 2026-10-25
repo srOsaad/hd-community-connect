@@ -79,16 +79,30 @@ if ($app) {
         $form['Skills'] = array_values(array_intersect($skill_options, (array) ($_POST['Skills'] ?? [])));
 
         $d = DateTime::createFromFormat('Y-m-d', $form['DOB']);
-        if (!preg_match("/^[\p{L}' -]{1,20}$/u", $form['FirstName'])) $errors[] = 'First name: letters only, max 20 characters.';
-        if (!preg_match("/^[\p{L}' -]{1,20}$/u", $form['LastName']))  $errors[] = 'Last name: letters only, max 20 characters.';
-        if (!$d || $d->format('Y-m-d') !== $form['DOB'] || $d > new DateTime('today')) $errors[] = 'Please enter a valid date of birth.';
+        if (!preg_match('/^[A-Za-z\s]{1,20}$/', $form['FirstName'])) $errors[] = 'First name must be 1-20 letters only.';
+        if (!preg_match('/^[A-Za-z\s]{1,20}$/', $form['LastName']))  $errors[] = 'Last name must be 1-20 letters only.';
+        if (!$d || $d->format('Y-m-d') !== $form['DOB'] || $d > new DateTime('today')) {
+            $errors[] = 'Please enter a valid date of birth.';
+        } else {
+            $age = $d->diff(new DateTime('today'))->y;
+            if ($age < 15 || $age > 80) $errors[] = 'Applicants must be aged between 15 and 80.';
+        }
         if (!in_array($form['Gender'], $genders, true)) $errors[] = 'Please choose a gender.';
         if ($form['StreetAddress'] === '' || mb_strlen($form['StreetAddress']) > 40) $errors[] = 'Street address is required (max 40 characters).';
         if ($form['Suburb'] === '' || mb_strlen($form['Suburb']) > 40) $errors[] = 'Suburb/town is required (max 40 characters).';
         if (!in_array($form['State'], $states, true)) $errors[] = 'Please choose a valid state.';
-        if (!preg_match('/^\d{4}$/', $form['Postcode'])) $errors[] = 'Postcode must be exactly 4 digits.';
+        $postcode_starts = [
+            'VIC' => ['3', '8'], 'NSW' => ['1', '2'], 'QLD' => ['4', '9'], 'NT' => ['0'],
+            'WA'  => ['6'],      'SA'  => ['5'],      'TAS' => ['7'],      'ACT' => ['0', '2'],
+        ];
+        if (!preg_match('/^\d{4}$/', $form['Postcode'])) {
+            $errors[] = 'Postcode must be exactly 4 digits.';
+        } elseif (isset($postcode_starts[$form['State']]) && !in_array($form['Postcode'][0], $postcode_starts[$form['State']], true)) {
+            $errors[] = 'Postcode does not match the selected state.';
+        }
         if (!filter_var(html_entity_decode($form['Email'], ENT_QUOTES, 'UTF-8'), FILTER_VALIDATE_EMAIL) || strlen($form['Email']) > 150) $errors[] = 'Please enter a valid email address.';
         if (!preg_match('/^\d{10}$/', $form['Phone'])) $errors[] = 'Phone must be exactly 10 digits.';
+        if (!$form['Skills'] && $form['OtherSkills'] === '') $errors[] = 'Please select at least one skill, or describe your skills in the other skills box.';
         if (mb_strlen($form['OtherSkills']) > 1000) $errors[] = 'Other skills: max 1000 characters.';
 
         if (!$errors) {
