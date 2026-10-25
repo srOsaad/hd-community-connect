@@ -538,6 +538,28 @@ input[type="checkbox"] {
   font-size: var(--step--1);
 }
 
+.coloured {
+  color: var(--brand);
+  font-weight: bold;
+}
+
+.outline {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+
+.job-card {
+  display: flex;
+  flex-direction: column;
+  max-width: 21rem;
+  margin: 0;
+}
+
+.job-card form {
+  margin-top: auto;
+}
+
 
 @media (min-width: 47.5625em) and (max-width: 60em) {
   .brand-name {

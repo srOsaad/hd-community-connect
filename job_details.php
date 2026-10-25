@@ -8,18 +8,6 @@ $page_description = "Full details of a job at Community Connect, including respo
 $current_page = "jobs";
 
 $page_style = <<<'CSS'
-	.coloured {
-		color: var(--brand);
-		font-weight: bold;
-	}
-
-	.outline {
-		padding: 1.25rem 1.5rem;
-		border: 1px solid var(--border-strong);
-		border-radius: var(--radius);
-		min-width: min(21rem, 100%);
-	}
-
 	.lists {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));

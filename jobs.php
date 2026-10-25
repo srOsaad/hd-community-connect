@@ -40,25 +40,6 @@ $page_style = <<<'CSS'
 	.job-tools input[type='text'] {
 		flex: 1 1 14rem;
 	}
-
-	.coloured {
-		color: var(--brand);
-		font-weight: bold;
-	}
-
-	.outline {
-		padding: 1.25rem 1.5rem;
-		border: 1px solid var(--border-strong);
-		border-radius: var(--radius);
-		max-width: 21rem;
-		margin: 0;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.outline form {
-		margin-top: auto;
-	}
 CSS;
 
 include("header.inc");
