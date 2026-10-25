@@ -3,21 +3,26 @@ require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
 
 function render_page($title, $heading, $messages, $is_error) {
-    echo "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>$title</title></head><body>";
-    echo "<h1>$heading</h1>";
+    $page_title = $title;
+    $page_description = "Community Connect job application.";
+    $current_page = "apply";
+    include "header.inc";
+    echo "<main id=\"main\">";
+    echo "<h1>" . e($heading) . "</h1>";
     if ($is_error) {
-        echo "<ul style='color:red;'>";
+        echo "<div class=\"message message-error\" role=\"alert\"><ul>";
         foreach ($messages as $msg) {
             echo "<li>" . e($msg) . "</li>";
         }
-        echo "</ul>";
+        echo "</ul></div>";
     } else {
         foreach ($messages as $msg) {
             echo "<p>" . e($msg) . "</p>";
         }
     }
-    echo "<p><a href='apply.php'>Return to application form</a></p>";
-    echo "</body></html>";
+    echo "<p><a class=\"btn\" href=\"apply.php\">Return to application form</a></p>";
+    echo "</main>";
+    include "footer.inc";
 }
 
 function make_application_id() {

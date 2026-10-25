@@ -6,8 +6,8 @@ $error = '';
 $max_attempts = 5;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $application_id = trim((string) ($_POST['application_id'] ?? ''));
-    $password = (string) ($_POST['password'] ?? '');
+    $application_id = is_string($_POST['application_id'] ?? null) ? trim($_POST['application_id']) : '';
+    $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
 
     if (!$conn) {
         $error = $db_error_message;

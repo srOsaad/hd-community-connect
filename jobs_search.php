@@ -40,9 +40,14 @@ include("header.inc");
 
 	<?php
 
-	if ($conn && isset($_GET["search"]))
+	$search = isset($_GET["search"]) ? clean_input($_GET["search"]) : "";
+
+	if ($conn && $search === "")
 	{
-		$search = clean_input($_GET["search"]);
+		echo "<p>Enter a job title in the search box on the <a href='jobs.php'>jobs page</a>.</p>";
+	}
+	elseif ($conn)
+	{
 		$like = "%" . $search . "%";
 		$stmt = mysqli_prepare($conn, "SELECT * FROM jobs WHERE title LIKE ? ORDER BY reference"); // retrieve job listings based on search from user
 		mysqli_stmt_bind_param($stmt, "s", $like);

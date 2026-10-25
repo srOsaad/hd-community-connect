@@ -5,6 +5,9 @@ Helps with a safety check of data transfer between frontend and backend
 
 # Clean user input (form or URL): trim, strip slashes, escape HTML.
 function clean_input($data) {
+    if (!is_string($data)) {
+        return "";
+    }
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data, ENT_QUOTES, "UTF-8");

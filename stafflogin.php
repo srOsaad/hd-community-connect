@@ -6,8 +6,8 @@ $error = '';
 $max_attempts = 5;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
+    $username = is_string($_POST['username'] ?? null) ? trim($_POST['username']) : '';
+    $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
 
     if (!$conn) {
         $error = $db_error_message;

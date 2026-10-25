@@ -108,9 +108,7 @@ if ($app) {
 
 $page_title = 'Your Application';
 $page_description = 'Check the status of your Community Connect job application.';
-include 'header.inc';
-?>
-<style>
+$page_style = <<<'CSS'
     html { height: 100%; }
     body { min-height: 100vh; display: flex; flex-direction: column; margin: 0; }
     main { flex: 1 0 auto; }
@@ -124,7 +122,9 @@ include 'header.inc';
         box-shadow: 0 0 0 2px rgba(26, 58, 110, 0.2);
     }
     input.static { pointer-events: none; cursor: default; }
-</style>
+CSS;
+include 'header.inc';
+?>
 <main id="main">
     <h1>Your Application<?= $job_title !== '' ? ' for ' . e($job_title) : '' ?></h1>
 
