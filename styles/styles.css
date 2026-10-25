@@ -370,6 +370,14 @@ input[type="checkbox"] {
   margin-bottom: 1.25rem;
 }
 
+fieldset.field > label:not(.choice) {
+  margin-top: 1rem;
+}
+
+fieldset.field > label:first-of-type {
+  margin-top: 0;
+}
+
 /* for radio label */
 .choice {
   display: flex;

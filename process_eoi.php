@@ -2,19 +2,11 @@
 require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you post_value() and validate_application()
 require_once "error.inc";
+require_once "application_form.inc";
 require_once "session.inc";
 
 function keep_form_values() {
-    $fields = ['job_reference_number', 'first_name', 'last_name', 'DateOfBirth', 'Gender', 'streetaddress',
-               'suburb_town', 'state', 'postcode', 'email', 'phone', 'Other_skill'];
-    $old = [];
-    foreach ($fields as $field) {
-        if (isset($_POST[$field]) && is_string($_POST[$field])) {
-            $old[$field] = $_POST[$field];
-        }
-    }
-    $old['skills'] = allowed_skills($_POST['skills'] ?? []);
-    $_SESSION['apply_old'] = $old;
+    $_SESSION['apply_old'] = sent_form_values();
 }
 
 function show_application_error($messages, $status = 400) {
@@ -62,18 +54,7 @@ if (!$conn) {
 $job_ref     = strtoupper(post_value('job_reference_number'));
 $password    = is_string($_POST['password'] ?? null) ? $_POST['password'] : "";
 $confirm     = is_string($_POST['confirm_password'] ?? null) ? $_POST['confirm_password'] : "";
-$first_name  = post_value('first_name');
-$last_name   = post_value('last_name');
-$DOB         = post_value('DateOfBirth');
-$gender      = post_value('Gender');
-$street      = post_value('streetaddress');
-$suburb      = post_value('suburb_town');
-$state       = strtoupper(post_value('state'));
-$postcode    = post_value('postcode');
-$email       = post_value('email');
-$phone       = post_value('phone');
-$other_skill = post_value('Other_skill');
-$skills_arr  = allowed_skills($_POST['skills'] ?? []);
+$form        = read_application_form();
 
 // Validate
 $errors = [];
@@ -96,21 +77,7 @@ if (!$job_exists) {
     $errors[] = "Please select a valid job.";
 }
 
-// DOB: dd/mm/yyyy and a real date (the age is checked in validate_application)
-$dob_date = null;
-$dob_sql = null;
-if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#D', $DOB, $m) && checkdate((int) $m[2], (int) $m[1], (int) $m[3])) {
-    $dob_sql = "$m[3]-$m[2]-$m[1]";
-    $dob_date = DateTime::createFromFormat('!Y-m-d', $dob_sql);
-}
-
-$errors = array_merge($errors, validate_application([
-    'first_name' => $first_name, 'last_name' => $last_name,
-    'dob' => $dob_date, 'dob_message' => "Date of birth must be a valid date in the format DD/MM/YYYY.",
-    'gender' => $gender, 'street' => $street, 'suburb' => $suburb,
-    'state' => $state, 'postcode' => $postcode, 'email' => $email, 'phone' => $phone,
-    'skills' => $skills_arr, 'other_skills' => $other_skill,
-]));
+$errors = array_merge($errors, validate_application($form));
 
 $password_error = validate_password($password, $confirm);
 if ($password_error !== "") {
@@ -158,7 +125,7 @@ if (!mysqli_query($conn, $create_sql) || !mysqli_query($conn, $create_users_sql)
 }
 
 // Save the application
-$skills_str = implode(",", $skills_arr);   // SET needs commas with no spaces
+$skills_str = implode(",", $form["skills"]);   // SET needs commas with no spaces
 
 $stmt = mysqli_prepare($conn,
     "INSERT INTO eoi (ApplicationID, JobReference, FirstName, LastName, DOB, Gender, StreetAddress, Suburb,
@@ -170,13 +137,14 @@ if (!$stmt) {
 
 $application_id = "";
 mysqli_stmt_bind_param($stmt, "ssssssssssssss",
-    $application_id, $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
-    $state, $postcode, $email, $phone, $skills_str, $other_skill);
+    $application_id, $job_ref, $form["first_name"], $form["last_name"], $form["dob_sql"], $form["gender"],
+    $form["street"], $form["suburb"], $form["state"], $form["postcode"], $form["email"], $form["phone"],
+    $skills_str, $form["other_skills"]);
 
 mysqli_begin_transaction($conn);
 
 $dup_stmt = db_prepare($conn, "SELECT 1 FROM eoi WHERE JobReference = ? AND Email = ? FOR UPDATE");
-mysqli_stmt_bind_param($dup_stmt, "ss", $job_ref, $email);
+mysqli_stmt_bind_param($dup_stmt, "ss", $job_ref, $form["email"]);
 mysqli_stmt_execute($dup_stmt);
 mysqli_stmt_store_result($dup_stmt);
 $already_applied = mysqli_stmt_num_rows($dup_stmt) > 0;
@@ -228,7 +196,7 @@ if ($saved) {
     session_regenerate_id(true);
     unset($_SESSION['apply_old']);
     $_SESSION['apply_success'] = true;
-    $_SESSION['first_name'] = $first_name;
+    $_SESSION['first_name'] = $form["first_name"];
     $_SESSION['eoi_id'] = $new_eoi_id;
     $_SESSION['applicant_last_activity'] = time();
     $_SESSION['application_id'] = $application_id;

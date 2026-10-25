@@ -9,10 +9,7 @@ require_once 'session.inc';
 require_once 'db_connect.inc';   // $conn
 require_once 'functions.inc';    // post_value(), e(), show()
 require_once 'error.inc';
-
-$genders = gender_options();
-$states  = state_options();
-$skill_options = skill_options();
+require_once 'application_form.inc';
 
 $errors = [];
 $locked_notice = '';
@@ -68,8 +65,14 @@ $job_title = $job['title'] ?? '';
 
 $locked = in_array($app['Status'], locked_statuses(), true);    // only Current,Final can't be edited
 
-$form = $app;
-$form['Skills'] = $app['Skills'] === '' ? [] : explode(',', $app['Skills']);
+$values = [];
+foreach (['first_name' => 'FirstName', 'last_name' => 'LastName', 'Gender' => 'Gender', 'streetaddress' => 'StreetAddress',
+          'suburb_town' => 'Suburb', 'state' => 'State', 'postcode' => 'Postcode', 'email' => 'Email',
+          'phone' => 'Phone', 'Other_skill' => 'OtherSkills'] as $key => $column) {
+    $values[$key] = html_entity_decode((string) $app[$column], ENT_QUOTES, 'UTF-8');
+}
+$values['DateOfBirth'] = date('d/m/Y', strtotime($app['DOB']));
+$values['skills'] = $app['Skills'] === '' ? [] : explode(',', $app['Skills']);
 
 // Edit mode is only available when not locked
 $editing = !$locked && (isset($_GET['edit']) || $_SERVER['REQUEST_METHOD'] === 'POST');
@@ -80,35 +83,18 @@ if ($locked && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Save
 if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $values = sent_form_values();
+    $form = read_application_form();
+
     if (!csrf_ok()) {
         $errors[] = 'That request could not be verified. Please try again.';
-    }
-
-    foreach (['FirstName','LastName','DOB','Gender','StreetAddress','Suburb',
-              'State','Postcode','Email','Phone','OtherSkills'] as $f) {
-        $form[$f] = post_value($f);
-    }
-    $form['State'] = strtoupper($form['State']);
-    $form['Skills'] = allowed_skills($_POST['Skills'] ?? []);
-
-    $d = DateTime::createFromFormat('!Y-m-d', $form['DOB']);
-    if ($d && $d->format('Y-m-d') !== $form['DOB']) {
-        $d = null;
-    }
-
-    if (!$errors) {
-        $errors = validate_application([
-            'first_name' => $form['FirstName'], 'last_name' => $form['LastName'],
-            'dob' => $d ?: null, 'dob_message' => 'Please enter a valid date of birth.',
-            'gender' => $form['Gender'], 'street' => $form['StreetAddress'], 'suburb' => $form['Suburb'],
-            'state' => $form['State'], 'postcode' => $form['Postcode'], 'email' => $form['Email'],
-            'phone' => $form['Phone'], 'skills' => $form['Skills'], 'other_skills' => $form['OtherSkills'],
-        ]);
+    } else {
+        $errors = validate_application($form);
     }
 
     if (!$errors) {
         $stmt = db_prepare($conn, 'SELECT 1 FROM eoi WHERE JobReference = ? AND Email = ? AND EOInumber <> ?');
-        mysqli_stmt_bind_param($stmt, 'ssi', $app['JobReference'], $form['Email'], $id);
+        mysqli_stmt_bind_param($stmt, 'ssi', $app['JobReference'], $form['email'], $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
         $email_taken = mysqli_stmt_num_rows($stmt) > 0;
@@ -120,16 +106,16 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
-        $skills = implode(',', $form['Skills']);
+        $skills = implode(',', $form['skills']);
         // Status is re-checked in SQL, so a Current application can't be changed
         $stmt = db_prepare($conn,
             "UPDATE eoi SET FirstName=?, LastName=?, DOB=?, Gender=?, StreetAddress=?, Suburb=?,
                     State=?, Postcode=?, Email=?, Phone=?, Skills=?, OtherSkills=?
              WHERE EOInumber=? AND Status NOT IN ('Current', 'Final')");
         mysqli_stmt_bind_param($stmt, 'ssssssssssssi',
-            $form['FirstName'], $form['LastName'], $form['DOB'], $form['Gender'],
-            $form['StreetAddress'], $form['Suburb'], $form['State'], $form['Postcode'],
-            $form['Email'], $form['Phone'], $skills, $form['OtherSkills'], $id);
+            $form['first_name'], $form['last_name'], $form['dob_sql'], $form['gender'],
+            $form['street'], $form['suburb'], $form['state'], $form['postcode'],
+            $form['email'], $form['phone'], $skills, $form['other_skills'], $id);
         $ok = mysqli_stmt_execute($stmt);
         $duplicate_email = !$ok && mysqli_stmt_errno($stmt) === 1062;
         $changed = mysqli_stmt_affected_rows($stmt);
@@ -266,69 +252,8 @@ include 'header.inc';
             <label for="JobReference">Job reference</label>
             <input type="text" id="JobReference" class="static" value="<?= show($app['JobReference']) ?>" readonly>
         </div>
-        <div class="field">
-            <label for="FirstName">First name</label>
-            <input type="text" id="FirstName" name="FirstName" maxlength="20" value="<?= show($form['FirstName']) ?>">
-        </div>
-        <div class="field">
-            <label for="LastName">Last name</label>
-            <input type="text" id="LastName" name="LastName" maxlength="20" value="<?= show($form['LastName']) ?>">
-        </div>
-        <div class="field">
-            <label for="DOB">Date of birth</label>
-            <input type="date" id="DOB" name="DOB" value="<?= show($form['DOB']) ?>">
-        </div>
-        <div class="field">
-            <label for="Gender">Gender</label>
-            <select id="Gender" name="Gender">
-                <?php foreach ($genders as $g): ?>
-                    <option value="<?= $g ?>"<?= $form['Gender'] === $g ? ' selected' : '' ?>><?= $g ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="field">
-            <label for="StreetAddress">Street address</label>
-            <input type="text" id="StreetAddress" name="StreetAddress" maxlength="40" value="<?= show($form['StreetAddress']) ?>">
-        </div>
-        <div class="field">
-            <label for="Suburb">Suburb or town</label>
-            <input type="text" id="Suburb" name="Suburb" maxlength="40" value="<?= show($form['Suburb']) ?>">
-        </div>
-        <div class="field">
-            <label for="State">State</label>
-            <select id="State" name="State">
-                <?php foreach ($states as $s): ?>
-                    <option value="<?= $s ?>"<?= $form['State'] === $s ? ' selected' : '' ?>><?= $s ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="field">
-            <label for="Postcode">Postcode</label>
-            <input type="text" id="Postcode" name="Postcode" maxlength="4" value="<?= show($form['Postcode']) ?>">
-        </div>
-        <div class="field">
-            <label for="Email">Email</label>
-            <input type="text" id="Email" name="Email" maxlength="150" value="<?= show($form['Email']) ?>">
-        </div>
-        <div class="field">
-            <label for="Phone">Phone</label>
-            <input type="text" id="Phone" name="Phone" maxlength="10" value="<?= show($form['Phone']) ?>">
-        </div>
-
-        <fieldset>
-            <legend>Skills</legend>
-            <?php foreach ($skill_options as $i => $opt): ?>
-                <label class="choice" for="skill<?= $i ?>">
-                    <input type="checkbox" id="skill<?= $i ?>" name="Skills[]" value="<?= e($opt) ?>"<?= in_array($opt, $form['Skills'], true) ? ' checked' : '' ?>>
-                    <?= e($opt) ?>
-                </label>
-            <?php endforeach; ?>
-        </fieldset>
-
-        <div class="field">
-            <label for="OtherSkills">Other skills</label>
-            <textarea id="OtherSkills" name="OtherSkills" rows="4" cols="40"><?= show($form['OtherSkills']) ?></textarea>
-        </div>
+        <?php application_fields($values); ?>
+        <?php skill_fields($values); ?>
 
         <div class="group">
             <input class="btn" type="submit" value="Save">
