@@ -42,7 +42,7 @@ Database settings are in `settings.php` (XAMPP defaults: user `root`, no passwor
 | `about.php` | Team page from the `group_info`, `members` and `contributions` tables |
 | `stafflogin.php`, `manage.php`, `staffregister.php`, `logout.php` | HR manager login, application management and manager registration |
 
-Shared files: `header.inc`, `nav.inc`, `footer.inc`, `settings.php`, `db_connect.inc`, `session.inc`, `auth.inc`, `functions.inc`, `error.inc`, `jobs.inc` and `manage.inc`.
+Shared files: `header.inc`, `nav.inc`, `footer.inc`, `settings.php`, `db_connect.inc`, `session.inc`, `auth.inc`, `functions.inc` (input and output helpers), `validation.inc` (form rules), `security.inc` (form tokens and login checks), `error.inc`, `application_form.inc` (the fields used by both the apply and edit forms), `jobs.inc` and `manage.inc`.
 
 ### Database tables
 | Table | Holds |
@@ -65,8 +65,10 @@ Shared files: `header.inc`, `nav.inc`, `footer.inc`, `settings.php`, `db_connect
 ### Enhancements
 - Manager registration with a unique username and a password rule; passwords are stored hashed
 - Staff-only access to the manage pages, with logout after 30 minutes of inactivity
-- Login lockout after 5 failed attempts, for staff and applicants
+- Login paused for 15 minutes after 5 failed attempts, for staff and applicants
 - Applicants get a unique application ID and password to check and edit their own application; their session also ends after 30 minutes of inactivity
+- The edit form uses the same fields and server-side rules as the apply form
+- Only one application per email address for each job, enforced by the database
 - The apply form keeps entered values after a validation error
 - One shared error page for database, not-found and form errors
 - Prepared statements for every database query that uses input, and CSRF tokens on every form that sends data and on logout
