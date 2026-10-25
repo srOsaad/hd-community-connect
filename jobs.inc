@@ -20,7 +20,7 @@ function job_card($row) {
 		<h2>" . show($row["title"]) . "</h2>
 		<p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
 		<p>" . show($row["description"]) . "</p>
-		<p>" . show($row["reporting_line"]) . "</p>";
+		<p>Reports to: " . show($row["reporting_line"]) . "</p>";
 
 	// button is a form so the job reference can be sent via get
 	echo "<form method='get' action='job_details.php'>" .

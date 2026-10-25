@@ -63,7 +63,7 @@ include("header.inc");
 			<h1>" . show($row["title"]) . "</h1>
 			<p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
 			<p>" . show($row["description"]) . "</p>
-			<p>" . show($row["reporting_line"]) . "</p>";
+			<p>Reports to: " . show($row["reporting_line"]) . "</p>";
 
 		// this div contains two buttons, so they can be displayed spaced as the group class
 		echo "<div class='group'>" .
