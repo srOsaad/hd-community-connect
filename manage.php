@@ -25,6 +25,7 @@ $messages = [];   # error messages to show above the results
 $filter_job   = strtoupper(field($_GET, "job_ref"));
 $filter_first = field($_GET, "first_name");
 $filter_last  = field($_GET, "last_name");
+$filter_app   = field($_GET, "application_id");
 
 # Check the search values the same way the apply form checks them. Anything invalid is ignored
 if ($filter_job !== "" && !preg_match('/^[A-Z0-9]{6}$/', $filter_job)) {
@@ -40,7 +41,12 @@ if ($filter_last !== "" && !preg_match('/^[A-Za-z ]{1,20}$/', $filter_last)) {
     $filter_last = "";
 }
 
-$is_filtered = $filter_job !== "" || $filter_first !== "" || $filter_last !== "";
+if ($filter_app !== "" && !preg_match('/^[0-9]{16,17}$/', $filter_app)) {
+    $messages[] = "An application ID is 16 or 17 digits.";
+    $filter_app = "";
+}
+
+$is_filtered = $filter_job !== "" || $filter_first !== "" || $filter_last !== "" || $filter_app !== "";
 
 # Columns the manager can sort by.
 $sort_fields = [
@@ -74,6 +80,7 @@ if (isset($_SESSION["success"])) {
 
 $page_url = "manage.php?" . http_build_query([
     "job_ref" => $filter_job, "first_name" => $filter_first, "last_name" => $filter_last,
+    "application_id" => $filter_app,
     "sort" => $sort, "order" => $order,
 ]);
 
@@ -172,6 +179,11 @@ if ($conn && $has_table) {
     $types = "";
     $params = [];
 
+    if ($filter_app !== "") {
+        $conditions[] = "ApplicationID = ?";
+        $types .= "s";
+        $params[] = $filter_app;
+    }
     if ($filter_job !== "") {
         $conditions[] = "JobReference = ?";
         $types .= "s";
@@ -327,6 +339,10 @@ include "header.inc";
       <h2 id="search-heading">Find and sort applications</h2>
       <form class="search-form" method="get" action="manage.php">
         <div class="field">
+          <label for="application_id">Application ID</label>
+          <input type="text" id="application_id" name="application_id" inputmode="numeric" maxlength="17" value="<?php echo e($filter_app); ?>">
+        </div>
+        <div class="field">
           <label for="job_ref">Job reference</label>
           <input type="text" id="job_ref" name="job_ref" maxlength="6" value="<?php echo e($filter_job); ?>">
         </div>
@@ -388,6 +404,7 @@ include "header.inc";
           <thead>
             <tr>
               <th scope="col">EOI</th>
+              <th scope="col">Application ID</th>
               <th scope="col">Job</th>
               <th scope="col">Name</th>
               <th scope="col">Date of birth</th>
@@ -403,6 +420,7 @@ include "header.inc";
 ?>
             <tr>
               <th scope="row"><?php echo (int) $row["EOInumber"]; ?></th>
+              <td><?php echo show($row["ApplicationID"]); ?></td>
               <td><?php echo show($row["JobReference"]); ?></td>
               <td><?php echo show($row["FirstName"] . " " . $row["LastName"]); ?><br><?php echo show($row["Gender"]); ?></td>
               <td><?php echo date("d/m/Y", strtotime($row["DOB"])); ?></td>
