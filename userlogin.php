@@ -20,9 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $application_id = is_string($_POST['application_id'] ?? null) ? trim($_POST['application_id']) : '';
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
 
+    mysqli_begin_transaction($conn);
     $stmt = mysqli_prepare($conn,
         "SELECT u.eoi_number, u.password_hash, u.failed_attempts, u.lockout_until, u.lockout_minutes
-         FROM users u JOIN eoi e ON e.EOInumber = u.eoi_number WHERE e.ApplicationID = ?");
+         FROM users u JOIN eoi e ON e.EOInumber = u.eoi_number WHERE e.ApplicationID = ? FOR UPDATE");
     $found = false;
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "s", $application_id);
@@ -45,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         mysqli_stmt_bind_param($stmt, "i", $eoi_number);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
+        mysqli_commit($conn);
 
         session_regenerate_id(true);
         $_SESSION['eoi_id'] = $eoi_number;
@@ -73,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_stmt_close($stmt);
         }
     }
+    mysqli_commit($conn);
 }
 
 $page_title = 'Check your application';
