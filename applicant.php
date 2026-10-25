@@ -27,14 +27,13 @@ $id  = (int) ($_SESSION['eoi_id'] ?? 0);
 $application_id = (string) ($_SESSION['application_id'] ?? '');
 
 if ($id < 1 || $application_id === '') {
-    unset($_SESSION['eoi_id'], $_SESSION['application_id'], $_SESSION['applicant_last_activity']);
+    end_applicant_session();
     header('Location: userlogin.php');
     exit;
 }
 
-$applicant_timeout = 30 * 60;
-if (isset($_SESSION['applicant_last_activity']) && time() - $_SESSION['applicant_last_activity'] > $applicant_timeout) {
-    unset($_SESSION['eoi_id'], $_SESSION['application_id'], $_SESSION['applicant_last_activity']);
+if (isset($_SESSION['applicant_last_activity']) && time() - $_SESSION['applicant_last_activity'] > SESSION_TIMEOUT) {
+    end_applicant_session();
     header('Location: userlogin.php?expired=1');
     exit;
 }
@@ -53,7 +52,7 @@ if ($stmt) {
 }
 
 if (!$app) {
-    unset($_SESSION['eoi_id'], $_SESSION['application_id'], $_SESSION['applicant_last_activity']);
+    end_applicant_session();
     show_error_page('Application Not Found', ['We could not find this application. It may have been removed.'], 'userlogin.php', 'Check Application', 404);
 }
 

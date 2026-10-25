@@ -11,9 +11,9 @@ if ($token !== '' && !hash_equals($token, $sent_token)) {
 }
 
 if ($who === 'staff') {
-    unset($_SESSION['username'], $_SESSION['role'], $_SESSION['last_activity']);
+    end_staff_session();
 } else {
-    unset($_SESSION['eoi_id'], $_SESSION['application_id'], $_SESSION['applicant_last_activity']);
+    end_applicant_session();
 }
 
 if (empty($_SESSION['username']) && empty($_SESSION['eoi_id'])) {
