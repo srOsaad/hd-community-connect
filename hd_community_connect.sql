@@ -52,6 +52,9 @@ CREATE TABLE `eoi` (
   PRIMARY KEY (`EOInumber`),
   UNIQUE KEY `ApplicationID` (`ApplicationID`),
   KEY `fk_eoi_job` (`JobReference`),
+  KEY `FirstName` (`FirstName`),
+  KEY `LastName` (`LastName`),
+  KEY `Status` (`Status`),
   CONSTRAINT `fk_eoi_job` FOREIGN KEY (`JobReference`) REFERENCES `jobs` (`reference`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

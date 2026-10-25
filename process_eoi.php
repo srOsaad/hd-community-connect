@@ -133,6 +133,9 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     Skills        SET('Problem solving','Communication','Teamwork') NOT NULL,
     OtherSkills   TEXT NULL,
     Status        ENUM('New','Current','Final') NOT NULL DEFAULT 'New',
+    INDEX (FirstName),
+    INDEX (LastName),
+    INDEX (Status),
     FOREIGN KEY (JobReference) REFERENCES jobs(reference) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 $create_users_sql = "CREATE TABLE IF NOT EXISTS users (
