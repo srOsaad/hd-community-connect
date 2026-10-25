@@ -6,7 +6,7 @@ function eoi_table_exists($conn) {
 }
 
 function update_eoi_status($conn, $eoi_number, $new_status) {
-    $stmt = mysqli_prepare($conn, "SELECT Status FROM eoi WHERE EOInumber = ?");
+    $stmt = db_prepare($conn, "SELECT Status FROM eoi WHERE EOInumber = ?");
     mysqli_stmt_bind_param($stmt, "i", $eoi_number);
     mysqli_stmt_execute($stmt);
     $current = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
@@ -19,7 +19,7 @@ function update_eoi_status($conn, $eoi_number, $new_status) {
         return ["success" => "EOI $eoi_number already had the status $new_status."];
     }
 
-    $stmt = mysqli_prepare($conn, "UPDATE eoi SET Status = ? WHERE EOInumber = ?");
+    $stmt = db_prepare($conn, "UPDATE eoi SET Status = ? WHERE EOInumber = ?");
     mysqli_stmt_bind_param($stmt, "si", $new_status, $eoi_number);
     $ok = mysqli_stmt_execute($stmt);
     if (!$ok) {
@@ -32,7 +32,7 @@ function update_eoi_status($conn, $eoi_number, $new_status) {
 }
 
 function count_job_eois($conn, $job_ref) {
-    $stmt = mysqli_prepare($conn, "SELECT COUNT(*) AS total FROM eoi WHERE JobReference = ?");
+    $stmt = db_prepare($conn, "SELECT COUNT(*) AS total FROM eoi WHERE JobReference = ?");
     mysqli_stmt_bind_param($stmt, "s", $job_ref);
     mysqli_stmt_execute($stmt);
     $total = (int) mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))["total"];
@@ -41,7 +41,7 @@ function count_job_eois($conn, $job_ref) {
 }
 
 function delete_job_eois($conn, $job_ref) {
-    $stmt = mysqli_prepare($conn, "DELETE FROM eoi WHERE JobReference = ?");
+    $stmt = db_prepare($conn, "DELETE FROM eoi WHERE JobReference = ?");
     mysqli_stmt_bind_param($stmt, "s", $job_ref);
     $deleted = null;
     if (mysqli_stmt_execute($stmt)) {

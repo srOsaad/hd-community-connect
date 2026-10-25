@@ -58,7 +58,7 @@ if (!$app) {
 
 // Job title for the page heading (JobReference in eoi = reference in jobs)
 $job_title = '';
-$stmt = mysqli_prepare($conn, 'SELECT title FROM jobs WHERE reference = ?');
+$stmt = db_prepare($conn, 'SELECT title FROM jobs WHERE reference = ?');
 $jn = $app['JobReference'];
 mysqli_stmt_bind_param($stmt, 's', $jn);
 mysqli_stmt_execute($stmt);
@@ -107,7 +107,7 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
-        $stmt = mysqli_prepare($conn, 'SELECT 1 FROM eoi WHERE JobReference = ? AND Email = ? AND EOInumber <> ?');
+        $stmt = db_prepare($conn, 'SELECT 1 FROM eoi WHERE JobReference = ? AND Email = ? AND EOInumber <> ?');
         mysqli_stmt_bind_param($stmt, 'ssi', $app['JobReference'], $form['Email'], $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
@@ -122,7 +122,7 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$errors) {
         $skills = implode(',', $form['Skills']);
         // Status is re-checked in SQL, so a Current application can't be changed
-        $stmt = mysqli_prepare($conn,
+        $stmt = db_prepare($conn,
             "UPDATE eoi SET FirstName=?, LastName=?, DOB=?, Gender=?, StreetAddress=?, Suburb=?,
                     State=?, Postcode=?, Email=?, Phone=?, Skills=?, OtherSkills=?
              WHERE EOInumber=? AND Status NOT IN ('Current', 'Final')");
@@ -136,7 +136,7 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_stmt_close($stmt);
 
         if ($ok && $changed === 0) {
-            $stmt = mysqli_prepare($conn, 'SELECT Status FROM eoi WHERE EOInumber = ?');
+            $stmt = db_prepare($conn, 'SELECT Status FROM eoi WHERE EOInumber = ?');
             mysqli_stmt_bind_param($stmt, 'i', $id);
             mysqli_stmt_execute($stmt);
             $current = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));

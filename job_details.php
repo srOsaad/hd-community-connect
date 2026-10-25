@@ -32,7 +32,7 @@ $row = null;
 
 if (preg_match('/^[A-Z0-9]{6}$/D', $reference))
 {
-    $stmt = mysqli_prepare($conn, "SELECT * FROM jobs WHERE reference = ?"); // get job listing from reference number
+    $stmt = db_prepare($conn, "SELECT * FROM jobs WHERE reference = ?"); // get job listing from reference number
     mysqli_stmt_bind_param($stmt, "s", $reference);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);

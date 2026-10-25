@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     if (!$errors) {
-        $stmt = mysqli_prepare($conn, "SELECT 1 FROM staff WHERE username = ?");
+        $stmt = db_prepare($conn, "SELECT 1 FROM staff WHERE username = ?");
         mysqli_stmt_bind_param($stmt, "s", $new_username);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $errors[] = "That username is already taken.";
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = mysqli_prepare($conn, "INSERT INTO staff (username, password_hash) VALUES (?, ?)");
+            $stmt = db_prepare($conn, "INSERT INTO staff (username, password_hash) VALUES (?, ?)");
             mysqli_stmt_bind_param($stmt, "ss", $new_username, $hash);
             if (mysqli_stmt_execute($stmt)) {
                 $success = "Manager account \"" . $new_username . "\" has been created.";

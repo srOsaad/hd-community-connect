@@ -111,9 +111,11 @@ function check_login($conn, $find_sql, $find_value, $table, $id_column, $passwor
             $attempts = 0;
         }
         $stmt = mysqli_prepare($conn, "UPDATE $table SET failed_attempts = ?, lockout_until = ? WHERE $id_column = ?");
-        mysqli_stmt_bind_param($stmt, "iss", $attempts, $lock_time, $id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "iss", $attempts, $lock_time, $id);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+        }
     }
     mysqli_commit($conn);
 

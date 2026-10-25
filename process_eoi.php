@@ -176,7 +176,7 @@ mysqli_stmt_bind_param($stmt, "ssssssssssssss",
 
 mysqli_begin_transaction($conn);
 
-$dup_stmt = mysqli_prepare($conn, "SELECT 1 FROM eoi WHERE JobReference = ? AND Email = ? FOR UPDATE");
+$dup_stmt = db_prepare($conn, "SELECT 1 FROM eoi WHERE JobReference = ? AND Email = ? FOR UPDATE");
 mysqli_stmt_bind_param($dup_stmt, "ss", $job_ref, $email);
 mysqli_stmt_execute($dup_stmt);
 mysqli_stmt_store_result($dup_stmt);
