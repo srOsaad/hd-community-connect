@@ -81,8 +81,7 @@ if ($locked && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Save
 if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $sent_token = is_string($_POST['token'] ?? null) ? $_POST['token'] : '';
-    if (!hash_equals($token, $sent_token)) {
+    if (!csrf_ok()) {
         $errors[] = 'That request could not be verified. Please try again.';
     }
 

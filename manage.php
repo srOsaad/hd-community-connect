@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && field($_POST, "action
     $eoi_number = (int) field($_POST, "eoi_number");
     $new_status = field($_POST, "status");
 
-    if (!hash_equals($token, field($_POST, "token"))) {
+    if (!csrf_ok()) {
         $messages[] = "That request could not be verified. Please try again.";
     } elseif ($eoi_number < 1 || !in_array($new_status, $statuses, true)) {
         $messages[] = "Please choose a valid status.";
@@ -113,7 +113,7 @@ $action = field($_POST, "action");
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && ($action === "confirm_delete" || $action === "delete")) {
     $job_ref = strtoupper(field($_POST, "job_ref"));
 
-    if (!hash_equals($token, field($_POST, "token"))) {
+    if (!csrf_ok()) {
         $messages[] = "That request could not be verified. Please try again.";
     } elseif (!preg_match('/^[A-Z0-9]{6}$/D', $job_ref)) {
         $messages[] = "A job reference is exactly 6 letters or numbers.";

@@ -1,9 +1,4 @@
 <?php
-// Reads one text value from the URL or a form. If it's missing (or someone sends an array), we just get ""
-function field($source, $key) {
-    return (isset($source[$key]) && is_string($source[$key])) ? clean_input($source[$key]) : "";
-}
-
 // The eoi table only exists after the first application is sent, so check for it first
 function eoi_table_exists($conn) {
     $check = mysqli_query($conn, "SHOW TABLES LIKE 'eoi'");

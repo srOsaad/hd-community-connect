@@ -18,9 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $new_username = is_string($_POST["username"] ?? null) ? trim($_POST["username"]) : "";
     $password = is_string($_POST["password"] ?? null) ? $_POST["password"] : "";
     $confirm = is_string($_POST["confirm_password"] ?? null) ? $_POST["confirm_password"] : "";
-    $sent_token = is_string($_POST["token"] ?? null) ? $_POST["token"] : "";
 
-    if (!hash_equals($token, $sent_token)) {
+    if (!csrf_ok()) {
         $errors[] = "That request could not be verified. Please try again.";
     } else {
         if (!preg_match('/^[A-Za-z0-9_]{3,20}$/D', $new_username)) {

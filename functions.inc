@@ -27,8 +27,13 @@ function show($value) {
     return e(html_entity_decode((string) $value, ENT_QUOTES, "UTF-8"));
 }
 
+// Reads one text value from the URL or a form. If it's missing (or someone sends an array), we just get ""
+function field($source, $key) {
+    return (isset($source[$key]) && is_string($source[$key])) ? clean_input($source[$key]) : "";
+}
+
 function post_value($key) {
-    return isset($_POST[$key]) && is_string($_POST[$key]) ? clean_input($_POST[$key]) : "";
+    return field($_POST, $key);
 }
 
 function text_length($value) {
