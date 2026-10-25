@@ -38,7 +38,8 @@ include "header.inc";
     } else {
         $jobs = find_jobs($conn, $search); // retrieve job listings based on search from user
 
-        echo "<p class='intro'> Search results for &#34;" . $search . "&#34;</p>";
+        $found = count($jobs);
+        echo "<p class='intro'>" . $found . ($found === 1 ? " job" : " jobs") . " found for &#34;" . $search . "&#34;</p>";
 
         echo "<div class='group job-list'>"; // group containing all job boxes
 
@@ -53,6 +54,8 @@ include "header.inc";
         echo "</div>";
     }
     ?>
+
+    <a class="btn-secondary" href="jobs.php">View All Jobs</a>
 
 </main>
 
