@@ -48,4 +48,8 @@ function allowed_skills($values) {
 function like_pattern($text) {
     return "%" . addcslashes($text, "\\%_") . "%";
 }
+
+function lockout_message($minutes) {
+    return "Too many failed attempts. Try again in " . $minutes . ($minutes === 1 ? " minute." : " minutes.");
+}
 ?>

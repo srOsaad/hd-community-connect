@@ -15,6 +15,7 @@ if (!$conn) {
 
 $error = '';
 $max_attempts = 5;
+$dummy_hash = '$2y$10$E4UH1PSby88iafe4viaiduqs8xxqYnEwXvd2IlIAk6LrRF5ilhA5e';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $application_id = is_string($_POST['application_id'] ?? null) ? trim($_POST['application_id']) : '';
@@ -36,10 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $is_locked = $found && $lock_until !== null && strtotime($lock_until) > time();
 
     if ($is_locked) {
-        $minutes_left = ceil((strtotime($lock_until) - time()) / 60);
-        $error = "Too many failed attempts. Try again in $minutes_left minute(s).";
+        $error = lockout_message((int) ceil((strtotime($lock_until) - time()) / 60));
 
-    } elseif ($found && password_verify($password, $hash)) {
+    } elseif (password_verify($password, $found ? $hash : $dummy_hash) && $found) {
         // Correct: clear the failed count and lockout, then log in as a user
         $stmt = mysqli_prepare($conn,
             "UPDATE users SET failed_attempts = 0, lockout_until = NULL WHERE eoi_number = ?");
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($attempts >= $max_attempts) {
                 $lock_time = date('Y-m-d H:i:s', time() + $lock_minutes * 60);
                 $attempts = 0;
-                $error = "Too many failed attempts. Try again in $lock_minutes minutes.";
+                $error = lockout_message((int) $lock_minutes);
             }
 
             $stmt = mysqli_prepare($conn,
