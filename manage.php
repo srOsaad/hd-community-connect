@@ -180,6 +180,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table && ($action ===
 
 # Get the applications, oldest first. Each filled search box adds a condition,
 # and the values go in as ? placeholders so they can't change the SQL
+$status_counts = array_fill_keys($statuses, 0);
+if ($conn && $has_table) {
+    $result = mysqli_query($conn, "SELECT Status, COUNT(*) AS total FROM eoi GROUP BY Status");
+    if ($result) {
+        while ($count_row = mysqli_fetch_assoc($result)) {
+            $status_counts[$count_row["Status"]] = (int) $count_row["total"];
+        }
+    }
+}
+$total_count = array_sum($status_counts);
+
 $eois = [];
 if ($conn && $has_table) {
     $conditions = [];
@@ -333,6 +344,11 @@ include "header.inc";
     <p>No applications have been submitted yet. They will appear here after the first one arrives.</p>
  
 <?php } else { ?>
+    <p><strong><?php echo $total_count; ?></strong> application(s) in total:
+<?php foreach ($status_counts as $status => $count) { ?>
+      <strong><?php echo $count; ?></strong> <?php echo $status; ?><?php echo $status === "Final" ? "." : ","; ?>
+<?php } ?>
+    </p>
 <?php if ($delete_job !== "") { ?>
     <section class="confirm-box" aria-labelledby="confirm-heading">
       <h2 id="confirm-heading">Delete applications for job <?php echo e($delete_job); ?>?</h2>
