@@ -16,7 +16,22 @@ $job_map = get_job_map($conn);
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-$selected_job = isset($_GET['reference']) && is_string($_GET['reference']) ? strtoupper($_GET['reference']) : (string) ($_SESSION['reference'] ?? '');
+$old = isset($_SESSION['apply_old']) && is_array($_SESSION['apply_old']) ? $_SESSION['apply_old'] : [];
+
+function old_value($key) {
+    global $old;
+    return isset($old[$key]) && is_string($old[$key]) ? $old[$key] : '';
+}
+
+$old_skills = isset($old['skills']) && is_array($old['skills']) ? $old['skills'] : [];
+
+if (isset($_GET['reference']) && is_string($_GET['reference'])) {
+    $selected_job = strtoupper($_GET['reference']);
+} elseif (old_value('job_reference_number') !== '') {
+    $selected_job = strtoupper(old_value('job_reference_number'));
+} else {
+    $selected_job = (string) ($_SESSION['reference'] ?? '');
+}
 
 
 $page_title = "Apply";
@@ -49,57 +64,57 @@ include "header.inc";
         <legend><strong>Who Are Youuuu?</strong></legend>
         <label for="first_name"><strong>First name:</strong></label>
         <input type="text" name="first_name" id="first_name" pattern="[A-Za-z\s]{1,20}"
-          title="Please enter your first name" placeholder="Enter your first name" required>
+          title="Please enter your first name" placeholder="Enter your first name" value="<?= e(old_value('first_name')) ?>" required>
         <label for="last_name"><strong>Last name:</strong></label>
         <input type="text" name="last_name" id="last_name" pattern="[A-Za-z\s]{1,20}" title="Please enter your last name"
-          placeholder="Enter your last name" required>
+          placeholder="Enter your last name" value="<?= e(old_value('last_name')) ?>" required>
 
         <label for="DateOfBirth"><strong>Date of birth:</strong></label>
-        <input type="text" pattern = "^\d{2}/\d{2}/\d{4}$" name="DateOfBirth" id="DateOfBirth" placeholder="Enter your date of birth (DD/MM/YYYY)" required>
+        <input type="text" pattern = "^\d{2}/\d{2}/\d{4}$" name="DateOfBirth" id="DateOfBirth" placeholder="Enter your date of birth (DD/MM/YYYY)" value="<?= e(old_value('DateOfBirth')) ?>" required>
       </fieldset>
       <!-- Form fields for user gender -->
       <fieldset class="field">
         <legend><strong>What is your gender?</strong></legend>
         <label><strong>Gender:</strong></label>
 
-        <label for="Male" class="choice"><input type="radio" name="Gender" id="Male" value="Male" required> Male </label>
+        <label for="Male" class="choice"><input type="radio" name="Gender" id="Male" value="Male"<?= old_value('Gender') === 'Male' ? ' checked' : '' ?> required> Male </label>
 
-        <label for="Female" class="choice"><input type="radio" name="Gender" id="Female" value="Female" required> Female </label>
+        <label for="Female" class="choice"><input type="radio" name="Gender" id="Female" value="Female"<?= old_value('Gender') === 'Female' ? ' checked' : '' ?> required> Female </label>
 
-        <label for ="Other" class="choice"><input type="radio" name="Gender" value="Other" id="Other" required> Other </label>
+        <label for ="Other" class="choice"><input type="radio" name="Gender" value="Other" id="Other"<?= old_value('Gender') === 'Other' ? ' checked' : '' ?> required> Other </label>
       </fieldset>
 
       <!-- Form fields for user address -->
       <fieldset class="field">
         <legend><strong>Where Do You Liveeee?</strong></legend>
     <label for="streetaddress"><strong>Street address:</strong></label>
-    <input type="text" name="streetaddress" id="streetaddress" pattern="[A-Za-z0-9\s\/,.'\-]{3,40}" style="width: 400px; max-width: 100%;" placeholder="Enter your street address" maxlength="40" title="Please enter your street address" required>
+    <input type="text" name="streetaddress" id="streetaddress" pattern="[A-Za-z0-9\s\/,.'\-]{3,40}" style="width: 400px; max-width: 100%;" placeholder="Enter your street address" maxlength="40" title="Please enter your street address" value="<?= e(old_value('streetaddress')) ?>" required>
     <label for="suburb_town"><strong>Suburb/Town:</strong></label>
-    <input type="text" name="suburb_town" id="suburb_town" pattern="[A-Za-z\s]{3,40}" placeholder="Enter your suburb or town" style="width: 400px; max-width: 100%;" maxlength="40" title="Please enter your suburb or town" required>
+    <input type="text" name="suburb_town" id="suburb_town" pattern="[A-Za-z\s]{3,40}" placeholder="Enter your suburb or town" style="width: 400px; max-width: 100%;" maxlength="40" title="Please enter your suburb or town" value="<?= e(old_value('suburb_town')) ?>" required>
     <label for="state"><strong>State:</strong></label>
     <select id="state" name="state" required>
         <option value="">Please select state where you live</option>
-        <option value="vic">VIC</option>
-        <option value="nsw">NSW</option>
-        <option value="qld">QLD</option>
-        <option value="NT">NT</option>
-        <option value="WA">WA</option>
-        <option value="SA">SA</option>
-        <option value="tas">TAS</option>
-        <option value="ACT">ACT</option>
+        <option value="vic"<?= strtoupper(old_value('state')) === 'VIC' ? ' selected' : '' ?>>VIC</option>
+        <option value="nsw"<?= strtoupper(old_value('state')) === 'NSW' ? ' selected' : '' ?>>NSW</option>
+        <option value="qld"<?= strtoupper(old_value('state')) === 'QLD' ? ' selected' : '' ?>>QLD</option>
+        <option value="NT"<?= strtoupper(old_value('state')) === 'NT' ? ' selected' : '' ?>>NT</option>
+        <option value="WA"<?= strtoupper(old_value('state')) === 'WA' ? ' selected' : '' ?>>WA</option>
+        <option value="SA"<?= strtoupper(old_value('state')) === 'SA' ? ' selected' : '' ?>>SA</option>
+        <option value="tas"<?= strtoupper(old_value('state')) === 'TAS' ? ' selected' : '' ?>>TAS</option>
+        <option value="ACT"<?= strtoupper(old_value('state')) === 'ACT' ? ' selected' : '' ?>>ACT</option>
     </select>
       <label for="postcode"><strong>Postcode:</strong></label>
-    <input type="text" name="postcode" id="postcode" pattern="[0-9]{4}" maxlength="4" placeholder="Enter your postcode" title="Please enter your postcode" required>
+    <input type="text" name="postcode" id="postcode" pattern="[0-9]{4}" maxlength="4" placeholder="Enter your postcode" title="Please enter your postcode" value="<?= e(old_value('postcode')) ?>" required>
 </fieldset>
 
 <!-- Form fields for user contact information -->
 <fieldset class="field">
     <legend><strong>Your contact informationnnn?</strong></legend>
     <label for="email"><strong>Email:</strong></label>
-    <input type="email" name="email" id="email" style="width: 400px; max-width: 100%;" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" maxlength="150" placeholder="Enter your email address" title="Please enter your email address" required>
+    <input type="email" name="email" id="email" style="width: 400px; max-width: 100%;" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" maxlength="150" placeholder="Enter your email address" title="Please enter your email address" value="<?= e(old_value('email')) ?>" required>
 
     <label for="phone"><strong>Phone:</strong></label>
-    <input type="tel" name="phone" id="phone" pattern="[0-9]{10}" maxlength="10" placeholder="Enter your phone number" title="Please enter your phone number" required>
+    <input type="tel" name="phone" id="phone" pattern="[0-9]{10}" maxlength="10" placeholder="Enter your phone number" title="Please enter your phone number" value="<?= e(old_value('phone')) ?>" required>
 </fieldset>
 <!-- Form fields for job apply -->
 <fieldset class="field">
@@ -116,16 +131,16 @@ include "header.inc";
 <fieldset class="field">
   <legend><strong>What skills you have in this field?</strong></legend>
     <label class="choice" for="skill1">
-    <input type="checkbox" name="skills[]" id="skill1" value="Problem solving"> Problem solving </label>
+    <input type="checkbox" name="skills[]" id="skill1" value="Problem solving"<?= in_array('Problem solving', $old_skills, true) ? ' checked' : '' ?>> Problem solving </label>
     
     <label class="choice" for="skill2">
-    <input type="checkbox" name="skills[]" id="skill2" value="Communication"> Communication </label>
+    <input type="checkbox" name="skills[]" id="skill2" value="Communication"<?= in_array('Communication', $old_skills, true) ? ' checked' : '' ?>> Communication </label>
 
     <label class="choice" for="skill3">
-    <input type="checkbox" name="skills[]" id="skill3" value="Teamwork"> Teamwork </label>
+    <input type="checkbox" name="skills[]" id="skill3" value="Teamwork"<?= in_array('Teamwork', $old_skills, true) ? ' checked' : '' ?>> Teamwork </label>
     
      <label class ="choice" for="Other_skill">Other skills:</label>
-    <textarea name="Other_skill" id="Other_skill" rows="4" cols="50" placeholder="Please enter if you have other skills"></textarea>
+    <textarea name="Other_skill" id="Other_skill" rows="4" cols="50" placeholder="Please enter if you have other skills"><?= e(old_value('Other_skill')) ?></textarea>
 </fieldset>
 <fieldset class="field">
 <legend><strong>Create your password hereeee</strong></legend>

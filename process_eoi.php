@@ -7,6 +7,22 @@ function render_page($title, $heading, $messages, $is_error) {
     show_error_page($heading, $messages, "apply.php", "Return to application form", $title === "Database Error" ? 503 : 400);
 }
 
+function keep_form_values() {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    $fields = ['job_reference_number', 'first_name', 'last_name', 'DateOfBirth', 'Gender', 'streetaddress',
+               'suburb_town', 'state', 'postcode', 'email', 'phone', 'Other_skill'];
+    $old = [];
+    foreach ($fields as $field) {
+        if (isset($_POST[$field]) && is_string($_POST[$field])) {
+            $old[$field] = $_POST[$field];
+        }
+    }
+    $old['skills'] = isset($_POST['skills']) && is_array($_POST['skills']) ? array_values(array_filter($_POST['skills'], 'is_string')) : [];
+    $_SESSION['apply_old'] = $old;
+}
+
 function make_application_id() {
     $now = new DateTime('now', new DateTimeZone('Australia/Melbourne'));
     $ms = str_pad((string) intdiv((int) $now->format('u'), 1000), 2, '0', STR_PAD_LEFT);
@@ -130,6 +146,7 @@ if (strlen($password) < 8)
 elseif ($password !== $confirm)
     $errors[] = "Passwords do not match.";
 if ($errors) {
+    keep_form_values();
     render_page("Application Error", "Please fix the following problems", $errors, true);
     exit();
 }
@@ -148,6 +165,7 @@ $job_exists = mysqli_stmt_num_rows($job_stmt) > 0;
 mysqli_stmt_close($job_stmt);
 
 if (!$job_exists) {
+    keep_form_values();
     render_page("Application Error", "Please fix the following problems",
         ["Please select a valid job."], true);
     mysqli_close($conn);
@@ -238,6 +256,7 @@ if ($saved) {
 
     session_start();
     session_regenerate_id(true);
+    unset($_SESSION['apply_old']);
     $_SESSION['apply_success'] = true;
     $_SESSION['first_name'] = $first_name;
     $_SESSION['eoi_id'] = $new_eoi_id;
