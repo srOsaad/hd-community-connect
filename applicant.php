@@ -107,6 +107,19 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
     ]));
 
     if (!$errors) {
+        $stmt = mysqli_prepare($conn, 'SELECT 1 FROM eoi WHERE JobReference = ? AND Email = ? AND EOInumber <> ?');
+        mysqli_stmt_bind_param($stmt, 'ssi', $app['JobReference'], $form['Email'], $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        $email_taken = mysqli_stmt_num_rows($stmt) > 0;
+        mysqli_stmt_close($stmt);
+
+        if ($email_taken) {
+            $errors[] = 'Another application for this job already uses this email address.';
+        }
+    }
+
+    if (!$errors) {
         $skills = implode(',', $form['Skills']);
         // Status is re-checked in SQL, so a Current application can't be changed
         $stmt = mysqli_prepare($conn,
