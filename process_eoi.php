@@ -38,6 +38,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
+$required_fields = ['job_reference_number', 'first_name', 'last_name', 'DateOfBirth', 'streetaddress', 'suburb_town',
+                    'state', 'postcode', 'email', 'phone', 'password', 'confirm_password'];
+foreach ($required_fields as $field) {
+    if (!isset($_POST[$field])) {
+        header("Location: apply.php");
+        exit();
+    }
+}
+
 if (!csrf_ok()) {
     keep_form_values();
     show_application_error(["That request could not be verified. Please try again."]);
