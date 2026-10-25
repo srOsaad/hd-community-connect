@@ -23,6 +23,7 @@ $page_style = <<<'CSS'
       color: var(--ink-muted);
       font-size: var(--step--1);
       font-weight: 600;
+      font-style: italic;
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
@@ -57,11 +58,6 @@ $page_style = <<<'CSS'
       margin: 0 0 0.75rem;
     }
 
-    .table-wrap {
-      overflow-x: auto;
-      margin-bottom: 1rem;
-    }
-
     ul.grid {
       list-style: none;
       padding: 0;
@@ -74,7 +70,7 @@ include "header.inc";
   <main id="main">
 
     <section class="hero box">
-      <p class="eyebrow" style="font-style: italic;">Not-for-profit organisation</p>
+      <p class="eyebrow">Not-for-profit organisation</p>
       <h1>Community Connect</h1>
       <p class="intro">Bringing people and support closer together.</p>
       <p>Community Connect is a not-for-profit organisation improving its digital
@@ -175,7 +171,7 @@ include "header.inc";
 
     <section class="acknowledgement" aria-labelledby="acknowledgement-heading">
       <h2 id="acknowledgement-heading">Acknowledgement of Country</h2>
-      <p style="text-align: justify;">Community Connect acknowledges the Traditional Owners of the lands on
+      <p>Community Connect acknowledges the Traditional Owners of the lands on
         which we work, connect and support our community, and recognises
         their continuing connection to land, waters and culture. We pay our
         respects to Elders past and present, and extend that respect to all

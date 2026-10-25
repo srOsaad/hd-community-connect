@@ -44,7 +44,7 @@ include "header.inc";
 
         echo "<p class='intro'> Search results for &#34;" . $search . "&#34;</p>";
 
-        echo "<div class='group' style='gap: 2rem;/*overriding style.css*/'>"; // group containing all job boxes
+        echo "<div class='group job-list'>"; // group containing all job boxes
 
         if ($jobs)
         {

@@ -40,7 +40,8 @@ $current_page = "about";
 $page_style = '    .quote { font-family: var(--font-heading); font-style: italic; }
     blockquote { margin: 0; }
     dd { margin-left: 0; }
-    figure { margin: 0; }';
+    figure { margin: 0; }
+    .group-name { letter-spacing: 0.03em; }';
 include "header.inc";
 ?>
 
@@ -52,7 +53,7 @@ include "header.inc";
     <section>
       <h2>Group details</h2>
       <ul>
-        <li>Group name: <strong style="letter-spacing: 0.03em;"><?php echo e($group["group_name"]); ?></strong>
+        <li>Group name: <strong class="group-name"><?php echo e($group["group_name"]); ?></strong>
           <ul>
             <li>Lecture: <?php echo e($group["lecture_time"]); ?> (<?php echo e($group["lecture_staff"]); ?>)</li>
             <li>Tutorial: <?php echo e($group["tutorial_time"]); ?> (<?php echo e($group["tutorial_staff"]); ?>)</li>

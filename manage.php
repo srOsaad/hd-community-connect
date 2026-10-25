@@ -185,13 +185,6 @@ $page_style = <<<'CSS'
       margin: 0.25rem 0 0;
     }
 
-    /* The table is wide, so on phones it scrolls inside this box instead of the whole page */
-    .table-wrap {
-      position: relative;
-      overflow-x: auto;
-      margin-bottom: 1rem;
-    }
-
     .eoi-table th,
     .eoi-table td {
       padding: 0.5rem 0.6rem;
@@ -228,15 +221,15 @@ $page_style = <<<'CSS'
 
     .btn-danger,
     .btn-danger:hover {
-      border-color: #B00020;
-      background-color: #B00020;
+      border-color: var(--danger);
+      background-color: var(--danger);
     }
 
     .confirm-box {
       max-width: var(--measure);
       margin-bottom: 1.5rem;
       padding: 1rem 1.25rem;
-      border: 2px solid #B00020;
+      border: 2px solid var(--danger);
       border-radius: var(--radius);
     }
 

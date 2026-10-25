@@ -5,6 +5,7 @@
   --brand-dark:     #142850;   /* hover states, footer */
   --brand-light:    #E7EBF3;   /* tints, table headers */
   --accent:         #004A80;   /* links */
+  --danger:         #B00020;
 
   --ink:            #231F20;   /* body text */
   --ink-muted:      #54585C;   /* captions, hints, IDs */
@@ -395,7 +396,7 @@ input[type="checkbox"] {
 }
 
 .message-error {
-  border-color: #B00020;
+  border-color: var(--danger);
   background-color: #FDECEE;
   color: #7A0016;
 }
@@ -558,6 +559,17 @@ input[type="checkbox"] {
   margin-top: auto;
 }
 
+/* The table is wide, so on phones it scrolls inside this box instead of the whole page */
+.table-wrap {
+  position: relative;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.job-list {
+  gap: 2rem;
+}
+
 .job-search {
   display: flex;
   flex-wrap: wrap;
@@ -572,6 +584,10 @@ input[type="checkbox"] {
 
 .job-search input[type="text"] {
   flex: 1 1 14rem;
+}
+
+.job-search input[type="submit"] {
+  width: 8em;
 }
 
 

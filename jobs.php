@@ -46,7 +46,7 @@ include "header.inc";
     </div>
 
      <!-- group containing all job boxes -->
-    <div class="group" style="gap: 2rem;/*overriding style.css*/">
+    <div class="group job-list">
 
         <?php
         $jobs = find_jobs($conn); // retrieve all job listing

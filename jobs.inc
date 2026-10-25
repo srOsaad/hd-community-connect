@@ -40,7 +40,7 @@ function job_search_form($value = "") {
     echo "<form method='get' action='search.php' class='job-search'>" .
         "<label for='search'>Search for a job title</label>" .
         "<input type='text' name='search' id='search' value='" . show($value) . "' required>" .
-        "<input class='btn' style='width: 8em' type='submit' value='Search'>" .
+        "<input class='btn' type='submit' value='Search'>" .
         "</form>";
 }
 
