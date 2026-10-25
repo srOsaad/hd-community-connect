@@ -25,10 +25,8 @@ $old_skills = isset($old['skills']) && is_array($old['skills']) ? $old['skills']
 
 if (isset($_GET['reference']) && is_string($_GET['reference'])) {
     $selected_job = strtoupper($_GET['reference']);
-} elseif (old_value('job_reference_number') !== '') {
-    $selected_job = strtoupper(old_value('job_reference_number'));
 } else {
-    $selected_job = (string) ($_SESSION['reference'] ?? '');
+    $selected_job = strtoupper(old_value('job_reference_number'));
 }
 
 
