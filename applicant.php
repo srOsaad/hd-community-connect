@@ -17,6 +17,7 @@ $states  = ['VIC', 'NSW', 'QLD', 'NT', 'WA', 'SA', 'TAS', 'ACT'];
 $skill_options = skill_options();
 
 $errors = [];
+$locked_notice = '';
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -82,6 +83,10 @@ if ($app) {
     // Edit mode is only available when not locked
     if (!$locked && (isset($_GET['edit']) || $_SERVER['REQUEST_METHOD'] === 'POST')) {
         $editing = true;
+    }
+
+    if ($locked && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        $locked_notice = 'Your changes were not saved because your application is now ' . strtolower($app['Status']) . '.';
     }
 
     // ---------- Save ----------
@@ -191,6 +196,7 @@ include 'header.inc';
 
     <!-- View mode: details list -->
     <?php if ($notice): ?><p class="message message-success" role="status"><?= e($notice) ?></p><?php endif; ?>
+    <?php if ($locked_notice): ?><p class="message message-error" role="alert"><?= e($locked_notice) ?></p><?php endif; ?>
 
     <h2>Application</h2>
     <dl class="details">
