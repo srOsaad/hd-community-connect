@@ -271,12 +271,18 @@ $page_style = <<<'CSS'
       margin-bottom: 1rem;
     }
 
+    .eoi-table th,
+    .eoi-table td {
+      padding: 0.5rem 0.6rem;
+    }
+
     .eoi-table td {
       font-size: var(--step--1);
     }
 
     .status-form {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.4rem;
     }
 
