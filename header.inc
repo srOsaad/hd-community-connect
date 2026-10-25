@@ -16,6 +16,10 @@ require_once "functions.inc";
 
 if (!headers_sent()) {
     header("X-Frame-Options: DENY");
+    header("X-Content-Type-Options: nosniff");
+    header("Referrer-Policy: same-origin");
+    header("Content-Security-Policy: default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+         . "font-src https://fonts.gstatic.com; img-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'");
 }
 
 // Safe defaults in case a page forgets to set these
