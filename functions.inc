@@ -30,4 +30,15 @@ function show($value) {
 function text_length($value) {
     return mb_strlen(html_entity_decode((string) $value, ENT_QUOTES, "UTF-8"));
 }
+
+function skill_options() {
+    return ["Problem solving", "Communication", "Teamwork"];
+}
+
+function allowed_skills($values) {
+    if (!is_array($values)) {
+        return [];
+    }
+    return array_values(array_intersect(skill_options(), array_filter($values, "is_string")));
+}
 ?>

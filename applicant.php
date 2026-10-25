@@ -14,7 +14,7 @@ require_once 'error.inc';
 
 $genders = ['Male', 'Female', 'Other'];
 $states  = ['VIC', 'NSW', 'QLD', 'NT', 'WA', 'SA', 'TAS', 'ACT'];
-$skill_options = ['Problem solving', 'Communication', 'Teamwork'];
+$skill_options = skill_options();
 
 $errors = [];
 
@@ -95,7 +95,7 @@ if ($app) {
                   'State','Postcode','Email','Phone','OtherSkills'] as $f) {
             $form[$f] = clean_input($_POST[$f] ?? '');
         }
-        $form['Skills'] = array_values(array_intersect($skill_options, (array) ($_POST['Skills'] ?? [])));
+        $form['Skills'] = allowed_skills($_POST['Skills'] ?? []);
 
         $d = DateTime::createFromFormat('!Y-m-d', $form['DOB']);
         if (!preg_match('/^[A-Za-z\s]{1,20}$/', $form['FirstName'])) $errors[] = 'First name must be 1-20 letters only.';

@@ -19,7 +19,7 @@ function keep_form_values() {
             $old[$field] = $_POST[$field];
         }
     }
-    $old['skills'] = isset($_POST['skills']) && is_array($_POST['skills']) ? array_values(array_filter($_POST['skills'], 'is_string')) : [];
+    $old['skills'] = allowed_skills($_POST['skills'] ?? []);
     $_SESSION['apply_old'] = $old;
 }
 
@@ -63,11 +63,7 @@ $postcode    = clean_input($_POST['postcode']);
 $email       = clean_input($_POST['email']);
 $phone       = clean_input($_POST['phone']);
 $other_skill = isset($_POST['Other_skill']) ? clean_input($_POST['Other_skill']) : "";
-$skills_arr = [];
-
-if (isset($_POST['skills']) && is_array($_POST['skills'])) {
-    foreach ($_POST['skills'] as $s) $skills_arr[] = clean_input($s);
-}    
+$skills_arr  = allowed_skills($_POST['skills'] ?? []);
 
 
 
