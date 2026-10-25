@@ -105,33 +105,17 @@ if ($app) {
         $form['Skills'] = allowed_skills($_POST['Skills'] ?? []);
 
         $d = DateTime::createFromFormat('!Y-m-d', $form['DOB']);
-        if (!preg_match('/^[A-Za-z ]{1,20}$/', $form['FirstName']) || trim($form['FirstName']) === '') $errors[] = 'First name must be 1 to 20 letters.';
-        if (!preg_match('/^[A-Za-z ]{1,20}$/', $form['LastName']) || trim($form['LastName']) === '') $errors[] = 'Last name must be 1 to 20 letters.';
-        if (!$d || $d->format('Y-m-d') !== $form['DOB'] || $d > new DateTime('today')) {
-            $errors[] = 'Please enter a valid date of birth.';
-        } else {
-            $age = $d->diff(new DateTime('today'))->y;
-            if ($age < 15 || $age > 80) $errors[] = 'Applicants must be aged between 15 and 80.';
+        if ($d && $d->format('Y-m-d') !== $form['DOB']) {
+            $d = null;
         }
-        if (!in_array($form['Gender'], $genders, true)) $errors[] = 'Please select a gender.';
-        if ($form['StreetAddress'] === '') $errors[] = 'Please enter your street address.';
-        elseif (text_length($form['StreetAddress']) > 40) $errors[] = 'Street address must be 40 characters or fewer.';
-        if ($form['Suburb'] === '') $errors[] = 'Please enter your suburb or town.';
-        elseif (text_length($form['Suburb']) > 40) $errors[] = 'Suburb or town must be 40 characters or fewer.';
-        if (!in_array($form['State'], $states, true)) $errors[] = 'Please select a valid state.';
-        $postcode_starts = [
-            'VIC' => ['3', '8'], 'NSW' => ['1', '2'], 'QLD' => ['4', '9'], 'NT' => ['0'],
-            'WA'  => ['6'],      'SA'  => ['5'],      'TAS' => ['7'],      'ACT' => ['0', '2'],
-        ];
-        if (!preg_match('/^\d{4}$/', $form['Postcode'])) {
-            $errors[] = 'Postcode must be exactly 4 digits.';
-        } elseif (isset($postcode_starts[$form['State']]) && !in_array($form['Postcode'][0], $postcode_starts[$form['State']], true)) {
-            $errors[] = 'Postcode does not match the selected state.';
-        }
-        if (!filter_var(html_entity_decode($form['Email'], ENT_QUOTES, 'UTF-8'), FILTER_VALIDATE_EMAIL) || text_length($form['Email']) > 150) $errors[] = 'Please enter a valid email address.';
-        if (!preg_match('/^\d{10}$/', $form['Phone'])) $errors[] = 'Phone number must be exactly 10 digits.';
-        if (!$form['Skills'] && $form['OtherSkills'] === '') $errors[] = 'Please select at least one skill, or describe your skills in the other skills box.';
-        if (text_length($form['OtherSkills']) > 1000) $errors[] = 'Other skills must be 1000 characters or fewer.';
+
+        $errors = array_merge($errors, validate_application([
+            'first_name' => $form['FirstName'], 'last_name' => $form['LastName'],
+            'dob' => $d ?: null, 'dob_message' => 'Please enter a valid date of birth.',
+            'gender' => $form['Gender'], 'street' => $form['StreetAddress'], 'suburb' => $form['Suburb'],
+            'state' => $form['State'], 'postcode' => $form['Postcode'], 'email' => $form['Email'],
+            'phone' => $form['Phone'], 'skills' => $form['Skills'], 'other_skills' => $form['OtherSkills'],
+        ]));
 
         if (!$errors) {
             $skills = implode(',', $form['Skills']);

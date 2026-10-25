@@ -62,71 +62,21 @@ $errors = [];
 if (!preg_match('/^[A-Za-z0-9]{6}$/', $job_ref))
     $errors[] = "Please select a valid job reference.";
 
-// Names: max 20 alpha characters (letters, hyphen, apostrophe, space allowed)
-if (trim($first_name) === "" || !preg_match('/^[A-Za-z ]{1,20}$/', $first_name))
-    $errors[] = "First name must be 1 to 20 letters.";
-if (trim($last_name) === "" || !preg_match('/^[A-Za-z ]{1,20}$/', $last_name))
-    $errors[] = "Last name must be 1 to 20 letters.";
-
 // DOB: dd/mm/yyyy, real date, age 15-80
+$dob_date = null;
 $dob_sql = null;
-if (!preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $DOB, $m) || !checkdate((int)$m[2], (int)$m[1], (int)$m[3])) {
-    $errors[] = "Date of birth must be a valid date in dd/mm/yyyy format.";
-} else {
+if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $DOB, $m) && checkdate((int) $m[2], (int) $m[1], (int) $m[3])) {
     $dob_sql = "$m[3]-$m[2]-$m[1]";
-    $dob_date = new DateTime($dob_sql);
-    $today    = new DateTime('today');
-
-    if ($dob_date > $today) {
-        $errors[] = "Date of birth cannot be in the future.";
-    } else {
-        $age = $dob_date->diff($today)->y;
-        if ($age < 15 || $age > 80) {
-            $errors[] = "Applicants must be aged between 15 and 80.";
-        }
-    }
+    $dob_date = DateTime::createFromFormat('!Y-m-d', $dob_sql);
 }
 
-// Gender
-$valid_genders = ['Male','Female','Other'];
-if (!in_array($gender, $valid_genders, true))
-    $errors[] = "Please select a gender.";
-
-// Address
-if ($street === "") $errors[] = "Please enter your street address.";
-elseif (text_length($street) > 40) $errors[] = "Street address must be 40 characters or fewer.";
-if ($suburb === "") $errors[] = "Please enter your suburb or town.";
-elseif (text_length($suburb) > 40) $errors[] = "Suburb or town must be 40 characters or fewer.";
-
-// State + postcode (4 digits, first digit must match state)
-$valid_states = ['VIC','NSW','QLD','NT','WA','SA','TAS','ACT'];
-if (!in_array($state, $valid_states, true)) {
-    $errors[] = "Please select a valid state.";
-}
-if (!preg_match('/^\d{4}$/', $postcode)) {
-    $errors[] = "Postcode must be exactly 4 digits.";
-} elseif (in_array($state, $valid_states, true)) {
-    $first_digit_map = [
-        'VIC' => ['3','8'], 'NSW' => ['1','2'], 'QLD' => ['4','9'], 'NT' => ['0'],
-        'WA'  => ['6'],     'SA'  => ['5'],     'TAS' => ['7'],     'ACT' => ['0','2'],
-    ];
-    if (!in_array($postcode[0], $first_digit_map[$state], true))
-        $errors[] = "Postcode does not match the selected state.";
-}
-
-// Email (check the raw value, since htmlspecialchars may alter odd characters)
-if (!filter_var(html_entity_decode($email), FILTER_VALIDATE_EMAIL) || text_length($email) > 150)
-    $errors[] = "Please enter a valid email address.";
-
-// Phone: 10 digits
-if (!preg_match('/^[0-9]{10}$/', $phone))
-    $errors[] = "Phone number must be exactly 10 digits.";
-
-// Skills: at least one, or something in other skills
-if (count($skills_arr) === 0 && $other_skill === "")
-    $errors[] = "Please select at least one skill, or describe your skills in the other skills box.";
-if (text_length($other_skill) > 1000)
-    $errors[] = "Other skills must be 1000 characters or fewer.";
+$errors = array_merge($errors, validate_application([
+    'first_name' => $first_name, 'last_name' => $last_name,
+    'dob' => $dob_date, 'dob_message' => "Date of birth must be a valid date in dd/mm/yyyy format.",
+    'gender' => $gender, 'street' => $street, 'suburb' => $suburb,
+    'state' => $state, 'postcode' => $postcode, 'email' => $email, 'phone' => $phone,
+    'skills' => $skills_arr, 'other_skills' => $other_skill,
+]));
 
 if (strlen($password) < 8)
     $errors[] = "Password must be at least 8 characters.";
