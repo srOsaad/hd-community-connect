@@ -354,6 +354,12 @@ textarea {
   resize: both;
 }
 
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  width: auto;
+}
+
 input[type="radio"],
 input[type="checkbox"] {
   width: auto;
