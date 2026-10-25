@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'session.inc';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' && !empty($_SESSION['eoi_id'])) {
     header('Location: applicant.php');
@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['eoi_id'] = $eoi_number;
         $_SESSION['application_id'] = $application_id;
         $_SESSION['applicant_last_activity'] = time();
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         header('Location: applicant.php');
         exit();
 

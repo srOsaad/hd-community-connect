@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once "session.inc";
 require_once "functions.inc";   // gives you e()
 
 if (empty($_SESSION['apply_success'])) {

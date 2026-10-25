@@ -4,9 +4,7 @@ auth.inc: protects staff-only pages. Put require_once "auth.inc"; on the first l
 Visitors who aren't logged in go to stafflogin.php. Logs out after 30 minutes of inactivity.
 */
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once "session.inc";
 
 $session_timeout = 30 * 60; # 30 minutes, in seconds
 

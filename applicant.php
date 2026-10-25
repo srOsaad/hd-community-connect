@@ -4,7 +4,7 @@
 //                   (no button when Current or Final)
 //   ?edit=1      -> editable form with Save / Cancel
 
-session_start();
+require_once 'session.inc';
 
 require_once 'db_connect.inc';   // $conn
 require_once 'functions.inc';    // clean_input(), e()

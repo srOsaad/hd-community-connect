@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'session.inc';
 require_once 'db_connect.inc';
 require_once 'error.inc';
 
@@ -45,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['username'] = $username;
         $_SESSION['role'] = 'staff';
         $_SESSION['last_activity'] = time();
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         header('Location: manage.php');
         exit();
 

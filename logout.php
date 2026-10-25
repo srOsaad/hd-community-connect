@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'session.inc';
 $was_staff = ($_SESSION['role'] ?? '') === 'staff';
 session_unset();
 session_destroy();

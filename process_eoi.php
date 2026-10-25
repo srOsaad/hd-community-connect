@@ -8,9 +8,7 @@ function render_page($title, $heading, $messages, $is_error) {
 }
 
 function keep_form_values() {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    require_once "session.inc";
     $fields = ['job_reference_number', 'first_name', 'last_name', 'DateOfBirth', 'Gender', 'streetaddress',
                'suburb_town', 'state', 'postcode', 'email', 'phone', 'Other_skill'];
     $old = [];
@@ -244,7 +242,7 @@ if ($saved) {
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
 
-    session_start();
+    require_once "session.inc";
     session_regenerate_id(true);
     unset($_SESSION['apply_old']);
     $_SESSION['apply_success'] = true;

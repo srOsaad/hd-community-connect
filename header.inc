@@ -11,8 +11,10 @@ Set these before including this file:
 
 # Every page needs the session so nav.inc can show the right staff links
 # Pages that redirect start it earlier themselves if it has not started.
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+require_once "session.inc";
+
+if (!headers_sent()) {
+    header("X-Frame-Options: DENY");
 }
 
 // Safe defaults in case a page forgets to set these

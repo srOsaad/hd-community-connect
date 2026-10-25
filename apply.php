@@ -13,9 +13,7 @@ if (!$conn) {
 }
 $job_map = get_job_map($conn);
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once "session.inc";
 $old = isset($_SESSION['apply_old']) && is_array($_SESSION['apply_old']) ? $_SESSION['apply_old'] : [];
 
 function old_value($key) {
