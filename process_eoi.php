@@ -24,8 +24,8 @@ if (!$conn) {
     echo "<p>" . $db_error_message . "</p>";   // database not reachable
     exit();
 } else {
-    $required_fields = ['job','first_name','last_name','DateOfBirth','streetaddress','suburb_town',
-                    'state','postcode','email','phone'];
+    $required_fields = ['job_reference_number','first_name','last_name','DateOfBirth','streetaddress','suburb_town',
+                    'state','postcode','email','phone','password','confirm_password'];
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         header("Location: apply.php");
@@ -40,10 +40,9 @@ if (!$conn) {
 }
 
 /* ---------- Sanitise ---------- */
-$job_number  = (int)$_POST['job'];
-$job_ref     = isset($_POST['job_reference_number'])
-                ? strtoupper(clean_input($_POST['job_reference_number']))
-                : (string)$job_number;
+$job_ref     = strtoupper(clean_input($_POST['job_reference_number']));
+$password    = (string) $_POST['password'];
+$confirm     = (string) $_POST['confirm_password'];
 $first_name  = clean_input($_POST['first_name']);
 $last_name   = clean_input($_POST['last_name']);
 $DOB         = clean_input($_POST['DateOfBirth']);
@@ -132,6 +131,11 @@ if (count($skills_arr) === 0 && $other_skill === "")
     $errors[] = "Please select at least one skill, or describe your skills in the other skills box.";
 if (strlen($other_skill) > 1000)
     $errors[] = "Other skills must be 1000 characters or fewer.";
+
+if (strlen($password) < 8)
+    $errors[] = "Password must be at least 8 characters.";
+elseif ($password !== $confirm)
+    $errors[] = "Passwords do not match.";
 if ($errors) {
     render_page("Application Error", "Please fix the following problems", $errors, true);
     exit();
@@ -143,8 +147,8 @@ if (!$conn) {
     exit();
 }
 
-$job_stmt = mysqli_prepare($conn, "SELECT 1 FROM job_table WHERE serial_number = ?");
-mysqli_stmt_bind_param($job_stmt, "i", $job_number);
+$job_stmt = mysqli_prepare($conn, "SELECT 1 FROM jobs WHERE reference = ?");
+mysqli_stmt_bind_param($job_stmt, "s", $job_ref);
 mysqli_stmt_execute($job_stmt);
 mysqli_stmt_store_result($job_stmt);
 $job_exists = mysqli_stmt_num_rows($job_stmt) > 0;
@@ -160,7 +164,6 @@ if (!$job_exists) {
  /* DATA BASE */
 $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     EOInumber     INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    job_number    INT UNSIGNED NOT NULL,
     JobReference  CHAR(6)      NOT NULL,
     FirstName     VARCHAR(20)  NOT NULL,
     LastName      VARCHAR(20)  NOT NULL,
@@ -174,9 +177,17 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     Phone         VARCHAR(10)  NOT NULL,
     Skills        SET('Problem solving','Communication','Teamwork') NOT NULL,
     OtherSkills   TEXT NULL,
-    Status        ENUM('New','Processing','Accepted','Rejected') NOT NULL DEFAULT 'New'
-)";
-if (!mysqli_query($conn, $create_sql)) {
+    Status        ENUM('New','Current','Final') NOT NULL DEFAULT 'New'
+) ENGINE=InnoDB";
+$create_users_sql = "CREATE TABLE IF NOT EXISTS users (
+    eoi_number       INT UNSIGNED NOT NULL PRIMARY KEY,
+    password_hash    VARCHAR(255) NOT NULL,
+    failed_attempts  INT UNSIGNED NOT NULL DEFAULT 0,
+    lockout_until    DATETIME     NULL,
+    lockout_minutes  INT UNSIGNED NOT NULL DEFAULT 15,
+    FOREIGN KEY (eoi_number) REFERENCES eoi(EOInumber) ON DELETE CASCADE
+) ENGINE=InnoDB";
+if (!mysqli_query($conn, $create_sql) || !mysqli_query($conn, $create_users_sql)) {
     render_page("Database Error", "Sorry, we could not process your application",
         ["Could not prepare the database table."], true);
     mysqli_close($conn);
@@ -187,9 +198,9 @@ if (!mysqli_query($conn, $create_sql)) {
 $skills_str = implode(",", $skills_arr);   // SET needs commas with no spaces
 
 $stmt = mysqli_prepare($conn,
-    "INSERT INTO eoi (job_number, JobReference, FirstName, LastName, DOB, Gender, StreetAddress, Suburb,
+    "INSERT INTO eoi (JobReference, FirstName, LastName, DOB, Gender, StreetAddress, Suburb,
                       State, Postcode, Email, Phone, Skills, OtherSkills)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 if (!$stmt) {
     render_page("Database Error", "Sorry, we could not process your application",
         ["Could not prepare the statement."], true);
@@ -197,28 +208,31 @@ if (!$stmt) {
     exit();
 }
 
-mysqli_stmt_bind_param($stmt, "isssssssssssss",
-    $job_number, $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
+mysqli_stmt_bind_param($stmt, "sssssssssssss",
+    $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
     $state, $postcode, $email, $phone, $skills_str, $other_skill);
 
-if (mysqli_stmt_execute($stmt)) {
-    $new_eoi_id = mysqli_insert_id($conn);
-    mysqli_stmt_close($stmt);
+mysqli_begin_transaction($conn);
+$saved = mysqli_stmt_execute($stmt);
+$new_eoi_id = $saved ? mysqli_insert_id($conn) : 0;
 
-    $upd = mysqli_prepare($conn,
-        "UPDATE job_table SET applicant_count = COALESCE(applicant_count, 0) + 1
-         WHERE serial_number = ?");
-    if ($upd) {
-        mysqli_stmt_bind_param($upd, "i", $job_number);
-        mysqli_stmt_execute($upd);
-        mysqli_stmt_close($upd);
-    } else {
-        error_log("job_table update failed: " . mysqli_error($conn));
+if ($saved) {
+    $password_hash = password_hash($password, PASSWORD_DEFAULT);
+    $user_stmt = mysqli_prepare($conn, "INSERT INTO users (eoi_number, password_hash) VALUES (?, ?)");
+    $saved = $user_stmt && mysqli_stmt_bind_param($user_stmt, "is", $new_eoi_id, $password_hash)
+        && mysqli_stmt_execute($user_stmt);
+    if ($user_stmt) {
+        mysqli_stmt_close($user_stmt);
     }
+}
 
+if ($saved) {
+    mysqli_commit($conn);
+    mysqli_stmt_close($stmt);
     mysqli_close($conn);
 
     session_start();
+    session_regenerate_id(true);
     $_SESSION['apply_success'] = true;
     $_SESSION['first_name'] = $first_name;
     $_SESSION['eoi_id'] = $new_eoi_id;
@@ -226,6 +240,7 @@ if (mysqli_stmt_execute($stmt)) {
     header("Location: success.php");
     exit();
 } else {
+    mysqli_rollback($conn);
     render_page("Database Error", "Sorry, we could not process your application",
         ["Your application could not be saved. Please try again."], true);
 }

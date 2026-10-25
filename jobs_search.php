@@ -1,67 +1,53 @@
-<!DOCTYPE html>
-<html lang="en-AU">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php
+session_start();
+require_once "db_connect.inc";   // gives you $conn
+require_once "functions.inc";    // gives you clean_input() and e()
 
-  <title>Jobs</title>
-  <meta name="description" content="Results for jobs search.">
+$page_title = "Search Jobs";
+$page_description = "Results for jobs search.";
+$current_page = "jobs";
 
-  <!-- Google Fonts — credited in the footer -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&amp;family=Source+Serif+4:wght@600;700&amp;display=swap">
-  
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-  <link rel="stylesheet" href="styles/styles.css">
-
-  <style>
+$page_style = <<<'CSS'
     .inline {
 		display: inline;
 	}
-	
+
 	.coloured {
 		color: #1C3872; /*from style.css*/
 		font-weight: bold;
 	}
-	
+
 	.outline {
 		padding: 1.25rem 1.5rem;
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
 		max-width: 20rem;
 	}
-  </style>
-  
-    <!-- php includes -->
-	<?php
-	session_start();
-	require_once "db_connect.inc";   // gives you $conn
-	require_once "functions.inc";    // gives you clean_input() and e()
-	?>
-</head>
-<body>
-	<!-- header from included file -->
-	<?php include("header.inc"); ?>
+CSS;
+
+include("header.inc");
+?>
 
 	<main id="main">
 
 	<h1>Search Jobs</h1>
-	
+
 	<?php
-	
+
 	if ($conn && isset($_GET["search"]))
 	{
 		$search = clean_input($_GET["search"]);
-		$query = "SELECT * FROM jobs WHERE title LIKE '%$search%'"; // retrieve job listings based on search from user
-		$result = mysqli_query($conn, $query);
-			
-		echo "<p class='intro'> Search results for &#34;" . $_GET["search"] . "&#34;</p>";
-		
+		$like = "%" . $search . "%";
+		$stmt = mysqli_prepare($conn, "SELECT * FROM jobs WHERE title LIKE ? ORDER BY reference"); // retrieve job listings based on search from user
+		mysqli_stmt_bind_param($stmt, "s", $like);
+		mysqli_stmt_execute($stmt);
+		$result = mysqli_stmt_get_result($stmt);
+
+		echo "<p class='intro'> Search results for &#34;" . $search . "&#34;</p>";
+
 		echo "<div class='group' style='gap: 2rem;/*overriding style.css*/'>"; // group containing all job boxes
-			
-		if (mysqli_num_rows($result) > 0)
+
+		if ($result && mysqli_num_rows($result) > 0)
 		{
 			while ($row = mysqli_fetch_assoc($result))
 			{
@@ -72,23 +58,24 @@
 					<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
 					<p>" . $row["description"] . "</p>
 					<p>" . $row["reporting_line"] . "</p>";
-						
+
 					// button is a form so the job reference can by sent via get
 					echo "<form method='get' action='job_full.php'>" .
-						"<input type='hidden' name='reference' value='" . $row["reference"] . "'>" .
+						"<input type='hidden' name='reference' value='" . e($row["reference"]) . "'>" .
 						"<input class='btn' type='submit' value='Read More'>" .
 						"</form>";
-					
+
 					echo "</section>";
 				}
 			}
 			else echo "<p>No job listings found. Search for something else or check back later.</p>"; // if db connected, but no listings
+
+			echo "</div>";
+			mysqli_stmt_close($stmt);
 		}
 		else echo "<p>There was an error connecting to the database...</p>"; // if failed to connect to db
 		?>
-		
-	</div>
-	
+
 	<aside style="float: right">
 		<p class="hint">See the apply page for information on how to apply.</p>
 	</aside>
@@ -97,6 +84,3 @@
 
 	<!-- footer from included file -->
 	<?php include("footer.inc"); ?>
-
-</body>
-</html>

@@ -1,75 +1,58 @@
-<!DOCTYPE html>
-<html lang="en-AU">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php
+session_start();
+require_once "db_connect.inc";   // gives you $conn
+require_once "functions.inc";    // gives you clean_input() and e()
 
-  <title>Jobs</title>
-  <meta name="description" content="The jobs listing page.">
+$page_title = "Jobs";
+$page_description = "The jobs listing page.";
+$current_page = "jobs";
 
-  <!-- Google Fonts — credited in the footer -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&amp;family=Source+Serif+4:wght@600;700&amp;display=swap">
-  
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-  <link rel="stylesheet" href="styles/styles.css">
-
-  <style>
+$page_style = <<<'CSS'
     .inline {
 		display: inline;
 	}
-	
+
 	.coloured {
 		color: #1C3872; /*from style.css*/
 		font-weight: bold;
 	}
-	
+
 	.outline {
 		padding: 1.25rem 1.5rem;
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
 		max-width: 21rem;
 	}
-  </style>
-  
-    <!-- php includes -->
-	<?php
-	session_start();
-	require_once "db_connect.inc";   // gives you $conn
-	require_once "functions.inc";    // gives you clean_input() and e()
-	?>
-</head>
-<body>
-	<!-- header from included file -->
-	<?php include("header.inc"); ?>
+CSS;
+
+include("header.inc");
+?>
 
 	<main id="main">
-	
+
 	<h1>Jobs</h1>
 	<p class="intro">List of currently avaliable positions at Community Connect.</p>
-		
+
 	<!-- search bar -->
 	<form method="get" action="jobs_search.php" class="inline">
 		<label for="search">Search for a job listing</label>
 		<input type="text" name="search" id="search" required>
 		<input class="btn" style="width: 8em" type="submit" value="Search">
 	</form>
-	
+
 	<!-- applied jobs button, goes to login page -->
-	<a href="userlogin.php" class="inline btn-secondary" style="float: right;">Applied Jobs</a>
-	
+	<a href="userlogin.php" class="inline btn-secondary" style="float: right;">Check Application</a>
+
 	 <!-- group containing all job boxes -->
 	<div class="group" style="gap: 2rem;/*overriding style.css*/">
-	
+
 		<?php
 		if ($conn)
 		{
-			$query = "SELECT * FROM jobs"; // retrieve all job listing
+			$query = "SELECT * FROM jobs ORDER BY reference"; // retrieve all job listing
 			$result = mysqli_query($conn, $query);
-			
-			if (mysqli_num_rows($result) > 0)
+
+			if ($result && mysqli_num_rows($result) > 0)
 			{
 				while ($row = mysqli_fetch_assoc($result))
 				{
@@ -80,24 +63,24 @@
 						<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
 						<p>" . $row["description"] . "</p>
 						<p>" . $row["reporting_line"] . "</p>";
-						
+
 					// button is a form so the job reference can by sent via get
 					echo "<form method='get' action='job_full.php'>" .
-						"<input type='hidden' name='reference' value='" . $row["reference"] . "'>" .
+						"<input type='hidden' name='reference' value='" . e($row["reference"]) . "'>" .
 						"<input class='btn' type='submit' value='Read More'>" .
 						"</form>";
-					
+
 					echo "</section>";
 				}
 			}
 			else echo "<p>There are no jobs at the moment...</p>"; // if db connected, but no listings
 		}
-		else echo "<p>There was an error connecting to the database...</p>" // if db failed to connect
+		else echo "<p>There was an error connecting to the database...</p>"; // if db failed to connect
 
 		?>
-		
+
 	</div>
-	
+
 	<aside class="hint" style="float: right">
 		<p>See the apply page for information on how to apply.</p>
 	</aside>
@@ -106,6 +89,3 @@
 
 	<!-- footer from included file -->
 	<?php include("footer.inc"); ?>
-
-</body>
-</html>

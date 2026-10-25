@@ -1,4 +1,3 @@
-
 <?php
 /*
 Using header.inc (with nav.inc inside) and footer.inc.
@@ -8,6 +7,11 @@ require_once "db_connect.inc";
 require_once "functions.inc";
 require_once "jobs.inc";
 $job_map = get_job_map($conn);
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$selected_job = isset($_GET['reference']) && is_string($_GET['reference']) ? strtoupper($_GET['reference']) : (string) ($_SESSION['reference'] ?? '');
 
 
 $page_title = "Apply";
@@ -38,10 +42,6 @@ include "header.inc";
       <!-- Form fields for user information -->
       <fieldset class="field">
         <legend><strong>Who Are Youuuu?</strong></legend>
-        <label for="job_reference_number"><strong>Job reference number:</strong></label>
-        <input type="text" name="job_reference_number" id="job_reference_number" maxlength="6" pattern="[A-Za-z0-9]{6}"
-          title="Please enter Exactly 6 alphanumeric characters" placeholder="Enter your job reference number" required>
-
         <label for="first_name"><strong>First name:</strong></label>
         <input type="text" name="first_name" id="first_name" pattern="[A-Za-z\s]{1,20}"
           title="Please enter your first name" placeholder="Enter your first name" required>
@@ -99,11 +99,11 @@ include "header.inc";
 <!-- Form fields for job apply -->
 <fieldset class="field">
 <legend><strong>Which Job you want to applyyyy?</strong></legend>
-<label for="job"><strong>Jobs:</strong></label>
-<select id="job" name="job" required>
+<label for="job_reference_number"><strong>Jobs:</strong></label>
+<select id="job_reference_number" name="job_reference_number" required>
     <option value="">Please select job you want to apply</option>
-    <?php foreach ($job_map as $title => $serial): ?>
-        <option value="<?= (int)$serial ?>"><?= e($title) ?></option>
+    <?php foreach ($job_map as $reference => $title): ?>
+        <option value="<?= e($reference) ?>"<?= (string) $reference === $selected_job ? ' selected' : '' ?>><?= e($title) ?> (#<?= e($reference) ?>)</option>
     <?php endforeach; ?>
 </select>
 </fieldset>
@@ -125,9 +125,9 @@ include "header.inc";
 <fieldset class="field">
 <legend><strong>Create your password hereeee</strong></legend>
     <label for="password">Password</label>
-    <input type="password" id="password" name="password" autocomplete="new-password">
+    <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" required>
     <label for="confirm_password">Confirm password</label>
-    <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password">
+    <input type="password" id="confirm_password" name="confirm_password" minlength="8" autocomplete="new-password" required>
 </fieldset>
 <!-- Form submission buttons -->
 <div class="grid">

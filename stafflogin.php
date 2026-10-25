@@ -90,7 +90,7 @@ include 'header.inc';
 
     <div class="group">
       <button type="submit" class="btn">Login</button>
-      <a class="btn-secondary" href="userlogin.php">User login</a>
+      <a class="btn-secondary" href="userlogin.php">Check application</a>
     </div>
   </form>
 </main>

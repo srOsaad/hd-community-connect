@@ -6,15 +6,15 @@ $error = '';
 $max_attempts = 5;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
+    $eoi_number = (int) trim((string) ($_POST['eoi_number'] ?? ''));
+    $password = (string) ($_POST['password'] ?? '');
 
     if (!$conn) {
         $error = $db_error_message;
     } else {
         $stmt = mysqli_prepare($conn,
-            "SELECT password_hash, failed_attempts, lockout_until, lockout_minutes FROM users WHERE username = ?");
-        mysqli_stmt_bind_param($stmt, "s", $username);
+            "SELECT password_hash, failed_attempts, lockout_until, lockout_minutes FROM users WHERE eoi_number = ?");
+        mysqli_stmt_bind_param($stmt, "i", $eoi_number);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_bind_result($stmt, $hash, $attempts, $lock_until, $lock_minutes);
         $found = mysqli_stmt_fetch($stmt);
@@ -26,23 +26,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $minutes_left = ceil((strtotime($lock_until) - time()) / 60);
             $error = "Too many failed attempts. Try again in $minutes_left minute(s).";
 
-        } elseif ($found && ($password == $hash)) {
+        } elseif ($found && password_verify($password, $hash)) {
             // Correct: clear the failed count and lockout, then log in as a user
             $stmt = mysqli_prepare($conn,
-                "UPDATE users SET failed_attempts = 0, lockout_until = NULL WHERE username = ?");
-            mysqli_stmt_bind_param($stmt, "s", $username);
+                "UPDATE users SET failed_attempts = 0, lockout_until = NULL WHERE eoi_number = ?");
+            mysqli_stmt_bind_param($stmt, "i", $eoi_number);
             mysqli_stmt_execute($stmt);
             mysqli_stmt_close($stmt);
 
             session_regenerate_id(true);
-            $_SESSION['username'] = $username;
-            $_SESSION['role'] = 'user';
-            $_SESSION['last_activity'] = time();
-            header('Location: index.php');
+            $_SESSION['eoi_id'] = $eoi_number;
+            header('Location: applicant.php');
             exit();
 
         } else {
-            $error = 'Incorrect username or password.';
+            $error = 'Incorrect application ID or password.';
 
             if ($found) {
                 $attempts = $attempts + 1;
@@ -55,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
 
                 $stmt = mysqli_prepare($conn,
-                    "UPDATE users SET failed_attempts = ?, lockout_until = ? WHERE username = ?");
-                mysqli_stmt_bind_param($stmt, "iss", $attempts, $lock_time, $username);
+                    "UPDATE users SET failed_attempts = ?, lockout_until = ? WHERE eoi_number = ?");
+                mysqli_stmt_bind_param($stmt, "isi", $attempts, $lock_time, $eoi_number);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
             }
@@ -64,28 +62,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$page_title = 'User login';
-$page_description = 'User login for Community Connect.';
+$page_title = 'Check your application';
+$page_description = 'Check the status of your Community Connect job application.';
 $current_page = 'userlogin';
 include 'header.inc';
 ?>
 
 <main id="main">
-  <h1>User login</h1>
+  <h1>Check your application</h1>
 
   <?php if ($error != '') { ?>
     <p class="message message-error"><?php echo $error; ?></p>
   <?php } ?>
 
   <form method="post" action="userlogin.php">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required><br>
+    <label for="eoi_number">Application ID:</label>
+    <input type="text" id="eoi_number" name="eoi_number" inputmode="numeric" pattern="[0-9]+" required><br>
 
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required><br>
 
     <div class="group">
-      <button type="submit" class="btn">Login</button>
+      <button type="submit" class="btn">Check application</button>
       <a class="btn-secondary" href="stafflogin.php">Staff login</a>
     </div>
   </form>

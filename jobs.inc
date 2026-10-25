@@ -1,11 +1,14 @@
 <?php
-// Returns [ title => serial_number ]
+// Returns [ reference => title ]
 function get_job_map($conn) {
     $map = [];
-    $res = mysqli_query($conn, "SELECT title, serial_number FROM job_table");
+    if (!$conn) {
+        return $map;
+    }
+    $res = mysqli_query($conn, "SELECT reference, title FROM jobs ORDER BY reference");
     if ($res) {
         while ($row = mysqli_fetch_assoc($res)) {
-            $map[$row['title']] = (int)$row['serial_number'];
+            $map[$row['reference']] = $row['title'];
         }
     }
     return $map;

@@ -5,7 +5,7 @@ Add a page by adding a line to $nav_links. The current page's link is highlighte
 Staff link: "Staff login" for visitors; "Manage" and "Log out" for logged-in managers.
 */
 
-$is_logged_in = isset($_SESSION["username"]);
+$is_logged_in = isset($_SESSION["username"]) && ($_SESSION["role"] ?? "") === "staff";
 
 # key = $current_page value => [file, link text]
 $nav_links = [
@@ -23,7 +23,7 @@ if ($is_logged_in) {
 if ($is_logged_in) {
     $staff_link = ["logout.php", "Log out (" . htmlspecialchars($_SESSION["username"]) . ")", "logout"];
 } else {
-    $staff_link = ["login.php", "Staff login", "login"];
+    $staff_link = ["stafflogin.php", "Staff login", "stafflogin"];
 }
 ?>
     <nav class="site-nav" aria-label="Main navigation">

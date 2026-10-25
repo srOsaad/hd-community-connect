@@ -1,7 +1,7 @@
 <?php
 // applicant.php - shows ONE applicant's own row from the eoi table.
 //   Default view -> data shown as headings + paragraphs, with an Edit button
-//                   (no button when Processing)
+//                   (no button when Current or Final)
 //   ?edit=1      -> editable form with Save / Cancel
 
 session_start();
@@ -23,6 +23,11 @@ unset($_SESSION['flash']);
 $app = null;
 $id  = (int) ($_SESSION['eoi_id'] ?? 0);
 
+if ($id < 1) {
+    header('Location: userlogin.php');
+    exit;
+}
+
 if ($conn && $id > 0) {
     $stmt = mysqli_prepare($conn, 'SELECT * FROM eoi WHERE EOInumber = ?');
     mysqli_stmt_bind_param($stmt, 'i', $id);
@@ -31,12 +36,12 @@ if ($conn && $id > 0) {
     mysqli_stmt_close($stmt);
 }
 
-// Job title for the page heading (job_number in eoi = serial_number in job_table)
+// Job title for the page heading (JobReference in eoi = reference in jobs)
 $job_title = '';
 if ($app) {
-    $stmt = mysqli_prepare($conn, 'SELECT title FROM job_table WHERE serial_number = ?');
-    $jn = (int) $app['job_number'];
-    mysqli_stmt_bind_param($stmt, 'i', $jn);
+    $stmt = mysqli_prepare($conn, 'SELECT title FROM jobs WHERE reference = ?');
+    $jn = $app['JobReference'];
+    mysqli_stmt_bind_param($stmt, 's', $jn);
     mysqli_stmt_execute($stmt);
     $job = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
     mysqli_stmt_close($stmt);
@@ -46,7 +51,7 @@ if ($app) {
 $editing = false;
 
 if ($app) {
-    $locked = in_array($app['Status'], ['Processing', 'Rejected'], true);    // only Processing,Rejected can't be edited
+    $locked = in_array($app['Status'], ['Current', 'Final'], true);    // only Current,Final can't be edited
 
     $form = $app;
     $form['Skills'] = $app['Skills'] === '' ? [] : explode(',', $app['Skills']);
@@ -79,11 +84,11 @@ if ($app) {
 
         if (!$errors) {
             $skills = implode(',', $form['Skills']);
-            // Status is re-checked in SQL, so a Processing application can't be changed
+            // Status is re-checked in SQL, so a Current application can't be changed
             $stmt = mysqli_prepare($conn,
                 "UPDATE eoi SET FirstName=?, LastName=?, DOB=?, Gender=?, StreetAddress=?, Suburb=?,
                         State=?, Postcode=?, Email=?, Phone=?, Skills=?, OtherSkills=?
-                 WHERE EOInumber=? AND Status NOT IN ('Processing', 'Rejected')");
+                 WHERE EOInumber=? AND Status NOT IN ('Current', 'Final')");
             mysqli_stmt_bind_param($stmt, 'ssssssssssssi',
                 $form['FirstName'], $form['LastName'], $form['DOB'], $form['Gender'],
                 $form['StreetAddress'], $form['Suburb'], $form['State'], $form['Postcode'],
@@ -101,6 +106,8 @@ if ($app) {
     }
 }
 
+$page_title = 'Your Application';
+$page_description = 'Check the status of your Community Connect job application.';
 include 'header.inc';
 ?>
 <style>
@@ -118,17 +125,20 @@ include 'header.inc';
     }
     input.static { pointer-events: none; cursor: default; }
 </style>
-<main>
+<main id="main">
     <h1>Your Application<?= $job_title !== '' ? ' for ' . e($job_title) : '' ?></h1>
 
 <?php if (!$app): ?>
 
-    <p>No application has been created yet.</p>
+    <p>No application was found for this ID.</p>
 
 <?php elseif (!$editing): ?>
 
     <!-- ===== VIEW: headings + paragraphs ===== -->
     <?php if ($notice): ?><p class="success"><?= e($notice) ?></p><?php endif; ?>
+
+    <h2>Application ID</h2>
+    <p><?= (int) $app['EOInumber'] ?></p>
 
     <h2>Status</h2>
     <p><strong><?= e($app['Status']) ?></strong></p>
@@ -176,9 +186,12 @@ include 'header.inc';
     <h2>Other Skills</h2>
     <p><?= trim((string) $app['OtherSkills']) === '' ? '-' : nl2br(e($app['OtherSkills'])) ?></p>
 
+    <div class="group">
     <?php if (!$locked): ?>
-        <p><a class="btn" href="applicant.php?edit=1">Edit</a></p>
+        <a class="btn" href="applicant.php?edit=1">Edit</a>
     <?php endif; ?>
+        <a class="btn-secondary" href="logout.php">Log out</a>
+    </div>
 
 <?php else: ?>
 
