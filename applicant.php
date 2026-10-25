@@ -160,11 +160,6 @@ if ($app) {
 $page_title = 'Your Application';
 $page_description = 'Check the status of your Community Connect job application.';
 $page_style = <<<'CSS'
-    html { height: 100%; }
-    body { min-height: 100vh; display: flex; flex-direction: column; margin: 0; }
-    main { flex: 1 0 auto; }
-    footer { margin-top: auto; flex-shrink: 0; }
-
     /* Edit form: fields react on hover (Job Reference is never editable) */
     form input:not(.static):hover,
     form select:hover,

@@ -9,19 +9,6 @@ function show_error_page($heading, $messages = [], $back_href = "index.php", $ba
     $page_title = "Error";
     $page_description = "Something went wrong on Community Connect.";
     $current_page = "";
-    $page_style = <<<'CSS'
-  body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    min-height: 100dvh;
-  }
-
-  main {
-    flex: 1 0 auto;
-    width: 100%;
-  }
-CSS;
     include "header.inc";
 ?>
   <main id="main">
