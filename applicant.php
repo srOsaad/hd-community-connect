@@ -26,7 +26,7 @@ $token = $_SESSION['csrf_token'];
 $notice = $_SESSION['flash'] ?? '';
 unset($_SESSION['flash']);
 
-// ---------- Load this user's row ----------
+// Load this user's row
 $app = null;
 $id  = (int) ($_SESSION['eoi_id'] ?? 0);
 $application_id = (string) ($_SESSION['application_id'] ?? '');
@@ -91,7 +91,7 @@ if ($app) {
         $locked_notice = 'Your changes were not saved because your application is now ' . strtolower($app['Status']) . '.';
     }
 
-    // ---------- Save ----------
+    // Save
     if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $sent_token = is_string($_POST['token'] ?? null) ? $_POST['token'] : '';
         if (!hash_equals($token, $sent_token)) {
@@ -227,7 +227,7 @@ include 'header.inc';
 
 <?php else: ?>
 
-    <!-- ===== EDIT FORM ===== -->
+    <!-- Edit mode: form -->
     <p>Status: <strong><?= show($app['Status']) ?></strong></p>
 
     <?php if ($errors): ?>

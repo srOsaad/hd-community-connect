@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-/* ---------- Sanitise ---------- */
+// Sanitise
 $job_ref     = strtoupper(post_value('job_reference_number'));
 $password    = is_string($_POST['password'] ?? null) ? $_POST['password'] : "";
 $confirm     = is_string($_POST['confirm_password'] ?? null) ? $_POST['confirm_password'] : "";
@@ -54,7 +54,7 @@ $phone       = post_value('phone');
 $other_skill = post_value('Other_skill');
 $skills_arr  = allowed_skills($_POST['skills'] ?? []);
 
-/* ---------- Validate ---------- */
+// Validate
 $errors = [];
 
 // Job reference: exactly 6 alphanumeric characters
@@ -97,7 +97,7 @@ if ($errors) {
     show_application_error($errors);
 }
 
- /* DATA BASE */
+// Database
 $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     EOInumber     INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     ApplicationID VARCHAR(17)  NOT NULL UNIQUE,
@@ -129,7 +129,7 @@ if (!mysqli_query($conn, $create_sql) || !mysqli_query($conn, $create_users_sql)
     show_error_page("Sorry, we could not process your application", ["Please try again later."], "apply.php", "Return to application form", 503);
 }
 
-/* ---------- Checking insert ---------- */
+// Checking insert
 $skills_str = implode(",", $skills_arr);   // SET needs commas with no spaces
 
 $stmt = mysqli_prepare($conn,
