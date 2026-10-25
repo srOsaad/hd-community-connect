@@ -8,7 +8,7 @@ Staff link: "Staff Login" for visitors; "Manage" and "Log Out" for logged-in man
 $is_logged_in = isset($_SESSION["username"]) && ($_SESSION["role"] ?? "") === "staff"
     && time() - ($_SESSION["last_activity"] ?? 0) <= 30 * 60;
 
-# key = $current_page value => [file, link text]
+// key = $current_page value => [file, link text]
 $nav_links = [
     "index" => ["index.php", "Home"],
     "jobs"  => ["jobs.php",  "Jobs"],
@@ -20,7 +20,7 @@ if ($is_logged_in) {
     $nav_links["manage"] = ["manage.php", "Manage"];
 }
 
-# Staff link, styled separately (class "nav-staff"): [file, link text, $current_page value]
+// Staff link, styled separately (class "nav-staff"): [file, link text, $current_page value]
 if ($is_logged_in) {
     $staff_link = ["logout.php?who=staff&amp;token=" . urlencode($_SESSION["csrf_token"] ?? ""), "Log Out (" . htmlspecialchars($_SESSION["username"]) . ")", "logout"];
 } else {

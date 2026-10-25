@@ -9,8 +9,8 @@ Set these before including this file:
   $page_style        optional: this page's embedded CSS
 */
 
-# Every page needs the session so nav.inc can show the right staff links
-# Pages that redirect start it earlier themselves if it has not started.
+// Every page needs the session so nav.inc can show the right staff links
+// Pages that redirect start it earlier themselves if it has not started.
 require_once "session.inc";
 
 if (!headers_sent()) {

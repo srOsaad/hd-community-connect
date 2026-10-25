@@ -4,29 +4,29 @@ manage.php: the HR manager's page. Only logged-in staff can see it.
 Shows every job application saved by process_eoi.php.
 */
 
-require_once "auth.inc";          # keep this first, it sends anyone not logged in back to the login page
-require_once "db_connect.inc";    # connects to the database ($conn)
-require_once "functions.inc";     # our helpers: clean_input() and e()
+require_once "auth.inc";          // keep this first, it sends anyone not logged in back to the login page
+require_once "db_connect.inc";    // connects to the database ($conn)
+require_once "functions.inc";     // our helpers: clean_input() and e()
 require_once "error.inc";
 
 if (!$conn) {
     show_database_error();
 }
 
-# Reads one text value from the URL or a form. If it's missing (or someone sends an array), we just get ""
+// Reads one text value from the URL or a form. If it's missing (or someone sends an array), we just get ""
 function field($source, $key) {
     return (isset($source[$key]) && is_string($source[$key])) ? clean_input($source[$key]) : "";
 }
 
-$messages = [];   # error messages to show above the results
+$messages = [];   // error messages to show above the results
 
-# What the manager is searching for (empty means "don't filter by this")
+// What the manager is searching for (empty means "don't filter by this")
 $filter_job   = strtoupper(field($_GET, "job_ref"));
 $filter_first = field($_GET, "first_name");
 $filter_last  = field($_GET, "last_name");
 $filter_app   = field($_GET, "application_id");
 
-# Check the search values the same way the apply form checks them. Anything invalid is ignored
+// Check the search values the same way the apply form checks them. Anything invalid is ignored
 if ($filter_job !== "" && !preg_match('/^[A-Z0-9]{6}$/', $filter_job)) {
     $messages[] = "A job reference is exactly 6 letters or numbers.";
 }
@@ -43,7 +43,7 @@ if ($filter_app !== "" && !preg_match('/^[0-9]{16,17}$/', $filter_app)) {
 
 $is_filtered = $filter_job !== "" || $filter_first !== "" || $filter_last !== "" || $filter_app !== "";
 
-# Columns the manager can sort by.
+// Columns the manager can sort by.
 $sort_fields = [
     "EOInumber"    => "EOI number",
     "JobReference" => "Job reference",
@@ -68,7 +68,7 @@ if ($filter_status !== "" && !in_array($filter_status, $statuses, true)) {
 $filter_invalid = count($messages) > 0;
 $is_filtered = $is_filtered || $filter_status !== "" || $filter_invalid;
 
-# CSRF token: forms that change data must send this back
+// CSRF token: forms that change data must send this back
 $token = csrf_token();
 
 $success = "";
@@ -83,7 +83,7 @@ $page_url = "manage.php?" . http_build_query([
     "sort" => $sort, "order" => $order,
 ]);
 
-# The eoi table only exists after the first application is sent, so check for it first
+// The eoi table only exists after the first application is sent, so check for it first
 $check = mysqli_query($conn, "SHOW TABLES LIKE 'eoi'");
 $has_table = $check && mysqli_num_rows($check) > 0;
 
@@ -118,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && field($_POST, "action
             mysqli_stmt_close($stmt);
         }
 
-        # Redirect so refreshing doesn't send the form again
+        // Redirect so refreshing doesn't send the form again
         if (isset($_SESSION["success"])) {
             header("Location: " . $page_url);
             exit();
@@ -178,8 +178,8 @@ if ($has_table) {
 }
 $total_count = array_sum($status_counts);
 
-# Get the applications in the chosen order. Each filled search box adds a condition,
-# and the values go in as ? placeholders so they can't change the SQL
+// Get the applications in the chosen order. Each filled search box adds a condition,
+// and the values go in as ? placeholders so they can't change the SQL
 $eois = [];
 if ($has_table && !$filter_invalid) {
     $conditions = [];
@@ -202,7 +202,7 @@ if ($has_table && !$filter_invalid) {
         $params[] = $filter_job;
     }
     if ($filter_first !== "") {
-        $conditions[] = "FirstName LIKE ?";      # LIKE with % on both sides means "contains"
+        $conditions[] = "FirstName LIKE ?";      // LIKE with % on both sides means "contains"
         $types .= "s";
         $params[] = like_pattern($filter_first);
     }
@@ -238,7 +238,7 @@ $page_title = "Manage Applications";
 $page_description = "HR page for viewing and managing job applications at Community Connect.";
 $current_page = "manage";
 
-# Embedded CSS for this page
+// Embedded CSS for this page
 $page_style = <<<'CSS'
     /* Search boxes sit side by side on wide screens and stack on phones */
     .search-form {
