@@ -34,6 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
+$content_type = $_SERVER['CONTENT_TYPE'] ?? '';
+$form_body = stripos($content_type, 'application/x-www-form-urlencoded') === 0 || stripos($content_type, 'multipart/form-data') === 0;
+if (empty($_POST) && $form_body && (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
+    show_application_error(["Your application was too large to send. Please shorten the other skills box and try again."], 413);
+}
+
 $required_fields = ['job_reference_number', 'first_name', 'last_name', 'DateOfBirth', 'streetaddress', 'suburb_town',
                     'state', 'postcode', 'email', 'phone', 'password', 'confirm_password'];
 foreach ($required_fields as $field) {
