@@ -39,11 +39,7 @@ include "header.inc";
 
     <div class="job-tools">
         <!-- search bar -->
-        <form method="get" action="search.php" class="job-search">
-            <label for="search">Search for a job title</label>
-            <input type="text" name="search" id="search" required>
-            <input class="btn" style="width: 8em" type="submit" value="Search">
-        </form>
+        <?php job_search_form(); ?>
 
         <!-- applied jobs button, goes to login page -->
         <a href="userlogin.php" class="btn-secondary">Check Application</a>
@@ -53,12 +49,11 @@ include "header.inc";
     <div class="group" style="gap: 2rem;/*overriding style.css*/">
 
         <?php
-        $query = "SELECT * FROM jobs ORDER BY reference"; // retrieve all job listing
-        $result = mysqli_query($conn, $query);
+        $jobs = find_jobs($conn); // retrieve all job listing
 
-        if ($result && mysqli_num_rows($result) > 0)
+        if ($jobs)
         {
-            while ($row = mysqli_fetch_assoc($result))
+            foreach ($jobs as $row)
             {
                 job_card($row);
             }

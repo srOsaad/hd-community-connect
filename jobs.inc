@@ -14,14 +14,41 @@ function get_job_map($conn) {
     return $map;
 }
 
+function find_jobs($conn, $title_search = "") {
+    if ($title_search === "") {
+        $result = mysqli_query($conn, "SELECT * FROM jobs ORDER BY reference");
+        return $result ? mysqli_fetch_all($result, MYSQLI_ASSOC) : [];
+    }
+
+    $like = like_pattern(html_entity_decode($title_search, ENT_QUOTES, "UTF-8"));
+    $stmt = db_prepare($conn, "SELECT * FROM jobs WHERE title LIKE ? ORDER BY reference");
+    mysqli_stmt_bind_param($stmt, "s", $like);
+    mysqli_stmt_execute($stmt);
+    $jobs = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+    mysqli_stmt_close($stmt);
+    return $jobs;
+}
+
+function job_facts($row) {
+    return "<p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
+        <p>Job reference: " . show($row["reference"]) . "</p>
+        <p>" . show($row["description"]) . "</p>
+        <p>Reports to: " . show($row["reporting_line"]) . "</p>";
+}
+
+function job_search_form($value = "") {
+    echo "<form method='get' action='search.php' class='job-search'>" .
+        "<label for='search'>Search for a job title</label>" .
+        "<input type='text' name='search' id='search' value='" . show($value) . "' required>" .
+        "<input class='btn' style='width: 8em' type='submit' value='Search'>" .
+        "</form>";
+}
+
 function job_card($row) {
     // only title, salary, job reference, description, and reporting line are shown on the card
     echo "<section class='outline job-card'>
         <h2>" . show($row["title"]) . "</h2>
-        <p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
-        <p>Job reference: " . show($row["reference"]) . "</p>
-        <p>" . show($row["description"]) . "</p>
-        <p>Reports to: " . show($row["reporting_line"]) . "</p>";
+        " . job_facts($row);
 
     // button is a form so the job reference can be sent via get
     echo "<form method='get' action='job_details.php'>" .

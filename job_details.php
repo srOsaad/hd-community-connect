@@ -56,10 +56,7 @@ include "header.inc";
         // display the first section of information for the job listing
         echo "<section>
             <h1>" . show($row["title"]) . "</h1>
-            <p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
-            <p>Job reference: " . show($row["reference"]) . "</p>
-            <p>" . show($row["description"]) . "</p>
-            <p>Reports to: " . show($row["reporting_line"]) . "</p>";
+            " . job_facts($row);
 
         // this div contains three buttons, so they can be displayed spaced as the group class
         echo "<div class='group'>" .
