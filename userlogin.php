@@ -100,7 +100,7 @@ include 'header.inc';
     <input type="password" id="password" name="password" required><br>
 
     <div class="group">
-      <button type="submit" class="btn">Check application</button>
+      <button type="submit" class="btn">Check Application</button>
       <a class="btn-secondary" href="stafflogin.php">Staff login</a>
     </div>
   </form>

@@ -94,8 +94,8 @@ include 'header.inc';
     <input type="password" id="password" name="password" required><br>
 
     <div class="group">
-      <button type="submit" class="btn">Login</button>
-      <a class="btn-secondary" href="userlogin.php">Check application</a>
+      <button type="submit" class="btn">Log in</button>
+      <a class="btn-secondary" href="userlogin.php">Check Application</a>
     </div>
   </form>
 </main>

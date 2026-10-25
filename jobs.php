@@ -43,7 +43,7 @@ include("header.inc");
 	<main id="main">
 
 	<h1>Jobs</h1>
-	<p class="intro">List of currently avaliable positions at Community Connect.</p>
+	<p class="intro">List of currently available positions at Community Connect.</p>
 
 	<!-- search bar -->
 	<form method="get" action="jobs_search.php" class="inline">

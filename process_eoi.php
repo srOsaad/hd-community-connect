@@ -62,13 +62,13 @@ $skills_arr  = allowed_skills($_POST['skills'] ?? []);
 $errors = [];
 // Job reference: exactly 6 alphanumeric characters
 if (!preg_match('/^[A-Za-z0-9]{6}$/', $job_ref))
-    $errors[] = "Please select a valid job referrence.";
+    $errors[] = "Please select a valid job reference.";
 
 // Names: max 20 alpha characters (letters, hyphen, apostrophe, space allowed)
 if (trim($first_name) === "" || !preg_match('/^[A-Za-z ]{1,20}$/', $first_name))
-    $errors[] = "First name must be 1-20 letters only.";
+    $errors[] = "First name must be 1 to 20 letters.";
 if (trim($last_name) === "" || !preg_match('/^[A-Za-z ]{1,20}$/', $last_name))
-    $errors[] = "Last name must be 1-20 letters only.";
+    $errors[] = "Last name must be 1 to 20 letters.";
 
 // DOB: dd/mm/yyyy, real date, age 15-80
 $dob_sql = null;
@@ -80,7 +80,7 @@ if (!preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $DOB, $m) || !checkdate((int)$m[2
     $today    = new DateTime('today');
 
     if ($dob_date > $today) {
-        $errors[] = "Date of birth is not valid.";
+        $errors[] = "Date of birth cannot be in the future.";
     } else {
         $age = $dob_date->diff($today)->y;
         if ($age < 15 || $age > 80) {
@@ -92,7 +92,7 @@ if (!preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $DOB, $m) || !checkdate((int)$m[2
 // Gender
 $valid_genders = ['Male','Female','Other'];
 if (!in_array($gender, $valid_genders, true))
-    $errors[] = "Please select a gender option.";
+    $errors[] = "Please select a gender.";
 
 // Address
 if ($street === "") $errors[] = "Please enter your street address.";
@@ -122,7 +122,7 @@ if (!filter_var(html_entity_decode($email), FILTER_VALIDATE_EMAIL) || text_lengt
 
 // Phone: 10 digits
 if (!preg_match('/^[0-9]{10}$/', $phone))
-    $errors[] = "Phone number must be exactly 10 digits";
+    $errors[] = "Phone number must be exactly 10 digits.";
 
 // Skills: at least one, or something in other skills
 if (count($skills_arr) === 0 && $other_skill === "")
