@@ -93,15 +93,20 @@ include 'header.inc';
   <?php } ?>
 
   <?php if ($error != '') { ?>
-    <p class="message message-error"><?php echo $error; ?></p>
+    <p class="message message-error" role="alert"><?php echo e($error); ?></p>
   <?php } ?>
 
   <form method="post" action="userlogin.php">
-    <label for="application_id">Application ID:</label>
-    <input type="text" id="application_id" name="application_id" inputmode="numeric" pattern="[0-9]{16,17}" maxlength="17" required><br>
+    <div class="field">
+      <label for="application_id">Application ID</label>
+      <input type="text" id="application_id" name="application_id" inputmode="numeric" pattern="[0-9]{16,17}" maxlength="17" required>
+      <p class="hint">The 16 or 17 digit number shown after you applied.</p>
+    </div>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required>
+    </div>
 
     <div class="group">
       <button type="submit" class="btn">Check Application</button>

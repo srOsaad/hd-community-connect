@@ -75,8 +75,14 @@ include "header.inc";
     <p class="message message-success" role="status"><?php echo e($success); ?></p>
 <?php } ?>
 
+<?php if ($errors) { ?>
+    <div class="message message-error" role="alert">
+      <ul>
 <?php foreach ($errors as $error) { ?>
-    <p class="message message-error" role="alert"><?php echo e($error); ?></p>
+        <li><?php echo e($error); ?></li>
+<?php } ?>
+      </ul>
+    </div>
 <?php } ?>
 
     <form method="post" action="staffregister.php" novalidate>

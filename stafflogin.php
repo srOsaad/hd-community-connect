@@ -86,15 +86,19 @@ include 'header.inc';
   <?php } ?>
 
   <?php if ($error != '') { ?>
-    <p class="message message-error"><?php echo $error; ?></p>
+    <p class="message message-error" role="alert"><?php echo e($error); ?></p>
   <?php } ?>
 
   <form method="post" action="stafflogin.php">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required><br>
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" autocomplete="username" required>
+    </div>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required>
+    </div>
 
     <div class="group">
       <button type="submit" class="btn">Log in</button>

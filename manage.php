@@ -334,8 +334,14 @@ include "header.inc";
     <p class="message message-success" role="status"><?php echo e($success); ?></p>
 <?php } ?>
 
+<?php if ($messages) { ?>
+    <div class="message message-error" role="alert">
+      <ul>
 <?php foreach ($messages as $message) { ?>
-    <p class="message message-error" role="alert"><?php echo e($message); ?></p>
+        <li><?php echo e($message); ?></li>
+<?php } ?>
+      </ul>
+    </div>
 <?php } ?>
  
 <?php if (!$has_table) { ?>
