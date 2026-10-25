@@ -39,7 +39,8 @@ function find_jobs($conn, $search = "") {
 }
 
 function job_facts($row) {
-    return "<p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
+    $salary = (float) $row["salary"];
+    return "<p class='coloured'>Salary: $" . number_format($salary, floor($salary) == $salary ? 0 : 2) . "</p>
         <p>Job reference: " . show($row["reference"]) . "</p>
         <p>" . show($row["description"]) . "</p>
         <p>Reports to: " . show($row["reporting_line"]) . "</p>";
