@@ -535,6 +535,12 @@ input[type="checkbox"] {
 }
 
 
+@media (min-width: 47.5625em) and (max-width: 60em) {
+  .site-nav a {
+    padding: 0.5rem 0.55rem;
+  }
+}
+
 /* Reponses from and within 760px */
 
 @media (max-width: 47.5em) {

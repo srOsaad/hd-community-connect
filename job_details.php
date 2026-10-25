@@ -21,7 +21,7 @@ $page_style = <<<'CSS'
 		padding: 1.25rem 1.5rem;
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
-		min-width: 21rem;
+		min-width: min(21rem, 100%);
 	}
 
 	.outline h2 {
