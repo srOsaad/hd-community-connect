@@ -167,7 +167,7 @@ function validate_application($f) {
     }
 
     $email = html_entity_decode($f["email"], ENT_QUOTES, "UTF-8");
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 150) {
+    if (!preg_match('/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/D', $email) || !filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 150) {
         $errors[] = "Please enter a valid email address.";
     }
 
