@@ -1,7 +1,7 @@
 <?php
 /*
 Using header.inc (with nav.inc inside) and footer.inc.
-Page content is unchanged from Part 1 apart from links (.html to .php).
+Job list comes from the jobs table; entered values come back after a validation error.
 */
 require_once "db_connect.inc";
 require_once "functions.inc";
@@ -52,16 +52,16 @@ include "header.inc";
 ?>
 
   <main id="main">
-    <!-- The title of the apply.html -->
+    <!-- The title of the apply page -->
 
-    <h1><strong>Join the Community</strong></h1>
-    <p class="intro"  >Why should you join our community? We have movie nights, workshops, and social events!</p>
-    <h2><strong>Become our CSSO member today</strong></h2>
-    <p><em>Fill in your details below to <span class="benefit">access advice</span>, <span class="benefit">support</span>, <span class="benefit">member benefits</span> <br> <span style="opacity:0.5">and more ...</span></em></p>
+    <h1><strong>Apply for a Position</strong></h1>
+    <p class="intro"  >Join our team and help us support community programs, volunteers and local services.</p>
+    <h2><strong>Application form</strong></h2>
+    <p><em>Fill in your details below. When you submit, you will receive an <span class="benefit">application ID</span> so you can <span class="benefit">check your application</span> later.</em></p>
     <form action="process_eoi.php" method="post" novalidate="novalidate">
       <!-- Form fields for user information -->
       <fieldset class="field">
-        <legend><strong>Who Are Youuuu?</strong></legend>
+        <legend><strong>Personal details</strong></legend>
         <label for="first_name"><strong>First name:</strong></label>
         <input type="text" name="first_name" id="first_name" pattern="[A-Za-z\s]{1,20}"
           title="Please enter your first name" placeholder="Enter your first name" value="<?= e(old_value('first_name')) ?>" required>
@@ -74,7 +74,7 @@ include "header.inc";
       </fieldset>
       <!-- Form fields for user gender -->
       <fieldset class="field">
-        <legend><strong>What is your gender?</strong></legend>
+        <legend><strong>Gender</strong></legend>
         <label><strong>Gender:</strong></label>
 
         <label for="Male" class="choice"><input type="radio" name="Gender" id="Male" value="Male"<?= old_value('Gender') === 'Male' ? ' checked' : '' ?> required> Male </label>
@@ -86,14 +86,14 @@ include "header.inc";
 
       <!-- Form fields for user address -->
       <fieldset class="field">
-        <legend><strong>Where Do You Liveeee?</strong></legend>
+        <legend><strong>Address</strong></legend>
     <label for="streetaddress"><strong>Street address:</strong></label>
     <input type="text" name="streetaddress" id="streetaddress" pattern="[A-Za-z0-9\s\/,.'\-]{3,40}" style="width: 400px; max-width: 100%;" placeholder="Enter your street address" maxlength="40" title="Please enter your street address" value="<?= e(old_value('streetaddress')) ?>" required>
     <label for="suburb_town"><strong>Suburb/Town:</strong></label>
     <input type="text" name="suburb_town" id="suburb_town" pattern="[A-Za-z\s]{3,40}" placeholder="Enter your suburb or town" style="width: 400px; max-width: 100%;" maxlength="40" title="Please enter your suburb or town" value="<?= e(old_value('suburb_town')) ?>" required>
     <label for="state"><strong>State:</strong></label>
     <select id="state" name="state" required>
-        <option value="">Please select state where you live</option>
+        <option value="">Please select your state</option>
         <option value="vic"<?= strtoupper(old_value('state')) === 'VIC' ? ' selected' : '' ?>>VIC</option>
         <option value="nsw"<?= strtoupper(old_value('state')) === 'NSW' ? ' selected' : '' ?>>NSW</option>
         <option value="qld"<?= strtoupper(old_value('state')) === 'QLD' ? ' selected' : '' ?>>QLD</option>
@@ -109,7 +109,7 @@ include "header.inc";
 
 <!-- Form fields for user contact information -->
 <fieldset class="field">
-    <legend><strong>Your contact informationnnn?</strong></legend>
+    <legend><strong>Contact details</strong></legend>
     <label for="email"><strong>Email:</strong></label>
     <input type="email" name="email" id="email" style="width: 400px; max-width: 100%;" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" maxlength="150" placeholder="Enter your email address" title="Please enter your email address" value="<?= e(old_value('email')) ?>" required>
 
@@ -118,10 +118,10 @@ include "header.inc";
 </fieldset>
 <!-- Form fields for job apply -->
 <fieldset class="field">
-<legend><strong>Which Job you want to applyyyy?</strong></legend>
-<label for="job_reference_number"><strong>Jobs:</strong></label>
+<legend><strong>Position</strong></legend>
+<label for="job_reference_number"><strong>Job:</strong></label>
 <select id="job_reference_number" name="job_reference_number" required>
-    <option value="">Please select job you want to apply</option>
+    <option value="">Please select a position</option>
     <?php foreach ($job_map as $reference => $title): ?>
         <option value="<?= e($reference) ?>"<?= (string) $reference === $selected_job ? ' selected' : '' ?>><?= e($title) ?></option>
     <?php endforeach; ?>
@@ -129,7 +129,7 @@ include "header.inc";
 </fieldset>
 <!-- Form fields for user skills -->
 <fieldset class="field">
-  <legend><strong>What skills you have in this field?</strong></legend>
+  <legend><strong>Skills</strong></legend>
     <label class="choice" for="skill1">
     <input type="checkbox" name="skills[]" id="skill1" value="Problem solving"<?= in_array('Problem solving', $old_skills, true) ? ' checked' : '' ?>> Problem solving </label>
     
@@ -140,10 +140,10 @@ include "header.inc";
     <input type="checkbox" name="skills[]" id="skill3" value="Teamwork"<?= in_array('Teamwork', $old_skills, true) ? ' checked' : '' ?>> Teamwork </label>
     
      <label class ="choice" for="Other_skill">Other skills:</label>
-    <textarea name="Other_skill" id="Other_skill" rows="4" cols="50" placeholder="Please enter if you have other skills"><?= e(old_value('Other_skill')) ?></textarea>
+    <textarea name="Other_skill" id="Other_skill" rows="4" cols="50" placeholder="List any other relevant skills"><?= e(old_value('Other_skill')) ?></textarea>
 </fieldset>
 <fieldset class="field">
-<legend><strong>Create your password hereeee</strong></legend>
+<legend><strong>Create a password</strong></legend>
     <label for="password">Password</label>
     <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" required>
     <label for="confirm_password">Confirm password</label>
