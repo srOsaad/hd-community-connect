@@ -234,7 +234,11 @@ include 'header.inc';
     <?php if (!$locked): ?>
         <a class="btn" href="applicant.php?edit=1">Edit</a>
     <?php endif; ?>
-        <a class="btn-secondary" href="logout.php?who=applicant&amp;token=<?= urlencode($token) ?>">Log Out</a>
+        <form method="post" action="logout.php">
+            <input type="hidden" name="who" value="applicant">
+            <input type="hidden" name="token" value="<?= e($token) ?>">
+            <button class="btn-secondary" type="submit">Log Out</button>
+        </form>
     </div>
 
 <?php else: ?>

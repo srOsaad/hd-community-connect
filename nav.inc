@@ -20,11 +20,7 @@ if ($is_logged_in) {
 }
 
 // Staff link, styled separately (class "nav-staff"): [file, link text, $current_page value]
-if ($is_logged_in) {
-    $staff_link = ["logout.php?who=staff&amp;token=" . urlencode($_SESSION["csrf_token"] ?? ""), "Log Out (" . e($_SESSION["username"]) . ")", "logout"];
-} else {
-    $staff_link = ["stafflogin.php", "Staff Login", "stafflogin"];
-}
+$staff_link = ["stafflogin.php", "Staff Login", "stafflogin"];
 ?>
     <nav class="site-nav" aria-label="Main navigation">
       <details>
@@ -36,6 +32,16 @@ if ($is_logged_in) {
 ?>
         <li><a href="<?php echo $link[0]; ?>"<?php if ($is_current) { echo ' aria-current="page"'; } ?>><?php echo $link[1]; ?></a></li>
 <?php } ?>
+<?php if (!$is_logged_in) { ?>
         <li class="nav-staff"><a href="<?php echo $staff_link[0]; ?>"<?php if (isset($current_page) && $current_page === $staff_link[2]) { echo ' aria-current="page"'; } ?>><?php echo $staff_link[1]; ?></a></li>
+<?php } else { ?>
+        <li class="nav-staff">
+          <form method="post" action="logout.php">
+            <input type="hidden" name="who" value="staff">
+            <input type="hidden" name="token" value="<?php echo e($_SESSION["csrf_token"] ?? ""); ?>">
+            <button type="submit">Log Out (<?php echo e($_SESSION["username"]); ?>)</button>
+          </form>
+        </li>
+<?php } ?>
       </ul>
     </nav>

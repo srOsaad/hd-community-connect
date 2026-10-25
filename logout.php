@@ -1,11 +1,11 @@
 <?php
 require_once 'session.inc';
 $was_staff = ($_SESSION['role'] ?? '') === 'staff';
-$who = $_GET['who'] ?? ($was_staff ? 'staff' : 'applicant');
+$who = ($_POST['who'] ?? '') === 'staff' ? 'staff' : 'applicant';
 
 $token = (string) ($_SESSION['csrf_token'] ?? '');
-$sent_token = is_string($_GET['token'] ?? null) ? $_GET['token'] : '';
-if ($token !== '' && !hash_equals($token, $sent_token)) {
+$sent_token = is_string($_POST['token'] ?? null) ? $_POST['token'] : '';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || ($token !== '' && !hash_equals($token, $sent_token))) {
     header('Location: ' . ($was_staff ? 'manage.php' : (!empty($_SESSION['eoi_id']) ? 'applicant.php' : 'index.php')));
     exit();
 }

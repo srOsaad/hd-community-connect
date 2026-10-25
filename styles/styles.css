@@ -244,15 +244,34 @@ main:focus {
   margin-left: 0.75rem;
 }
 
-.site-nav .nav-staff a {
+.site-nav .nav-staff form {
+  margin: 0;
+}
+
+.site-nav .nav-staff button {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius);
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.site-nav .nav-staff a,
+.site-nav .nav-staff button {
   padding: 0.35rem 0.85rem;
   border: 1px solid var(--border-strong);
   color: var(--ink-muted);
   font-size: var(--step--1);
 }
 
-.site-nav .nav-staff a:hover {
+.site-nav .nav-staff a:hover,
+.site-nav .nav-staff button:hover {
   border-color: var(--brand-dark);
+}
+
+.site-nav .nav-staff button:hover {
+  background-color: var(--brand-light);
 }
 
 
@@ -616,7 +635,8 @@ fieldset.field > label:first-of-type {
     margin-left: 0.25rem;
   }
 
-  .site-nav .nav-staff a {
+  .site-nav .nav-staff a,
+  .site-nav .nav-staff button {
     padding: 0.35rem 0.6rem;
   }
 }
@@ -682,7 +702,8 @@ fieldset.field > label:first-of-type {
   }
 
   /* Nav link positioning */
-  .site-nav details[open] ~ ul a {
+  .site-nav details[open] ~ ul a,
+  .site-nav details[open] ~ ul button {
     text-align: center;
   }
 
@@ -692,7 +713,8 @@ fieldset.field > label:first-of-type {
     margin-left: 0;
   }
 
-  .site-nav .nav-staff a {
+  .site-nav .nav-staff a,
+  .site-nav .nav-staff button {
     border: none;
   }
 }
