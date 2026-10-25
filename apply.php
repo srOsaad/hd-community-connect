@@ -40,7 +40,7 @@ $current_page = "apply";
 $page_style = <<<'CSS'
   .benefit{
     font-weight: bold;
-    color: #007bff;
+    color: var(--accent);
   }
 CSS;
 
@@ -68,18 +68,18 @@ include "header.inc";
           placeholder="Enter your last name" value="<?= e(old_value('last_name')) ?>" required>
 
         <label for="DateOfBirth"><strong>Date of birth:</strong></label>
-        <input type="text" pattern = "^\d{2}/\d{2}/\d{4}$" name="DateOfBirth" id="DateOfBirth" placeholder="Enter your date of birth (DD/MM/YYYY)" value="<?= e(old_value('DateOfBirth')) ?>" required>
+        <input type="text" pattern="^\d{2}/\d{2}/\d{4}$" name="DateOfBirth" id="DateOfBirth" placeholder="DD/MM/YYYY" value="<?= e(old_value('DateOfBirth')) ?>" aria-describedby="dob_hint" required>
+        <p class="hint" id="dob_hint">Use the format DD/MM/YYYY, for example 05/09/2001.</p>
       </fieldset>
       <!-- Form fields for user gender -->
       <fieldset class="field">
         <legend><strong>Gender</strong></legend>
-        <label><strong>Gender:</strong></label>
 
         <label for="Male" class="choice"><input type="radio" name="Gender" id="Male" value="Male"<?= old_value('Gender') === 'Male' ? ' checked' : '' ?> required> Male </label>
 
         <label for="Female" class="choice"><input type="radio" name="Gender" id="Female" value="Female"<?= old_value('Gender') === 'Female' ? ' checked' : '' ?> required> Female </label>
 
-        <label for ="Other" class="choice"><input type="radio" name="Gender" value="Other" id="Other"<?= old_value('Gender') === 'Other' ? ' checked' : '' ?> required> Other </label>
+        <label for="Other" class="choice"><input type="radio" name="Gender" value="Other" id="Other"<?= old_value('Gender') === 'Other' ? ' checked' : '' ?> required> Other </label>
       </fieldset>
 
       <!-- Form fields for user address -->
@@ -137,13 +137,14 @@ include "header.inc";
     <label class="choice" for="skill3">
     <input type="checkbox" name="skills[]" id="skill3" value="Teamwork"<?= in_array('Teamwork', $old_skills, true) ? ' checked' : '' ?>> Teamwork </label>
     
-     <label class ="choice" for="Other_skill">Other skills:</label>
+     <label class="choice" for="Other_skill">Other skills:</label>
     <textarea name="Other_skill" id="Other_skill" rows="4" cols="50" placeholder="List any other relevant skills"><?= e(old_value('Other_skill')) ?></textarea>
 </fieldset>
 <fieldset class="field">
 <legend><strong>Create a password</strong></legend>
     <label for="password">Password</label>
-    <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" required>
+    <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" aria-describedby="password_hint" required>
+    <p class="hint" id="password_hint">At least 8 characters. You will use it with your application ID to check your application.</p>
     <label for="confirm_password">Confirm password</label>
     <input type="password" id="confirm_password" name="confirm_password" minlength="8" autocomplete="new-password" required>
 </fieldset>
