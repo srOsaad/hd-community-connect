@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!hash_equals($token, $sent_token)) {
         $errors[] = "That request could not be verified. Please try again.";
     } else {
-        if (!preg_match('/^[A-Za-z0-9_]{3,20}$/', $new_username)) {
+        if (!preg_match('/^[A-Za-z0-9_]{3,20}$/D', $new_username)) {
             $errors[] = "Username must be 3 to 20 letters, numbers or underscores.";
         }
         if (strlen($password) < 8 || !preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {

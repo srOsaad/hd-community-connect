@@ -30,7 +30,7 @@ if (!$conn)
 $reference = isset($_GET["reference"]) && is_string($_GET["reference"]) ? strtoupper(clean_input($_GET["reference"])) : "";
 $row = null;
 
-if (preg_match('/^[A-Z0-9]{6}$/', $reference))
+if (preg_match('/^[A-Z0-9]{6}$/D', $reference))
 {
     $stmt = mysqli_prepare($conn, "SELECT * FROM jobs WHERE reference = ?"); // get job listing from reference number
     mysqli_stmt_bind_param($stmt, "s", $reference);

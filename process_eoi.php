@@ -75,7 +75,7 @@ $errors = [];
 
 // Job reference: exactly 6 alphanumeric characters
 $job_exists = false;
-if (preg_match('/^[A-Z0-9]{6}$/', $job_ref)) {
+if (preg_match('/^[A-Z0-9]{6}$/D', $job_ref)) {
     $job_stmt = mysqli_prepare($conn, "SELECT 1 FROM jobs WHERE reference = ?");
     if (!$job_stmt) {
         keep_form_values();
@@ -94,7 +94,7 @@ if (!$job_exists) {
 // DOB: dd/mm/yyyy, real date, age 15-80
 $dob_date = null;
 $dob_sql = null;
-if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $DOB, $m) && checkdate((int) $m[2], (int) $m[1], (int) $m[3])) {
+if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#D', $DOB, $m) && checkdate((int) $m[2], (int) $m[1], (int) $m[3])) {
     $dob_sql = "$m[3]-$m[2]-$m[1]";
     $dob_date = DateTime::createFromFormat('!Y-m-d', $dob_sql);
 }

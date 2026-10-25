@@ -116,7 +116,7 @@ function validate_application($f) {
     $errors = [];
 
     foreach (["first_name" => "First name", "last_name" => "Last name"] as $key => $label) {
-        if (!preg_match('/^[A-Za-z ]{1,20}$/', $f[$key]) || trim($f[$key]) === "") {
+        if (!preg_match('/^[A-Za-z ]{1,20}$/D', $f[$key]) || trim($f[$key]) === "") {
             $errors[] = "$label must be 1 to 20 letters.";
         }
     }
@@ -154,7 +154,7 @@ function validate_application($f) {
     if (!isset($postcode_starts[$f["state"]])) {
         $errors[] = "Please select a valid state.";
     }
-    if (!preg_match('/^\d{4}$/', $f["postcode"])) {
+    if (!preg_match('/^\d{4}$/D', $f["postcode"])) {
         $errors[] = "Postcode must be exactly 4 digits.";
     } elseif (isset($postcode_starts[$f["state"]]) && !in_array($f["postcode"][0], $postcode_starts[$f["state"]], true)) {
         $errors[] = "Postcode does not match the selected state.";
@@ -165,7 +165,7 @@ function validate_application($f) {
         $errors[] = "Please enter a valid email address.";
     }
 
-    if (!preg_match('/^\d{10}$/', $f["phone"])) {
+    if (!preg_match('/^\d{10}$/D', $f["phone"])) {
         $errors[] = "Phone number must be exactly 10 digits.";
     }
 
