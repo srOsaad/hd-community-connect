@@ -39,7 +39,9 @@ if (!$group || !$members) {
 $page_title = "About the Team";
 $page_description = "Meet the HD team behind Community Connect and how the project was built.";
 $current_page = "about";
-$page_style = '    .quote { font-family: "Source Serif 4", serif; font-style: italic; }';
+$page_style = '    .quote { font-family: "Source Serif 4", serif; font-style: italic; }
+    blockquote { margin: 0; }
+    dd { margin-left: 0; }';
 include "header.inc";
 ?>
 
@@ -87,8 +89,8 @@ include "header.inc";
       <div class="grid">
 <?php foreach ($members as $m) { ?>
         <blockquote class="box" lang="en">
-          <p class="quote">"<?php echo e($m["quote_text"]); ?>" - <?php echo e($m["quote_by"]); ?></p>
-          <footer>- <?php echo e($m["full_name"]); ?></footer>
+          <p class="quote">"<?php echo e($m["quote_text"]); ?>"</p>
+          <footer><cite><?php echo e($m["quote_by"]); ?></cite>, chosen by <?php echo e($m["full_name"]); ?></footer>
         </blockquote>
 <?php } ?>
       </div>
@@ -99,7 +101,7 @@ include "header.inc";
       <figure class="box team-photo">
         <img src="<?php echo e($group["photo_path"]); ?>"
              alt="<?php echo e($group["photo_alt"]); ?>"
-             width="1000" height="600">
+             width="1200" height="900">
         <figcaption><?php echo e($group["photo_caption"]); ?></figcaption>
       </figure>
     </section>

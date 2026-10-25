@@ -138,7 +138,7 @@ INSERT INTO `group_info` (`group_id`, `group_name`, `intro`, `lecture_time`, `le
 INSERT INTO `members` (`member_id`, `full_name`, `nickname`, `student_id`, `quote_text`, `quote_by`, `fun_fact`, `sort_order`) VALUES
 (1, 'Shahryar Rahman Saad', 'Sam', '106406031', 'You cannot shake hands with a clenched fist.', 'Indira Gandhi', 'I am interested in web development and enjoy creating interactive websites.', 1),
 (2, 'Gia Nghia Le', 'Tom', '106424716', 'Doubt kills more dreams than failure ever will.', 'Suzy Kassem', 'I am a big fan of anime and manga, and I enjoy watching and reading them in my free time.', 2),
-(3, 'Shashwat Chhabra', 'Shash', '106514329', 'Never put off until tomorrow what can be done today', 'Sensei Wu', 'I love to play Football/Soccer and I am very passionate about it.', 3),
+(3, 'Shashwat Chhabra', 'Shash', '106514329', 'Never put off until tomorrow what can be done today.', 'Sensei Wu', 'I love to play Football/Soccer and I am very passionate about it.', 3),
 (4, 'Declan Elliott', NULL, '106052926', 'First we mine, then we craft. Let''s MINECRAFT', 'Steve', 'I am really into music and I play the guitar in my spare time.', 4);
 
 INSERT INTO `contributions` (`contribution_id`, `member_id`, `project_part`, `description`) VALUES
