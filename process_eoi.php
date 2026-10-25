@@ -108,8 +108,10 @@ if (!in_array($gender, $valid_genders, true))
     $errors[] = "Please select a gender option.";
 
 // Address
-if ($street === "" || strlen($street) > 40) $errors[] = "Street address is required";
-if ($suburb === "" || strlen($suburb) > 40) $errors[] = "Suburb/town is required";
+if ($street === "") $errors[] = "Please enter your street address.";
+elseif (text_length($street) > 40) $errors[] = "Street address must be 40 characters or fewer.";
+if ($suburb === "") $errors[] = "Please enter your suburb or town.";
+elseif (text_length($suburb) > 40) $errors[] = "Suburb or town must be 40 characters or fewer.";
 
 // State + postcode (4 digits, first digit must match state)
 $valid_states = ['VIC','NSW','QLD','NT','WA','SA','TAS','ACT'];
@@ -128,7 +130,7 @@ if (!preg_match('/^\d{4}$/', $postcode)) {
 }
 
 // Email (check the raw value, since htmlspecialchars may alter odd characters)
-if (!filter_var(html_entity_decode($email), FILTER_VALIDATE_EMAIL) || strlen($email) > 150)
+if (!filter_var(html_entity_decode($email), FILTER_VALIDATE_EMAIL) || text_length($email) > 150)
     $errors[] = "Please enter a valid email address.";
 
 // Phone: 10 digits
@@ -138,7 +140,7 @@ if (!preg_match('/^[0-9]{10}$/', $phone))
 // Skills: at least one, or something in other skills
 if (count($skills_arr) === 0 && $other_skill === "")
     $errors[] = "Please select at least one skill, or describe your skills in the other skills box.";
-if (strlen($other_skill) > 1000)
+if (text_length($other_skill) > 1000)
     $errors[] = "Other skills must be 1000 characters or fewer.";
 
 if (strlen($password) < 8)
@@ -181,11 +183,11 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     LastName      VARCHAR(20)  NOT NULL,
     DOB           DATE         NOT NULL,
     Gender        ENUM('Male','Female','Other') NOT NULL,
-    StreetAddress VARCHAR(40)  NOT NULL,
-    Suburb        VARCHAR(40)  NOT NULL,
+    StreetAddress VARCHAR(255) NOT NULL,
+    Suburb        VARCHAR(255) NOT NULL,
     State         ENUM('VIC','NSW','QLD','NT','WA','SA','TAS','ACT') NOT NULL,
     Postcode      CHAR(4)      NOT NULL,
-    Email         VARCHAR(150)  NOT NULL,
+    Email         VARCHAR(255)  NOT NULL,
     Phone         VARCHAR(10)  NOT NULL,
     Skills        SET('Problem solving','Communication','Teamwork') NOT NULL,
     OtherSkills   TEXT NULL,

@@ -26,4 +26,8 @@ function e($value) {
 function show($value) {
     return e(html_entity_decode((string) $value, ENT_QUOTES, "UTF-8"));
 }
+
+function text_length($value) {
+    return mb_strlen(html_entity_decode((string) $value, ENT_QUOTES, "UTF-8"));
+}
 ?>

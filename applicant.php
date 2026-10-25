@@ -107,8 +107,10 @@ if ($app) {
             if ($age < 15 || $age > 80) $errors[] = 'Applicants must be aged between 15 and 80.';
         }
         if (!in_array($form['Gender'], $genders, true)) $errors[] = 'Please choose a gender.';
-        if ($form['StreetAddress'] === '' || mb_strlen($form['StreetAddress']) > 40) $errors[] = 'Street address is required (max 40 characters).';
-        if ($form['Suburb'] === '' || mb_strlen($form['Suburb']) > 40) $errors[] = 'Suburb/town is required (max 40 characters).';
+        if ($form['StreetAddress'] === '') $errors[] = 'Please enter your street address.';
+        elseif (text_length($form['StreetAddress']) > 40) $errors[] = 'Street address must be 40 characters or fewer.';
+        if ($form['Suburb'] === '') $errors[] = 'Please enter your suburb or town.';
+        elseif (text_length($form['Suburb']) > 40) $errors[] = 'Suburb or town must be 40 characters or fewer.';
         if (!in_array($form['State'], $states, true)) $errors[] = 'Please choose a valid state.';
         $postcode_starts = [
             'VIC' => ['3', '8'], 'NSW' => ['1', '2'], 'QLD' => ['4', '9'], 'NT' => ['0'],
@@ -119,10 +121,10 @@ if ($app) {
         } elseif (isset($postcode_starts[$form['State']]) && !in_array($form['Postcode'][0], $postcode_starts[$form['State']], true)) {
             $errors[] = 'Postcode does not match the selected state.';
         }
-        if (!filter_var(html_entity_decode($form['Email'], ENT_QUOTES, 'UTF-8'), FILTER_VALIDATE_EMAIL) || strlen($form['Email']) > 150) $errors[] = 'Please enter a valid email address.';
+        if (!filter_var(html_entity_decode($form['Email'], ENT_QUOTES, 'UTF-8'), FILTER_VALIDATE_EMAIL) || text_length($form['Email']) > 150) $errors[] = 'Please enter a valid email address.';
         if (!preg_match('/^\d{10}$/', $form['Phone'])) $errors[] = 'Phone must be exactly 10 digits.';
         if (!$form['Skills'] && $form['OtherSkills'] === '') $errors[] = 'Please select at least one skill, or describe your skills in the other skills box.';
-        if (mb_strlen($form['OtherSkills']) > 1000) $errors[] = 'Other skills: max 1000 characters.';
+        if (text_length($form['OtherSkills']) > 1000) $errors[] = 'Other skills: max 1000 characters.';
 
         if (!$errors) {
             $skills = implode(',', $form['Skills']);
