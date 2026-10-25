@@ -58,10 +58,10 @@ include("header.inc");
 	<?php
 		// display the first section of information for the job listing
 		echo "<section>
-			<h1>" . $row["title"] . "</h1>
-			<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
-			<p>" . $row["description"] . "</p>
-			<p>" . $row["reporting_line"] . "</p>";
+			<h1>" . show($row["title"]) . "</h1>
+			<p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
+			<p>" . show($row["description"]) . "</p>
+			<p>" . show($row["reporting_line"]) . "</p>";
 
 		// this div contains two buttons, so they can be displayed spaced as the group class
 		echo "<div class='group'>" .
@@ -79,7 +79,7 @@ include("header.inc");
 		$separated = explode("\n", trim((string) $row["responsibilities"])); // separate text by newline
 		for ($i = 0; $i < count($separated); $i++)
 		{
-			echo "<li>" . $separated[$i] . "</li>";
+			echo "<li>" . show($separated[$i]) . "</li>";
 		}
 		echo "</ul>" .
 		"</div>";
@@ -91,7 +91,7 @@ include("header.inc");
 		$separated = explode("\n", trim((string) $row["essential"])); // separate text by newline
 		for ($i = 0; $i < count($separated); $i++)
 		{
-			echo "<li>" . $separated[$i] . "</li>";
+			echo "<li>" . show($separated[$i]) . "</li>";
 		}
 		echo "</ul>" .
 			"</div>";
@@ -103,7 +103,7 @@ include("header.inc");
 		$separated = explode("\n", trim((string) $row["preferred"])); // separate text by newline
 		for ($i = 0; $i < count($separated); $i++)
 		{
-			echo "<li>" . $separated[$i] . "</li>";
+			echo "<li>" . show($separated[$i]) . "</li>";
 		}
 		echo "</ul>" .
 			"</div>";

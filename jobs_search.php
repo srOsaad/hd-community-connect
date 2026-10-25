@@ -70,10 +70,10 @@ include("header.inc");
 			{
 				// only title, reference number, salary, description, and reporting line are shown on this page
 				echo "<section class='outline'>
-					<h2>" . $row["title"] . "</h2>
-					<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
-					<p>" . $row["description"] . "</p>
-					<p>" . $row["reporting_line"] . "</p>";
+					<h2>" . show($row["title"]) . "</h2>
+					<p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
+					<p>" . show($row["description"]) . "</p>
+					<p>" . show($row["reporting_line"]) . "</p>";
 
 					// button is a form so the job reference can by sent via get
 					echo "<form method='get' action='job_details.php'>" .
