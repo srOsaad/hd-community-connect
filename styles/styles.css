@@ -97,7 +97,7 @@ p {
   margin: 0 0 1em;
 }
 
-/* Links — underline marks them */
+/* Links: underline marks them */
 a {
   color: var(--accent);
   text-decoration: underline;
