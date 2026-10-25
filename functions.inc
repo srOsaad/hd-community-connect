@@ -136,7 +136,7 @@ function validate_application($f) {
 
     foreach (["first_name" => "First name", "last_name" => "Last name"] as $key => $label) {
         if (!preg_match('/^[A-Za-z ]{1,20}$/D', $f[$key]) || trim($f[$key]) === "") {
-            $errors[] = "$label must be 1 to 20 letters.";
+            $errors[] = "$label must be 1 to 20 characters using only letters and spaces.";
         }
     }
 
