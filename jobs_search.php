@@ -14,8 +14,20 @@ $page_description = "Results for jobs search.";
 $current_page = "jobs";
 
 $page_style = <<<'CSS'
-    .inline {
-		display: inline;
+    .search-again {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		align-items: end;
+		margin-bottom: 1.5rem;
+	}
+
+	.search-again label {
+		flex-basis: 100%;
+	}
+
+	.search-again input[type='text'] {
+		flex: 1 1 14rem;
 	}
 
 	.coloured {
@@ -31,7 +43,7 @@ $page_style = <<<'CSS'
 		display: flex;
 		flex-direction: column;
 	}
-	
+
 	.outline form {
 		margin-top: auto;
 	}
@@ -40,19 +52,26 @@ CSS;
 include("header.inc");
 ?>
 
-	<main id="main">
+<main id="main">
 
 	<h1>Search Jobs</h1>
 
 	<?php
-
 	$search = isset($_GET["search"]) ? clean_input($_GET["search"]) : "";
+	?>
 
-	if ($conn && $search === "")
+	<form method="get" action="jobs_search.php" class="search-again">
+		<label for="search">Search for a job title</label>
+		<input type="text" name="search" id="search" value="<?php echo $search; ?>" required>
+		<input class="btn" style="width: 8em" type="submit" value="Search">
+	</form>
+
+	<?php
+	if ($search === "")
 	{
-		echo "<p>Enter a job title in the search box on the <a href='jobs.php'>jobs page</a>.</p>";
+		echo "<p>Enter a job title to search.</p>";
 	}
-	elseif ($conn)
+	else
 	{
 		$like = like_pattern(html_entity_decode($search, ENT_QUOTES, "UTF-8"));
 		$stmt = mysqli_prepare($conn, "SELECT * FROM jobs WHERE title LIKE ? ORDER BY reference"); // retrieve job listings based on search from user
@@ -86,16 +105,16 @@ include("header.inc");
 			}
 			else echo "<p>No job listings found. Search for something else or check back later.</p>"; // if db connected, but no listings
 
-			echo "</div>";
-			mysqli_stmt_close($stmt);
-		}
-		?>
+		echo "</div>";
+		mysqli_stmt_close($stmt);
+	}
+	?>
 
 	<aside style="float: right">
 		<p class="hint">See the apply page for information on how to apply.</p>
 	</aside>
 
-	</main>
+</main>
 
 	<!-- footer from included file -->
-	<?php include("footer.inc"); ?>
+<?php include("footer.inc"); ?>
