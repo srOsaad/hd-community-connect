@@ -120,14 +120,33 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $form['StreetAddress'], $form['Suburb'], $form['State'], $form['Postcode'],
             $form['Email'], $form['Phone'], $skills, $form['OtherSkills'], $id);
         $ok = mysqli_stmt_execute($stmt);
+        $changed = mysqli_stmt_affected_rows($stmt);
         mysqli_stmt_close($stmt);
+
+        if ($ok && $changed === 0) {
+            $stmt = mysqli_prepare($conn, 'SELECT Status FROM eoi WHERE EOInumber = ?');
+            mysqli_stmt_bind_param($stmt, 'i', $id);
+            mysqli_stmt_execute($stmt);
+            $current = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+            mysqli_stmt_close($stmt);
+
+            if ($current && in_array($current['Status'], ['Current', 'Final'], true)) {
+                $ok = false;
+                $locked = true;
+                $editing = false;
+                $app['Status'] = $current['Status'];
+                $locked_notice = 'Your changes were not saved because your application is now ' . strtolower($current['Status']) . '.';
+            }
+        }
 
         if ($ok) {
             $_SESSION['flash'] = 'Your application has been updated.';
             header('Location: applicant.php');
             exit;
         }
-        $errors[] = 'Sorry, we could not save your changes. Please try again later.';
+        if (!$locked) {
+            $errors[] = 'Sorry, we could not save your changes. Please try again later.';
+        }
     }
 }
 
