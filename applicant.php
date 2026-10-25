@@ -247,86 +247,91 @@ include 'header.inc';
     <p>Status: <strong><?= show($app['Status']) ?></strong></p>
 
     <?php if ($errors): ?>
-        <ul class="errors"><?php foreach ($errors as $err): ?><li><?= e($err) ?></li><?php endforeach; ?></ul>
+        <div class="message message-error" role="alert">
+            <ul>
+            <?php foreach ($errors as $err): ?>
+                <li><?= e($err) ?></li>
+            <?php endforeach; ?>
+            </ul>
+        </div>
     <?php endif; ?>
 
     <form method="post" action="applicant.php" novalidate="novalidate">
         <input type="hidden" name="token" value="<?= e($token) ?>">
 
         <!-- Never editable -->
-        <p>
-            <label for="JobReference">Job Reference</label>
+        <div class="field">
+            <label for="JobReference">Job reference</label>
             <input type="text" id="JobReference" class="static" value="<?= show($app['JobReference']) ?>" readonly>
-        </p>
-        <p>
-            <label for="FirstName">First Name</label>
+        </div>
+        <div class="field">
+            <label for="FirstName">First name</label>
             <input type="text" id="FirstName" name="FirstName" maxlength="20" value="<?= show($form['FirstName']) ?>">
-        </p>
-        <p>
-            <label for="LastName">Last Name</label>
+        </div>
+        <div class="field">
+            <label for="LastName">Last name</label>
             <input type="text" id="LastName" name="LastName" maxlength="20" value="<?= show($form['LastName']) ?>">
-        </p>
-        <p>
-            <label for="DOB">Date of Birth</label>
+        </div>
+        <div class="field">
+            <label for="DOB">Date of birth</label>
             <input type="date" id="DOB" name="DOB" value="<?= show($form['DOB']) ?>">
-        </p>
-        <p>
+        </div>
+        <div class="field">
             <label for="Gender">Gender</label>
             <select id="Gender" name="Gender">
                 <?php foreach ($genders as $g): ?>
                     <option value="<?= $g ?>"<?= $form['Gender'] === $g ? ' selected' : '' ?>><?= $g ?></option>
                 <?php endforeach; ?>
             </select>
-        </p>
-        <p>
-            <label for="StreetAddress">Street Address</label>
+        </div>
+        <div class="field">
+            <label for="StreetAddress">Street address</label>
             <input type="text" id="StreetAddress" name="StreetAddress" maxlength="40" value="<?= show($form['StreetAddress']) ?>">
-        </p>
-        <p>
-            <label for="Suburb">Suburb/Town</label>
+        </div>
+        <div class="field">
+            <label for="Suburb">Suburb or town</label>
             <input type="text" id="Suburb" name="Suburb" maxlength="40" value="<?= show($form['Suburb']) ?>">
-        </p>
-        <p>
+        </div>
+        <div class="field">
             <label for="State">State</label>
             <select id="State" name="State">
                 <?php foreach ($states as $s): ?>
                     <option value="<?= $s ?>"<?= $form['State'] === $s ? ' selected' : '' ?>><?= $s ?></option>
                 <?php endforeach; ?>
             </select>
-        </p>
-        <p>
+        </div>
+        <div class="field">
             <label for="Postcode">Postcode</label>
             <input type="text" id="Postcode" name="Postcode" maxlength="4" value="<?= show($form['Postcode']) ?>">
-        </p>
-        <p>
+        </div>
+        <div class="field">
             <label for="Email">Email</label>
             <input type="text" id="Email" name="Email" maxlength="150" value="<?= show($form['Email']) ?>">
-        </p>
-        <p>
+        </div>
+        <div class="field">
             <label for="Phone">Phone</label>
             <input type="text" id="Phone" name="Phone" maxlength="10" value="<?= show($form['Phone']) ?>">
-        </p>
+        </div>
 
         <fieldset>
             <legend>Skills</legend>
-            <?php foreach ($skill_options as $opt): ?>
-                <label>
-                    <input type="checkbox" name="Skills[]" value="<?= e($opt) ?>"
-                        <?= in_array($opt, $form['Skills'], true) ? 'checked' : '' ?>>
+            <?php foreach ($skill_options as $i => $opt): ?>
+                <label class="choice" for="skill<?= $i ?>">
+                    <input type="checkbox" id="skill<?= $i ?>" name="Skills[]" value="<?= e($opt) ?>"<?= in_array($opt, $form['Skills'], true) ? ' checked' : '' ?>>
                     <?= e($opt) ?>
-                </label><br>
+                </label>
             <?php endforeach; ?>
         </fieldset>
 
-        <p>
-            <label for="OtherSkills">Other Skills</label>
+        <div class="field">
+            <label for="OtherSkills">Other skills</label>
             <textarea id="OtherSkills" name="OtherSkills" rows="4" cols="40"><?= show($form['OtherSkills']) ?></textarea>
-        </p>
+        </div>
 
-        <p>
+        <div class="group">
             <input class="btn" type="submit" value="Save">
-            <a href="applicant.php">Cancel</a>
-        </p>
+            <a class="btn-secondary" href="applicant.php">Cancel</a>
+        </div>
     </form>
 
 <?php endif; ?>
