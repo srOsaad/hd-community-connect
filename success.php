@@ -9,6 +9,7 @@ if (empty($_SESSION['apply_success'])) {
 
 $first_name = $_SESSION['first_name'] ?? "";
 $application_id = $_SESSION['application_id'] ?? "";
+$eoi_number = $_SESSION['eoi_id'] ?? "";
 unset($_SESSION['apply_success'], $_SESSION['first_name']);
 
 $page_title = "Success";
@@ -20,6 +21,7 @@ include "header.inc";
 <main id="main">
   <h1>Thank you, <?php echo e($first_name); ?>!</h1>
   <h2>Your application has been received.</h2>
+  <p>Your EOI number is <strong><?php echo e($eoi_number); ?></strong>.</p>
   <p>Your application ID is <strong><?php echo e($application_id); ?></strong>. Keep it with your password to check your application later.</p>
   <div class="group">
     <a class="btn" href="applicant.php">View Your Application</a>
