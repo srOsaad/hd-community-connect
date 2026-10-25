@@ -15,10 +15,11 @@ function get_job_map($conn) {
 }
 
 function job_card($row) {
-    // only title, salary, description, and reporting line are shown on the card
+    // only title, salary, job reference, description, and reporting line are shown on the card
     echo "<section class='outline job-card'>
         <h2>" . show($row["title"]) . "</h2>
         <p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
+        <p>Job reference: " . show($row["reference"]) . "</p>
         <p>" . show($row["description"]) . "</p>
         <p>Reports to: " . show($row["reporting_line"]) . "</p>";
 

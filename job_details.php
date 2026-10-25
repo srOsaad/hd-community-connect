@@ -56,6 +56,7 @@ include "header.inc";
         echo "<section>
             <h1>" . show($row["title"]) . "</h1>
             <p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
+            <p>Job reference: " . show($row["reference"]) . "</p>
             <p>" . show($row["description"]) . "</p>
             <p>Reports to: " . show($row["reporting_line"]) . "</p>";
 
