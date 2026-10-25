@@ -151,8 +151,8 @@ include "header.inc";
       <fieldset class="field">
         <legend>Create a password</legend>
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" aria-describedby="password_hint" required>
-        <p class="hint" id="password_hint">At least 8 characters. You will use it with your application ID to check your application.</p>
+        <input type="password" id="password" name="password" minlength="8" maxlength="72" autocomplete="new-password" aria-describedby="password_hint" required>
+        <p class="hint" id="password_hint">8 to 72 characters. You will use it with your application ID to check your application.</p>
         <label for="confirm_password">Confirm password</label>
         <input type="password" id="confirm_password" name="confirm_password" minlength="8" autocomplete="new-password" required>
       </fieldset>

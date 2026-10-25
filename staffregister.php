@@ -28,6 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
         if (strlen($password) < 8 || !preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
             $errors[] = "Password must be at least 8 characters and include at least one letter and one number.";
+        } elseif (strlen($password) > 72) {
+            $errors[] = "Password must be 72 characters or fewer.";
         } elseif (strpos($password, "\0") !== false) {
             $errors[] = "Password contains a character that is not allowed.";
         } elseif ($password !== $confirm) {
@@ -85,8 +87,8 @@ include "header.inc";
       </div>
       <div class="field">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" required>
-        <p class="hint">At least 8 characters, with at least one letter and one number.</p>
+        <input type="password" id="password" name="password" minlength="8" maxlength="72" autocomplete="new-password" required>
+        <p class="hint">8 to 72 characters, with at least one letter and one number.</p>
       </div>
       <div class="field">
         <label for="confirm_password">Confirm password</label>
