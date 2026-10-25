@@ -26,14 +26,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (!preg_match('/^[A-Za-z0-9_]{3,20}$/D', $new_username)) {
             $errors[] = "Username must be 3 to 20 letters, numbers or underscores.";
         }
-        if (strlen($password) < 8 || !preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
-            $errors[] = "Password must be at least 8 characters and include at least one letter and one number.";
-        } elseif (strlen($password) > 72) {
-            $errors[] = "Password must be 72 characters or fewer.";
-        } elseif (strpos($password, "\0") !== false) {
-            $errors[] = "Password contains a character that is not allowed.";
-        } elseif ($password !== $confirm) {
-            $errors[] = "Passwords do not match.";
+        $password_error = validate_password($password, $confirm);
+        if ($password_error !== "") {
+            $errors[] = $password_error;
+        } elseif (!preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
+            $errors[] = "Password must include at least one letter and one number.";
         }
     }
 

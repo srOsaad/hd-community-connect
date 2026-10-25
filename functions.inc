@@ -112,6 +112,25 @@ function failed_login_message($what) {
     return "Incorrect " . $what . " or password. After 5 failed attempts, logging in is paused for 15 minutes.";
 }
 
+function validate_password($password, $confirm) {
+    if (strlen($password) < 8) {
+        return "Password must be at least 8 characters.";
+    }
+    if (strlen($password) > 72) {
+        return "Password must be 72 characters or fewer.";
+    }
+    if (strpos($password, "\0") !== false) {
+        return "Password contains a character that is not allowed.";
+    }
+    if (trim($password) === "") {
+        return "Password cannot be only spaces.";
+    }
+    if ($password !== $confirm) {
+        return "Passwords do not match.";
+    }
+    return "";
+}
+
 function validate_application($f) {
     $errors = [];
 
