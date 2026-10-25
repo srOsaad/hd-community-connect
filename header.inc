@@ -5,7 +5,7 @@ header.inc: shared <head>, skip link and site header (includes nav.inc).
 Set these before including this file:
   $page_title        page name shown in the browser tab
   $page_description  one sentence for the meta description
-  $current_page      "index", "jobs", "apply", "about", "manage", "stafflogin" or "userlogin" (highlights the menu link)
+  $current_page      "index", "jobs", "apply", "about", "manage" or "stafflogin" (highlights the menu link)
   $page_style        optional: this page's embedded CSS
 */
 

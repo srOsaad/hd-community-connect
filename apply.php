@@ -35,7 +35,7 @@ $page_title = "Apply";
 $page_description = "Apply for a position at Community Connect.";
 $current_page = "apply";
 
-// Embedded CSS for this page (Part 1 requirement: embedded CSS on every page)
+// Embedded CSS for this page
 $page_style = <<<'CSS'
   .benefit{
     font-weight: bold;

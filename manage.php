@@ -13,7 +13,7 @@ if (!$conn) {
     show_database_error();
 }
 
-# Reads one text value from the URL. If it's missing (or someone sends an array), we just get ""
+# Reads one text value from the URL or a form. If it's missing (or someone sends an array), we just get ""
 function field($source, $key) {
     return (isset($source[$key]) && is_string($source[$key])) ? clean_input($source[$key]) : "";
 }
@@ -178,7 +178,7 @@ if ($has_table) {
 }
 $total_count = array_sum($status_counts);
 
-# Get the applications, oldest first. Each filled search box adds a condition,
+# Get the applications in the chosen order. Each filled search box adds a condition,
 # and the values go in as ? placeholders so they can't change the SQL
 $eois = [];
 if ($has_table && !$filter_invalid) {

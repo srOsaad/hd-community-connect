@@ -8,7 +8,7 @@ $page_title = "Home";
 $page_description = "Community Connect is a not-for-profit supporting community programs, volunteer registration, events, donations and access to support resources.";
 $current_page = "index";
 
-// Embedded CSS for this page (Part 1 requirement: embedded CSS on every page)
+// Embedded CSS for this page
 $page_style = <<<'CSS'
     /* Embedded CSS */
 
