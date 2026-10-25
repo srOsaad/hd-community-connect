@@ -172,6 +172,20 @@ mysqli_stmt_bind_param($stmt, "ssssssssssssss",
     $state, $postcode, $email, $phone, $skills_str, $other_skill);
 
 mysqli_begin_transaction($conn);
+
+$dup_stmt = mysqli_prepare($conn, "SELECT 1 FROM eoi WHERE JobReference = ? AND Email = ? FOR UPDATE");
+mysqli_stmt_bind_param($dup_stmt, "ss", $job_ref, $email);
+mysqli_stmt_execute($dup_stmt);
+mysqli_stmt_store_result($dup_stmt);
+$already_applied = mysqli_stmt_num_rows($dup_stmt) > 0;
+mysqli_stmt_close($dup_stmt);
+
+if ($already_applied) {
+    mysqli_rollback($conn);
+    keep_form_values();
+    show_application_error(["You have already applied for this job with this email address."]);
+}
+
 $saved = false;
 for ($try = 0; $try < 5 && !$saved; $try++) {
     $application_id = make_application_id();
