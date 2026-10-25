@@ -49,8 +49,8 @@ function like_pattern($text) {
     return "%" . addcslashes($text, "\\%_") . "%";
 }
 
-function lockout_message($minutes) {
-    return "Too many failed attempts. Try again in " . $minutes . ($minutes === 1 ? " minute." : " minutes.");
+function failed_login_message($what) {
+    return "Incorrect " . $what . " or password. After 5 failed attempts, logging in is paused for 15 minutes.";
 }
 
 function validate_application($f) {

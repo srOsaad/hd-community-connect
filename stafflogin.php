@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $is_locked = $found && $lock_until !== null && strtotime($lock_until) > time();
 
     if ($is_locked) {
-        $error = lockout_message((int) ceil((strtotime($lock_until) - time()) / 60));
+        $error = failed_login_message('username');
 
     } elseif (password_verify($password, $found ? $hash : $dummy_hash) && $found) {
         // Correct: clear the failed count and lockout, then log in as staff
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
 
     } else {
-        $error = 'Incorrect username or password.';
+        $error = failed_login_message('username');
 
         if ($found) {
             $attempts = $attempts + 1;
@@ -59,7 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($attempts >= $max_attempts) {
                 $lock_time = date('Y-m-d H:i:s', time() + $lock_minutes * 60);
                 $attempts = 0;
-                $error = lockout_message((int) $lock_minutes);
             }
 
             $stmt = mysqli_prepare($conn,
