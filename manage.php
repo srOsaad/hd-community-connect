@@ -327,7 +327,8 @@ include "header.inc";
 ?>
   <main id="main">
     <h1>Manage applications</h1>
-    <p class="intro">Signed in as <strong><?php echo e($_SESSION["username"]); ?></strong>.</p>
+    <p class="intro">Signed in as <strong><?php echo e($_SESSION["username"]); ?></strong>.
+      <a href="staffregister.php">Add a manager</a></p>
  
 <?php if ($success !== "") { ?>
     <p class="message message-success" role="status"><?php echo e($success); ?></p>

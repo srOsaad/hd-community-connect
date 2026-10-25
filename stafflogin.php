@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $minutes_left = ceil((strtotime($lock_until) - time()) / 60);
             $error = "Too many failed attempts. Try again in $minutes_left minute(s).";
 
-        } elseif ($found &&($password == $hash)) {
+        } elseif ($found && password_verify($password, $hash)) {
             // Correct: clear the failed count and lockout, then log in as staff
             $stmt = mysqli_prepare($conn,
                 "UPDATE staff SET failed_attempts = 0, lockout_until = NULL WHERE username = ?");
