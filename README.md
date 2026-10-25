@@ -37,12 +37,12 @@ Database settings are in `settings.php` (XAMPP defaults: user `root`, no passwor
 | --- | --- |
 | `index.php` | Home page |
 | `jobs.php`, `search.php`, `job_details.php` | Job listings, search and full job details from the `jobs` table |
-| `apply.php`, `process_eoi.php`, `success.php` | Job application form, server-side validation and saving, confirmation with the application ID |
+| `apply.php`, `process_eoi.php`, `success.php` | Job application form, server-side validation and saving, confirmation with the EOI number and application ID |
 | `userlogin.php`, `applicant.php` | Applicants log in with their application ID and password to check status and edit while it is still New |
 | `about.php` | Team page from the `group_info`, `members` and `contributions` tables |
 | `stafflogin.php`, `manage.php`, `staffregister.php`, `logout.php` | HR manager login, application management and manager registration |
 
-Shared files: `header.inc`, `nav.inc`, `footer.inc`, `db_connect.inc`, `settings.php`, `functions.inc`, `auth.inc`, `jobs.inc` and `error.inc`.
+Shared files: `header.inc`, `nav.inc`, `footer.inc`, `settings.php`, `db_connect.inc`, `session.inc`, `auth.inc`, `functions.inc`, `error.inc`, `jobs.inc` and `manage.inc`.
 
 ### Database tables
 | Table | Holds |
@@ -59,6 +59,7 @@ Shared files: `header.inc`, `nav.inc`, `footer.inc`, `db_connect.inc`, `settings
 - Change an application's status (New, Current, Final)
 - Delete all applications for a job reference, with a confirmation step
 - Application counts by status
+- Results shown 20 at a time when more than 20 applications match
 
 ### Enhancements
 - Manager registration with a unique username and a password rule; passwords are stored hashed
@@ -67,7 +68,8 @@ Shared files: `header.inc`, `nav.inc`, `footer.inc`, `db_connect.inc`, `settings
 - Applicants get a unique application ID and password to check and edit their own application; their session also ends after 30 minutes of inactivity
 - The apply form keeps entered values after a validation error
 - One shared error page for database, not-found and form errors
-- Prepared statements for every database query that uses input, and CSRF tokens on the manage, manager registration and applicant edit forms
+- Prepared statements for every database query that uses input, and CSRF tokens on every form that sends data and on logout
+- Session cookies set to HttpOnly and SameSite, pages can't be framed by other sites, and the SQL, include and markdown files can't be downloaded on Apache
 
 ### Acknowledgements and third-party content
 - Logo generated with Google Gemini.
