@@ -3,10 +3,6 @@ require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
 require_once "error.inc";
 
-function render_page($title, $heading, $messages, $is_error) {
-    show_error_page($heading, $messages, "apply.php", "Return to application form", $title === "Database Error" ? 503 : 400);
-}
-
 function keep_form_values() {
     require_once "session.inc";
     $fields = ['job_reference_number', 'first_name', 'last_name', 'DateOfBirth', 'Gender', 'streetaddress',
@@ -19,6 +15,10 @@ function keep_form_values() {
     }
     $old['skills'] = allowed_skills($_POST['skills'] ?? []);
     $_SESSION['apply_old'] = $old;
+}
+
+function show_application_error($messages, $status = 400) {
+    show_error_page("Please fix the following problems", $messages, "apply.php", "Return to application form", $status);
 }
 
 function make_application_id() {
@@ -54,13 +54,22 @@ $phone       = post_value('phone');
 $other_skill = post_value('Other_skill');
 $skills_arr  = allowed_skills($_POST['skills'] ?? []);
 
-
-
 /* ---------- Validate ---------- */
 $errors = [];
+
 // Job reference: exactly 6 alphanumeric characters
-if (!preg_match('/^[A-Za-z0-9]{6}$/', $job_ref))
-    $errors[] = "Please select a valid job reference.";
+$job_exists = false;
+if (preg_match('/^[A-Z0-9]{6}$/', $job_ref)) {
+    $job_stmt = mysqli_prepare($conn, "SELECT 1 FROM jobs WHERE reference = ?");
+    mysqli_stmt_bind_param($job_stmt, "s", $job_ref);
+    mysqli_stmt_execute($job_stmt);
+    mysqli_stmt_store_result($job_stmt);
+    $job_exists = mysqli_stmt_num_rows($job_stmt) > 0;
+    mysqli_stmt_close($job_stmt);
+}
+if (!$job_exists) {
+    $errors[] = "Please select a valid job.";
+}
 
 // DOB: dd/mm/yyyy, real date, age 15-80
 $dob_date = null;
@@ -82,31 +91,10 @@ if (strlen($password) < 8)
     $errors[] = "Password must be at least 8 characters.";
 elseif ($password !== $confirm)
     $errors[] = "Passwords do not match.";
+
 if ($errors) {
     keep_form_values();
-    render_page("Application Error", "Please fix the following problems", $errors, true);
-    exit();
-}
-mysqli_report(MYSQLI_REPORT_OFF);
-$conn = @mysqli_connect($host, $user, $pwd, $sql_db);
-if (!$conn) {
-    render_page("Database Error", "Sorry, we could not process your application", ["Database connection failed. Please try again later."], true);
-    exit();
-}
-
-$job_stmt = mysqli_prepare($conn, "SELECT 1 FROM jobs WHERE reference = ?");
-mysqli_stmt_bind_param($job_stmt, "s", $job_ref);
-mysqli_stmt_execute($job_stmt);
-mysqli_stmt_store_result($job_stmt);
-$job_exists = mysqli_stmt_num_rows($job_stmt) > 0;
-mysqli_stmt_close($job_stmt);
-
-if (!$job_exists) {
-    keep_form_values();
-    render_page("Application Error", "Please fix the following problems",
-        ["Please select a valid job."], true);
-    mysqli_close($conn);
-    exit();
+    show_application_error($errors);
 }
 
  /* DATA BASE */
@@ -138,10 +126,7 @@ $create_users_sql = "CREATE TABLE IF NOT EXISTS users (
     FOREIGN KEY (eoi_number) REFERENCES eoi(EOInumber) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 if (!mysqli_query($conn, $create_sql) || !mysqli_query($conn, $create_users_sql)) {
-    render_page("Database Error", "Sorry, we could not process your application",
-        ["Could not prepare the database table."], true);
-    mysqli_close($conn);
-    exit();
+    show_error_page("Sorry, we could not process your application", ["Please try again later."], "apply.php", "Return to application form", 503);
 }
 
 /* ---------- Checking insert ---------- */
@@ -152,10 +137,7 @@ $stmt = mysqli_prepare($conn,
                       State, Postcode, Email, Phone, Skills, OtherSkills)
      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 if (!$stmt) {
-    render_page("Database Error", "Sorry, we could not process your application",
-        ["Could not prepare the statement."], true);
-    mysqli_close($conn);
-    exit();
+    show_error_page("Sorry, we could not process your application", ["Please try again later."], "apply.php", "Return to application form", 503);
 }
 
 $application_id = "";
@@ -205,11 +187,8 @@ if ($saved) {
     exit();
 } else {
     mysqli_rollback($conn);
-    render_page("Database Error", "Sorry, we could not process your application",
-        ["Your application could not be saved. Please try again."], true);
+    keep_form_values();
+    show_error_page("Sorry, we could not process your application", ["Your application could not be saved. Please try again."], "apply.php", "Return to application form", 503);
 }
-
-mysqli_stmt_close($stmt);
-mysqli_close($conn);
 
 ?>
