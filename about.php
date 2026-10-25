@@ -39,7 +39,8 @@ $page_description = "Meet the HD team behind Community Connect and how the proje
 $current_page = "about";
 $page_style = '    .quote { font-family: "Source Serif 4", serif; font-style: italic; }
     blockquote { margin: 0; }
-    dd { margin-left: 0; }';
+    dd { margin-left: 0; }
+    figure { margin: 0; }';
 include "header.inc";
 ?>
 
