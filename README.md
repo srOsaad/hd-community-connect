@@ -65,14 +65,15 @@ Shared files: `header.inc`, `nav.inc`, `footer.inc`, `settings.php`, `db_connect
 ### Enhancements
 - Manager registration with a unique username and a password rule; passwords are stored hashed
 - Staff-only access to the manage pages, with logout after 30 minutes of inactivity
-- Login paused for 15 minutes after 5 failed attempts, for staff and applicants
+- Login paused for 15 minutes after 5 failed attempts, for staff and applicants. The pause is per account, so someone could lock an account on purpose; this is the usual trade off for stopping password guessing
 - Applicants get a unique application ID and password to check and edit their own application; their session also ends after 30 minutes of inactivity
 - The edit form uses the same fields and server-side rules as the apply form
 - Only one application per email address for each job, enforced by the database
 - The apply form keeps entered values after a validation error
 - One shared error page for database, not-found and form errors
-- Prepared statements for every database query that uses input, and CSRF tokens on every form that sends data and on logout
-- Session cookies set to HttpOnly and SameSite, pages can't be framed by other sites, and the SQL, include and markdown files can't be downloaded on Apache
+- Prepared statements for every database query that uses input, and CSRF tokens on every form that sends data, including the Log Out buttons
+- Session cookies set to HttpOnly and SameSite (and Secure over HTTPS), made up session IDs are refused, and sessions are kept for the full 30 minutes
+- A content security policy blocks all scripts and outside content, pages can't be framed by other sites, page addresses aren't sent to other sites, and the SQL, include and markdown files can't be downloaded on Apache
 
 ### Acknowledgements and third-party content
 - Logo generated with Google Gemini.
