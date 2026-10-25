@@ -17,6 +17,11 @@ $states  = ['VIC', 'NSW', 'QLD', 'NT', 'WA', 'SA', 'TAS', 'ACT'];
 $skill_options = ['Problem solving', 'Communication', 'Teamwork'];
 
 $errors = [];
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$token = $_SESSION['csrf_token'];
 $notice = $_SESSION['flash'] ?? '';
 unset($_SESSION['flash']);
 
@@ -72,6 +77,11 @@ if ($app) {
 
     // ---------- Save ----------
     if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        $sent_token = is_string($_POST['token'] ?? null) ? $_POST['token'] : '';
+        if (!hash_equals($token, $sent_token)) {
+            $errors[] = 'That request could not be verified. Please try again.';
+        }
+
         foreach (['FirstName','LastName','DOB','Gender','StreetAddress','Suburb',
                   'State','Postcode','Email','Phone','OtherSkills'] as $f) {
             $form[$f] = clean_input($_POST[$f] ?? '');
@@ -222,6 +232,7 @@ include 'header.inc';
     <?php endif; ?>
 
     <form method="post" action="applicant.php" novalidate="novalidate">
+        <input type="hidden" name="token" value="<?= e($token) ?>">
 
         <!-- Never editable -->
         <p>
