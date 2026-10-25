@@ -10,8 +10,7 @@ $session_timeout = 30 * 60; # 30 minutes, in seconds
 
 # Inactive too long: end the session and ask to log in again
 if (isset($_SESSION["last_activity"]) && time() - $_SESSION["last_activity"] > $session_timeout) {
-    session_unset();
-    session_destroy();
+    unset($_SESSION["username"], $_SESSION["role"], $_SESSION["last_activity"]);
     header("Location: stafflogin.php?expired=1");
     exit();
 }

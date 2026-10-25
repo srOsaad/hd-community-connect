@@ -231,7 +231,7 @@ include 'header.inc';
     <?php if (!$locked): ?>
         <a class="btn" href="applicant.php?edit=1">Edit</a>
     <?php endif; ?>
-        <a class="btn-secondary" href="logout.php?token=<?= urlencode($token) ?>">Log out</a>
+        <a class="btn-secondary" href="logout.php?who=applicant&amp;token=<?= urlencode($token) ?>">Log out</a>
     </div>
 
 <?php else: ?>
