@@ -6,7 +6,7 @@ function show_error_page($heading, $messages = [], $back_href = "index.php", $ba
         http_response_code($status);
     }
 
-    $page_title = "Error";
+    $page_title = $heading;
     $page_description = "Something went wrong on Community Connect.";
     $current_page = "";
     include "header.inc";
