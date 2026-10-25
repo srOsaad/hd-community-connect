@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' && !empty($_SESSION['eoi_id'])) {
+    header('Location: applicant.php');
+    exit();
+}
+
 require_once 'db_connect.inc';
 require_once 'error.inc';
 
