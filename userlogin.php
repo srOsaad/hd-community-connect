@@ -48,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         session_regenerate_id(true);
         $_SESSION['eoi_id'] = $eoi_number;
+        $_SESSION['application_id'] = $application_id;
         $_SESSION['applicant_last_activity'] = time();
         header('Location: applicant.php');
         exit();

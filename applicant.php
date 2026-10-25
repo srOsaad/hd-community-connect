@@ -29,8 +29,10 @@ unset($_SESSION['flash']);
 // ---------- Load this user's row ----------
 $app = null;
 $id  = (int) ($_SESSION['eoi_id'] ?? 0);
+$application_id = (string) ($_SESSION['application_id'] ?? '');
 
-if ($id < 1) {
+if ($id < 1 || $application_id === '') {
+    unset($_SESSION['eoi_id'], $_SESSION['application_id'], $_SESSION['applicant_last_activity']);
     header('Location: userlogin.php');
     exit;
 }
@@ -47,9 +49,9 @@ if (!$conn) {
     show_database_error('userlogin.php', 'Back to check application');
 }
 
-$stmt = mysqli_prepare($conn, 'SELECT * FROM eoi WHERE EOInumber = ?');
+$stmt = mysqli_prepare($conn, 'SELECT * FROM eoi WHERE EOInumber = ? AND ApplicationID = ?');
 if ($stmt) {
-    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_bind_param($stmt, 'is', $id, $application_id);
     mysqli_stmt_execute($stmt);
     $app = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt)) ?: null;
     mysqli_stmt_close($stmt);
