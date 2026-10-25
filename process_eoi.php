@@ -112,7 +112,7 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     Suburb        VARCHAR(255) NOT NULL,
     State         ENUM('VIC','NSW','QLD','NT','WA','SA','TAS','ACT') NOT NULL,
     Postcode      CHAR(4)      NOT NULL,
-    Email         VARCHAR(255)  NOT NULL,
+    Email         VARCHAR(1000) NOT NULL,
     Phone         VARCHAR(10)  NOT NULL,
     Skills        SET('Problem solving','Communication','Teamwork') NOT NULL,
     OtherSkills   TEXT NULL,

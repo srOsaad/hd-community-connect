@@ -37,7 +37,7 @@ CREATE TABLE `eoi` (
   `Suburb` varchar(255) NOT NULL,
   `State` enum('VIC','NSW','QLD','NT','WA','SA','TAS','ACT') NOT NULL,
   `Postcode` char(4) NOT NULL,
-  `Email` varchar(255) NOT NULL,
+  `Email` varchar(1000) NOT NULL,
   `Phone` varchar(10) NOT NULL,
   `Skills` set('Problem solving','Communication','Teamwork') NOT NULL,
   `OtherSkills` text DEFAULT NULL,
