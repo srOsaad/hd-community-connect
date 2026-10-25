@@ -7,7 +7,7 @@
 require_once 'session.inc';
 
 require_once 'db_connect.inc';   // $conn
-require_once 'functions.inc';    // clean_input(), e()
+require_once 'functions.inc';    // post_value(), e(), show()
 require_once 'error.inc';
 
 $genders = gender_options();

@@ -6,7 +6,7 @@ Shows every job application saved by process_eoi.php.
 
 require_once "auth.inc";          // keep this first, it sends anyone not logged in back to the login page
 require_once "db_connect.inc";    // connects to the database ($conn)
-require_once "functions.inc";     // our helpers: clean_input() and e()
+require_once "functions.inc";     // our helpers: field(), e() and show()
 require_once "error.inc";
 require_once "manage.inc";
 

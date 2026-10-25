@@ -1,7 +1,7 @@
 <?php
 require_once "session.inc";
 require_once "db_connect.inc";   // gives you $conn
-require_once "functions.inc";    // gives you clean_input() and e()
+require_once "functions.inc";    // gives you clean_input()
 require_once "error.inc";
 require_once "jobs.inc";
 

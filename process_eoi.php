@@ -1,6 +1,6 @@
 <?php
 require_once "db_connect.inc";   // gives you $conn
-require_once "functions.inc";    // gives you clean_input() and e()
+require_once "functions.inc";    // gives you post_value() and validate_application()
 require_once "error.inc";
 require_once "session.inc";
 
@@ -97,7 +97,7 @@ if (!$job_exists) {
     $errors[] = "Please select a valid job.";
 }
 
-// DOB: dd/mm/yyyy, real date, age 15-80
+// DOB: dd/mm/yyyy and a real date (the age is checked in validate_application)
 $dob_date = null;
 $dob_sql = null;
 if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#D', $DOB, $m) && checkdate((int) $m[2], (int) $m[1], (int) $m[3])) {
@@ -158,7 +158,7 @@ if (!mysqli_query($conn, $create_sql) || !mysqli_query($conn, $create_users_sql)
     show_error_page("Sorry, we could not process your application", ["Please try again later."], "apply.php", "Return to Application Form", 503);
 }
 
-// Checking insert
+// Save the application
 $skills_str = implode(",", $skills_arr);   // SET needs commas with no spaces
 
 $stmt = mysqli_prepare($conn,

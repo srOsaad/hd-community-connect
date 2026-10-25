@@ -1,5 +1,5 @@
 <?php
-// The eoi table only exists after the first application is sent, so check for it first
+// process_eoi.php creates the eoi table if it is missing, so it may not exist yet
 function eoi_table_exists($conn) {
     $check = mysqli_query($conn, "SHOW TABLES LIKE 'eoi'");
     return $check && mysqli_num_rows($check) > 0;
