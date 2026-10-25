@@ -73,11 +73,15 @@ include "header.inc";
 ?>
         <dt><?php echo e($name); ?> - <?php echo e($m["student_id"]); ?></dt>
         <dd>
+<?php if (empty($contributions[$m["member_id"]])) { ?>
+          <p>No contributions recorded yet.</p>
+<?php } else { ?>
           <ul>
-<?php foreach ($contributions[$m["member_id"]] ?? [] as $line) { ?>
+<?php foreach ($contributions[$m["member_id"]] as $line) { ?>
             <li><?php echo e($line); ?></li>
 <?php } ?>
           </ul>
+<?php } ?>
         </dd>
 <?php } ?>
       </dl>

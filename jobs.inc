@@ -86,8 +86,12 @@ function get_job_requirements($conn, $job_id) {
 
 function job_list($heading, $items) {
     echo "<div class='outline'>" .
-        "<h2 class='coloured'>" . e($heading) . "</h2>" .
-        "<ul>";
+        "<h2 class='coloured'>" . e($heading) . "</h2>";
+    if (!$items) {
+        echo "<p>None listed.</p></div>";
+        return;
+    }
+    echo "<ul>";
     foreach ($items as $item) {
         echo "<li>" . show($item) . "</li>";
     }
