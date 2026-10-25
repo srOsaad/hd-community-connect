@@ -115,8 +115,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
-summary:focus-visible,
-table:focus-visible {
+summary:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
@@ -276,7 +275,6 @@ section {
 /* Tables */
 
 table {
-  overflow-x: auto;
   width: 100%;
   border-collapse: collapse;
   background-color: var(--surface);

@@ -70,7 +70,7 @@ include "header.inc";
         $name = $name . " (" . $m["nickname"] . ")";
     }
 ?>
-        <dt><?php echo e($name); ?> - <span class="student-id"><?php echo e($m["student_id"]); ?></span></dt>
+        <dt><?php echo e($name); ?> - <?php echo e($m["student_id"]); ?></dt>
         <dd>
           <ul>
 <?php foreach ($contributions[$m["member_id"]] ?? [] as $line) { ?>
@@ -97,7 +97,7 @@ include "header.inc";
 
     <section>
       <h2>The team</h2>
-      <figure class="box team-photo">
+      <figure class="box">
         <img src="<?php echo e($group["photo_path"]); ?>"
              alt="<?php echo e($group["photo_alt"]); ?>"
              width="1200" height="900">
@@ -107,7 +107,7 @@ include "header.inc";
 
     <section>
       <h2>Fun facts</h2>
-      <table class="fun-facts">
+      <table>
         <caption>A few things you might not know about us</caption>
         <thead>
           <tr>

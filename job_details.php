@@ -45,7 +45,6 @@ if (!$row)
 	show_error_page("Job Not Found", ["We couldn't find that job. It may have been filled or removed."], "jobs.php", "Back to Jobs", 404);
 }
 
-$_SESSION["reference"] = $row["reference"]; // set the current job reference for the session, for other pages
 $page_title = $row["title"];
 
 include("header.inc");
