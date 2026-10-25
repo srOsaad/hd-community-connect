@@ -98,13 +98,15 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $d = null;
     }
 
-    $errors = array_merge($errors, validate_application([
-        'first_name' => $form['FirstName'], 'last_name' => $form['LastName'],
-        'dob' => $d ?: null, 'dob_message' => 'Please enter a valid date of birth.',
-        'gender' => $form['Gender'], 'street' => $form['StreetAddress'], 'suburb' => $form['Suburb'],
-        'state' => $form['State'], 'postcode' => $form['Postcode'], 'email' => $form['Email'],
-        'phone' => $form['Phone'], 'skills' => $form['Skills'], 'other_skills' => $form['OtherSkills'],
-    ]));
+    if (!$errors) {
+        $errors = validate_application([
+            'first_name' => $form['FirstName'], 'last_name' => $form['LastName'],
+            'dob' => $d ?: null, 'dob_message' => 'Please enter a valid date of birth.',
+            'gender' => $form['Gender'], 'street' => $form['StreetAddress'], 'suburb' => $form['Suburb'],
+            'state' => $form['State'], 'postcode' => $form['Postcode'], 'email' => $form['Email'],
+            'phone' => $form['Phone'], 'skills' => $form['Skills'], 'other_skills' => $form['OtherSkills'],
+        ]);
+    }
 
     if (!$errors) {
         $stmt = mysqli_prepare($conn, 'SELECT 1 FROM eoi WHERE JobReference = ? AND Email = ? AND EOInumber <> ?');
@@ -161,6 +163,10 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
                                          : 'Sorry, we could not save your changes. Please try again later.';
         }
     }
+}
+
+if ($errors) {
+    http_response_code(400);
 }
 
 $page_title = 'Your Application';
