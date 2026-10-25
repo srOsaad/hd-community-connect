@@ -131,7 +131,7 @@ INSERT INTO `staff` (`username`, `password_hash`, `failed_attempts`, `lockout_un
 ('admin', '$2y$10$ioi25gIcURU7giCkK5jJeeOQ.HVXloCh1AiHXtz4MV3r/djh0BFfG', 0, NULL, 15);
 
 INSERT INTO `group_info` (`group_id`, `group_name`, `intro`, `lecture_time`, `lecture_staff`, `tutorial_time`, `tutorial_staff`, `photo_path`, `photo_alt`, `photo_caption`) VALUES
-(1, 'HD', 'Community Connect''s site was designed and built by a four-person student team over Semester 2, 2026. This page introduces who we are, what each of us contributed, and a little about us outside of the project.', 'Monday 4:30pm to 5:30pm', 'Dr Atie Kia', 'Tuesday 12:30pm to 2:30pm', 'Razeen Hashmi', 'images/HD-team-photo.jpg', 'The HD team standing together on campus', 'The HD team — Sam, Tom, Shash and Declan.');
+(1, 'HD', 'Community Connect''s site was designed and built by a four-person student team over Semester 2, 2026. This page introduces who we are, what each of us contributed, and a little about us outside of the project.', 'Monday 4:30pm to 5:30pm', 'Dr Atie Kia', 'Tuesday 12:30pm to 2:30pm', 'Razeen Hashmi', 'images/HD-team-photo.jpg', 'The HD team standing together on campus', 'The HD team: Sam, Tom, Shash and Declan.');
 
 INSERT INTO `members` (`member_id`, `full_name`, `nickname`, `student_id`, `quote_text`, `quote_by`, `fun_fact`, `sort_order`) VALUES
 (1, 'Shahryar Rahman Saad', 'Sam', '106406031', 'You cannot shake hands with a clenched fist.', 'Indira Gandhi', 'I am interested in web development and enjoy creating interactive websites.', 1),
