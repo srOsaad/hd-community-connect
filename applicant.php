@@ -55,7 +55,8 @@ if ($conn && $id > 0) {
 }
 
 if (!$app) {
-    show_error_page('Application not found', ['We could not find an application with this ID.'], 'userlogin.php', 'Check another application', 404);
+    unset($_SESSION['eoi_id'], $_SESSION['application_id'], $_SESSION['applicant_last_activity']);
+    show_error_page('Application not found', ['We could not find this application. It may have been removed.'], 'userlogin.php', 'Check another application', 404);
 }
 
 // Job title for the page heading (JobReference in eoi = reference in jobs)
