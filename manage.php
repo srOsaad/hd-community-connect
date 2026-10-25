@@ -73,11 +73,15 @@ if (isset($_SESSION["success"])) {
     unset($_SESSION["success"]);
 }
 
-$page_url = "manage.php?" . http_build_query([
+$page = max(1, (int) field($_GET, "page"));
+$per_page = 20;
+
+$list_query = [
     "job_ref" => $filter_job, "first_name" => $filter_first, "last_name" => $filter_last,
     "application_id" => $filter_app, "status" => $filter_status,
     "sort" => $sort, "order" => $order,
-]);
+];
+$page_url = "manage.php?" . http_build_query($list_query + ["page" => $page]);
 
 $has_table = eoi_table_exists($conn);
 
@@ -137,14 +141,27 @@ $status_counts = $has_table ? count_by_status($conn, $statuses) : array_fill_key
 $total_count = array_sum($status_counts);
 
 $eois = [];
+$match_count = 0;
+$page_count = 1;
 if ($has_table && !$filter_invalid) {
-    $eois = find_eois($conn, [
+    $filters = [
         "status" => $filter_status, "application_id" => $filter_app, "job_ref" => $filter_job,
         "first_name" => $filter_first, "last_name" => $filter_last,
-    ], $sort, $order);
+    ];
+    $match_count = count_eois($conn, $filters);
 
-    if ($eois === null) {
+    if ($match_count !== null && $match_count <= $per_page) {
+        $page = 1;
+        $eois = find_eois($conn, $filters, $sort, $order);
+    } elseif ($match_count !== null) {
+        $page_count = (int) ceil($match_count / $per_page);
+        $page = min($page, $page_count);
+        $eois = find_eois($conn, $filters, $sort, $order, $per_page, ($page - 1) * $per_page);
+    }
+
+    if ($match_count === null || $eois === null) {
         $eois = [];
+        $match_count = 0;
         $messages[] = "Applications could not be loaded. Please try again later.";
     }
 }
@@ -182,6 +199,14 @@ $page_style = <<<'CSS'
 
     .eoi-table td {
       font-size: var(--step--1);
+    }
+
+    .pager {
+      align-items: center;
+    }
+
+    .pager p {
+      margin: 0;
     }
 
     .status-form {
@@ -335,7 +360,7 @@ include "header.inc";
     <section aria-labelledby="results-heading">
       <h2 id="results-heading"><?php echo $is_filtered ? "Search results" : "All applications"; ?></h2>
 <?php if (!$filter_invalid) { ?>
-      <p><?php echo count($eois); ?> application(s) found.</p>
+      <p><?php echo $match_count; ?> application(s) found.<?php if ($page_count > 1) { ?> Showing <?php echo ($page - 1) * $per_page + 1; ?> to <?php echo ($page - 1) * $per_page + count($eois); ?>.<?php } ?></p>
 <?php } ?>
 
 <?php if ($filter_invalid) { ?>
@@ -398,6 +423,18 @@ include "header.inc";
           </tbody>
         </table>
       </div>
+<?php } ?>
+
+<?php if ($page_count > 1) { ?>
+      <nav class="group pager" aria-label="Pages of applications">
+<?php if ($page > 1) { ?>
+        <a class="btn-secondary" href="<?php echo e("manage.php?" . http_build_query($list_query + ["page" => $page - 1])); ?>">Previous</a>
+<?php } ?>
+        <p>Page <?php echo $page; ?> of <?php echo $page_count; ?></p>
+<?php if ($page < $page_count) { ?>
+        <a class="btn-secondary" href="<?php echo e("manage.php?" . http_build_query($list_query + ["page" => $page + 1])); ?>">Next</a>
+<?php } ?>
+      </nav>
 <?php } ?>
     </section>
 <?php } ?>

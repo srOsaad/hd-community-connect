@@ -69,9 +69,7 @@ function count_by_status($conn, $statuses) {
     return $status_counts;
 }
 
-// Get the applications in the chosen order. Each filled search box adds a condition,
-// and the values go in as ? placeholders so they can't change the SQL
-function find_eois($conn, $filters, $sort, $order) {
+function eoi_conditions($filters) {
     $conditions = [];
     $types = "";
     $params = [];
@@ -102,13 +100,41 @@ function find_eois($conn, $filters, $sort, $order) {
         $params[] = like_pattern($filters["last_name"]);
     }
 
-    $sql = "SELECT * FROM eoi";
-    if ($conditions) {
-        $sql .= " WHERE " . implode(" AND ", $conditions);
+    $where = $conditions ? " WHERE " . implode(" AND ", $conditions) : "";
+    return [$where, $types, $params];
+}
+
+function count_eois($conn, $filters) {
+    [$where, $types, $params] = eoi_conditions($filters);
+
+    $stmt = mysqli_prepare($conn, "SELECT COUNT(*) AS total FROM eoi" . $where);
+    if (!$stmt) {
+        error_log("EOI count query failed: " . mysqli_error($conn));
+        return null;
     }
+    if ($params) {
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
+    }
+    mysqli_stmt_execute($stmt);
+    $total = (int) mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))["total"];
+    mysqli_stmt_close($stmt);
+    return $total;
+}
+
+// Get the applications in the chosen order. Each filled search box adds a condition,
+// and the values go in as ? placeholders so they can't change the SQL
+function find_eois($conn, $filters, $sort, $order, $limit = null, $offset = 0) {
+    [$where, $types, $params] = eoi_conditions($filters);
 
     $order_by = $sort === "State" ? "CAST(State AS CHAR)" : $sort;
-    $sql .= " ORDER BY " . $order_by . " " . strtoupper($order) . ", EOInumber";
+    $sql = "SELECT * FROM eoi" . $where . " ORDER BY " . $order_by . " " . strtoupper($order) . ", EOInumber";
+
+    if ($limit !== null) {
+        $sql .= " LIMIT ? OFFSET ?";
+        $types .= "ii";
+        $params[] = $limit;
+        $params[] = $offset;
+    }
 
     $stmt = mysqli_prepare($conn, $sql);
     if (!$stmt) {
