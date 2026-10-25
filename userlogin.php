@@ -6,17 +6,18 @@ $error = '';
 $max_attempts = 5;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $eoi_number = (int) trim((string) ($_POST['eoi_number'] ?? ''));
+    $application_id = trim((string) ($_POST['application_id'] ?? ''));
     $password = (string) ($_POST['password'] ?? '');
 
     if (!$conn) {
         $error = $db_error_message;
     } else {
         $stmt = mysqli_prepare($conn,
-            "SELECT password_hash, failed_attempts, lockout_until, lockout_minutes FROM users WHERE eoi_number = ?");
-        mysqli_stmt_bind_param($stmt, "i", $eoi_number);
+            "SELECT u.eoi_number, u.password_hash, u.failed_attempts, u.lockout_until, u.lockout_minutes
+             FROM users u JOIN eoi e ON e.EOInumber = u.eoi_number WHERE e.ApplicationID = ?");
+        mysqli_stmt_bind_param($stmt, "s", $application_id);
         mysqli_stmt_execute($stmt);
-        mysqli_stmt_bind_result($stmt, $hash, $attempts, $lock_until, $lock_minutes);
+        mysqli_stmt_bind_result($stmt, $eoi_number, $hash, $attempts, $lock_until, $lock_minutes);
         $found = mysqli_stmt_fetch($stmt);
         mysqli_stmt_close($stmt);
 
@@ -76,8 +77,8 @@ include 'header.inc';
   <?php } ?>
 
   <form method="post" action="userlogin.php">
-    <label for="eoi_number">Application ID:</label>
-    <input type="text" id="eoi_number" name="eoi_number" inputmode="numeric" pattern="[0-9]+" required><br>
+    <label for="application_id">Application ID:</label>
+    <input type="text" id="application_id" name="application_id" inputmode="numeric" pattern="[0-9]{16,17}" maxlength="17" required><br>
 
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required><br>

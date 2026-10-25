@@ -22,6 +22,12 @@ $page_style = <<<'CSS'
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
 		max-width: 20rem;
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.outline form {
+		margin-top: auto;
 	}
 CSS;
 
@@ -54,7 +60,6 @@ include("header.inc");
 				// only title, reference number, salary, description, and reporting line are shown on this page
 				echo "<section class='outline'>
 					<h2>" . $row["title"] . "</h2>
-					<p class='hint'> #" . $row["reference"] . "</p>
 					<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
 					<p>" . $row["description"] . "</p>
 					<p>" . $row["reporting_line"] . "</p>";

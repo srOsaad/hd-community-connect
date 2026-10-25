@@ -8,7 +8,7 @@ if (empty($_SESSION['apply_success'])) {
 }
 
 $first_name = $_SESSION['first_name'] ?? "";
-$eoi_id = (int) ($_SESSION['eoi_id'] ?? 0);
+$application_id = $_SESSION['application_id'] ?? "";
 unset($_SESSION['apply_success'], $_SESSION['first_name']);
 
 $page_title = "Success";
@@ -34,7 +34,7 @@ include "header.inc";
 <main id="main">
   <h1>Thank you, <?php echo e($first_name); ?>!</h1>
   <h2>Your application has been received.</h2>
-  <p>Your application ID is <strong><?php echo $eoi_id; ?></strong>. Keep it with your password to check your application later.</p>
+  <p>Your application ID is <strong><?php echo e($application_id); ?></strong>. Keep it with your password to check your application later.</p>
   <div class="group">
     <a class="btn" href="applicant.php">View your application</a>
     <a class="btn-secondary" href="index.php">Back to home</a>

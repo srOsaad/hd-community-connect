@@ -138,7 +138,7 @@ include 'header.inc';
     <?php if ($notice): ?><p class="success"><?= e($notice) ?></p><?php endif; ?>
 
     <h2>Application ID</h2>
-    <p><?= (int) $app['EOInumber'] ?></p>
+    <p><?= e($app['ApplicationID']) ?></p>
 
     <h2>Status</h2>
     <p><strong><?= e($app['Status']) ?></strong></p>

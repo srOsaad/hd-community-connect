@@ -103,7 +103,7 @@ include "header.inc";
 <select id="job_reference_number" name="job_reference_number" required>
     <option value="">Please select job you want to apply</option>
     <?php foreach ($job_map as $reference => $title): ?>
-        <option value="<?= e($reference) ?>"<?= (string) $reference === $selected_job ? ' selected' : '' ?>><?= e($title) ?> (#<?= e($reference) ?>)</option>
+        <option value="<?= e($reference) ?>"<?= (string) $reference === $selected_job ? ' selected' : '' ?>><?= e($title) ?></option>
     <?php endforeach; ?>
 </select>
 </fieldset>

@@ -523,9 +523,9 @@ input[type="checkbox"] {
 }
 
 
-/* Reponses from and within 680px */
+/* Reponses from and within 760px */
 
-@media (max-width: 42.5em) {
+@media (max-width: 47.5em) {
   /* Smaller logo */
   .logo {
     width: 40px;

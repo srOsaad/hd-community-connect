@@ -50,7 +50,6 @@ include("header.inc");
 				// display the first section of information for the job listing
 				echo "<section>
 					<h1>" . $row["title"] . "</h1>
-					<p class='hint'> #" . $row["reference"] . "</p>
 					<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
 					<p>" . $row["description"] . "</p>
 					<p>" . $row["reporting_line"] . "</p>";

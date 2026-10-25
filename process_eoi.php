@@ -20,6 +20,13 @@ function render_page($title, $heading, $messages, $is_error) {
     echo "</body></html>";
 }
 
+function make_application_id() {
+    $now = new DateTime('now', new DateTimeZone('Australia/Melbourne'));
+    $ms = str_pad((string) intdiv((int) $now->format('u'), 1000), 2, '0', STR_PAD_LEFT);
+    return $ms . $now->format('s') . $now->format('i') . $now->format('H')
+         . $now->format('d') . $now->format('m') . $now->format('Y');
+}
+
 if (!$conn) {
     echo "<p>" . $db_error_message . "</p>";   // database not reachable
     exit();
@@ -164,6 +171,7 @@ if (!$job_exists) {
  /* DATA BASE */
 $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     EOInumber     INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    ApplicationID VARCHAR(17)  NOT NULL UNIQUE,
     JobReference  CHAR(6)      NOT NULL,
     FirstName     VARCHAR(20)  NOT NULL,
     LastName      VARCHAR(20)  NOT NULL,
@@ -198,9 +206,9 @@ if (!mysqli_query($conn, $create_sql) || !mysqli_query($conn, $create_users_sql)
 $skills_str = implode(",", $skills_arr);   // SET needs commas with no spaces
 
 $stmt = mysqli_prepare($conn,
-    "INSERT INTO eoi (JobReference, FirstName, LastName, DOB, Gender, StreetAddress, Suburb,
+    "INSERT INTO eoi (ApplicationID, JobReference, FirstName, LastName, DOB, Gender, StreetAddress, Suburb,
                       State, Postcode, Email, Phone, Skills, OtherSkills)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 if (!$stmt) {
     render_page("Database Error", "Sorry, we could not process your application",
         ["Could not prepare the statement."], true);
@@ -208,12 +216,23 @@ if (!$stmt) {
     exit();
 }
 
-mysqli_stmt_bind_param($stmt, "sssssssssssss",
-    $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
+$application_id = "";
+mysqli_stmt_bind_param($stmt, "ssssssssssssss",
+    $application_id, $job_ref, $first_name, $last_name, $dob_sql, $gender, $street, $suburb,
     $state, $postcode, $email, $phone, $skills_str, $other_skill);
 
 mysqli_begin_transaction($conn);
-$saved = mysqli_stmt_execute($stmt);
+$saved = false;
+for ($try = 0; $try < 5 && !$saved; $try++) {
+    $application_id = make_application_id();
+    $saved = mysqli_stmt_execute($stmt);
+    if (!$saved && mysqli_stmt_errno($stmt) !== 1062) {
+        break;
+    }
+    if (!$saved) {
+        usleep(1000);
+    }
+}
 $new_eoi_id = $saved ? mysqli_insert_id($conn) : 0;
 
 if ($saved) {
@@ -236,6 +255,7 @@ if ($saved) {
     $_SESSION['apply_success'] = true;
     $_SESSION['first_name'] = $first_name;
     $_SESSION['eoi_id'] = $new_eoi_id;
+    $_SESSION['application_id'] = $application_id;
 
     header("Location: success.php");
     exit();
