@@ -25,20 +25,7 @@ $page_style = <<<'CSS'
     }
 
     .job-tools form {
-        display: flex;
         flex: 1 1 22rem;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        align-items: end;
-        max-width: 36rem;
-    }
-
-    .job-tools label {
-        flex-basis: 100%;
-    }
-
-    .job-tools input[type='text'] {
-        flex: 1 1 14rem;
     }
 CSS;
 
@@ -52,7 +39,7 @@ include "header.inc";
 
     <div class="job-tools">
         <!-- search bar -->
-        <form method="get" action="search.php">
+        <form method="get" action="search.php" class="job-search">
             <label for="search">Search for a job title</label>
             <input type="text" name="search" id="search" required>
             <input class="btn" style="width: 8em" type="submit" value="Search">

@@ -15,20 +15,8 @@ $page_description = "Search Community Connect job openings by title.";
 $current_page = "jobs";
 
 $page_style = <<<'CSS'
-    .search-again {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        align-items: end;
+    .job-search {
         margin-bottom: 1.5rem;
-    }
-
-    .search-again label {
-        flex-basis: 100%;
-    }
-
-    .search-again input[type='text'] {
-        flex: 1 1 14rem;
     }
 CSS;
 
@@ -43,7 +31,7 @@ include "header.inc";
     $search = isset($_GET["search"]) ? clean_input($_GET["search"]) : "";
     ?>
 
-    <form method="get" action="search.php" class="search-again">
+    <form method="get" action="search.php" class="job-search">
         <label for="search">Search for a job title</label>
         <input type="text" name="search" id="search" value="<?php echo $search; ?>" required>
         <input class="btn" style="width: 8em" type="submit" value="Search">
