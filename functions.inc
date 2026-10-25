@@ -31,7 +31,7 @@ function post_value($key) {
 }
 
 function text_length($value) {
-    return mb_strlen(html_entity_decode((string) $value, ENT_QUOTES, "UTF-8"));
+    return mb_strlen(str_replace("\r\n", "\n", html_entity_decode((string) $value, ENT_QUOTES, "UTF-8")));
 }
 
 function skill_options() {
