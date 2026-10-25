@@ -105,8 +105,8 @@ if ($app) {
         $form['Skills'] = allowed_skills($_POST['Skills'] ?? []);
 
         $d = DateTime::createFromFormat('!Y-m-d', $form['DOB']);
-        if (!preg_match('/^[A-Za-z\s]{1,20}$/', $form['FirstName'])) $errors[] = 'First name must be 1-20 letters only.';
-        if (!preg_match('/^[A-Za-z\s]{1,20}$/', $form['LastName']))  $errors[] = 'Last name must be 1-20 letters only.';
+        if (!preg_match('/^[A-Za-z ]{1,20}$/', $form['FirstName']) || trim($form['FirstName']) === '') $errors[] = 'First name must be 1-20 letters only.';
+        if (!preg_match('/^[A-Za-z ]{1,20}$/', $form['LastName']) || trim($form['LastName']) === '') $errors[] = 'Last name must be 1-20 letters only.';
         if (!$d || $d->format('Y-m-d') !== $form['DOB'] || $d > new DateTime('today')) {
             $errors[] = 'Please enter a valid date of birth.';
         } else {

@@ -65,9 +65,9 @@ if (!preg_match('/^[A-Za-z0-9]{6}$/', $job_ref))
     $errors[] = "Please select a valid job referrence.";
 
 // Names: max 20 alpha characters (letters, hyphen, apostrophe, space allowed)
-if ($first_name === "" || !preg_match("/^[A-Za-z\s]{1,20}$/", $first_name))
+if (trim($first_name) === "" || !preg_match('/^[A-Za-z ]{1,20}$/', $first_name))
     $errors[] = "First name must be 1-20 letters only.";
-if ($last_name === "" || !preg_match("/^[A-Za-z\s]{1,20}$/", $last_name))
+if (trim($last_name) === "" || !preg_match('/^[A-Za-z ]{1,20}$/', $last_name))
     $errors[] = "Last name must be 1-20 letters only.";
 
 // DOB: dd/mm/yyyy, real date, age 15-80
