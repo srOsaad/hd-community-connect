@@ -56,6 +56,7 @@ include "header.inc";
     <h2><strong>Application form</strong></h2>
     <p><em>Fill in your details below. When you submit, you will receive an <span class="benefit">application ID</span> so you can <span class="benefit">check your application</span> later.</em></p>
     <form action="process_eoi.php" method="post" novalidate="novalidate">
+      <input type="hidden" name="token" value="<?= e(csrf_token()) ?>">
       <!-- Form fields for user information -->
       <fieldset class="field">
         <legend><strong>Personal details</strong></legend>

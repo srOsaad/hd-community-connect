@@ -49,6 +49,18 @@ function like_pattern($text) {
     return "%" . addcslashes($text, "\\%_") . "%";
 }
 
+function csrf_token() {
+    if (empty($_SESSION["csrf_token"])) {
+        $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION["csrf_token"];
+}
+
+function csrf_ok() {
+    $sent = isset($_POST["token"]) && is_string($_POST["token"]) ? $_POST["token"] : "";
+    return hash_equals(csrf_token(), $sent);
+}
+
 function failed_login_message($what) {
     return "Incorrect " . $what . " or password. After 5 failed attempts, logging in is paused for 15 minutes.";
 }

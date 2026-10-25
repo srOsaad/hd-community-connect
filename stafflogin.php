@@ -2,6 +2,7 @@
 require_once 'session.inc';
 require_once 'db_connect.inc';
 require_once 'error.inc';
+require_once 'functions.inc';
 
 if (!$conn) {
     show_database_error();
@@ -11,7 +12,9 @@ $error = '';
 $max_attempts = 5;
 $dummy_hash = '$2y$10$E4UH1PSby88iafe4viaiduqs8xxqYnEwXvd2IlIAk6LrRF5ilhA5e';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && !csrf_ok()) {
+    $error = 'That request could not be verified. Please try again.';
+} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = is_string($_POST['username'] ?? null) ? trim($_POST['username']) : '';
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
 
@@ -89,6 +92,7 @@ include 'header.inc';
   <?php } ?>
 
   <form method="post" action="stafflogin.php">
+    <input type="hidden" name="token" value="<?php echo e(csrf_token()); ?>">
     <div class="field">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" autocomplete="username" required>

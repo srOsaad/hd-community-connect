@@ -2,6 +2,7 @@
 require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
 require_once "error.inc";
+require_once "session.inc";
 
 function keep_form_values() {
     require_once "session.inc";
@@ -35,6 +36,11 @@ if (!$conn) {
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: apply.php");
     exit();
+}
+
+if (!csrf_ok()) {
+    keep_form_values();
+    show_application_error(["That request could not be verified. Please try again."]);
 }
 
 // Sanitise

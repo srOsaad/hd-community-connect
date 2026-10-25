@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' && !empty($_SESSION['eoi_id'])) {
 
 require_once 'db_connect.inc';
 require_once 'error.inc';
+require_once 'functions.inc';
 
 if (!$conn) {
     show_database_error();
@@ -17,7 +18,9 @@ $error = '';
 $max_attempts = 5;
 $dummy_hash = '$2y$10$E4UH1PSby88iafe4viaiduqs8xxqYnEwXvd2IlIAk6LrRF5ilhA5e';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && !csrf_ok()) {
+    $error = 'That request could not be verified. Please try again.';
+} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $application_id = is_string($_POST['application_id'] ?? null) ? trim($_POST['application_id']) : '';
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
 
@@ -96,6 +99,7 @@ include 'header.inc';
   <?php } ?>
 
   <form method="post" action="userlogin.php">
+    <input type="hidden" name="token" value="<?php echo e(csrf_token()); ?>">
     <div class="field">
       <label for="application_id">Application ID</label>
       <input type="text" id="application_id" name="application_id" inputmode="numeric" pattern="[0-9]{16,17}" maxlength="17" required>
