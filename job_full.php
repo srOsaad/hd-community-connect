@@ -4,7 +4,6 @@ require_once "db_connect.inc";   // gives you $conn
 require_once "functions.inc";    // gives you clean_input() and e()
 require_once "error.inc";
 
-$page_title = "Jobs";
 $page_description = "Full job listing.";
 $current_page = "jobs";
 
@@ -50,6 +49,7 @@ if (!$row)
 }
 
 $_SESSION["reference"] = $row["reference"]; // set the current job reference for the session, for other pages
+$page_title = $row["title"];
 
 include("header.inc");
 ?>
