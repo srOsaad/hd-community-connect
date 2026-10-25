@@ -163,6 +163,21 @@ $page_style = <<<'CSS'
         box-shadow: 0 0 0 2px rgba(26, 58, 110, 0.2);
     }
     input.static { pointer-events: none; cursor: default; }
+
+    .details {
+        display: grid;
+        grid-template-columns: 8.5rem 1fr;
+        gap: 0.6rem 1.5rem;
+        max-width: var(--measure);
+        margin: 0 0 1.75rem;
+    }
+    .details dt { font-weight: 600; color: var(--brand); }
+    .details dd { margin: 0; }
+
+    @media (max-width: 30em) {
+        .details { grid-template-columns: 1fr; gap: 0.15rem; }
+        .details dd { margin-bottom: 0.75rem; }
+    }
 CSS;
 include 'header.inc';
 ?>
@@ -171,57 +186,47 @@ include 'header.inc';
 
 <?php if (!$editing): ?>
 
-    <!-- ===== VIEW: headings + paragraphs ===== -->
-    <?php if ($notice): ?><p class="success"><?= e($notice) ?></p><?php endif; ?>
+    <!-- View mode: details list -->
+    <?php if ($notice): ?><p class="message message-success" role="status"><?= e($notice) ?></p><?php endif; ?>
 
-    <h2>Application ID</h2>
-    <p><?= show($app['ApplicationID']) ?></p>
+    <h2>Application</h2>
+    <dl class="details">
+        <dt>Application ID</dt>
+        <dd><?= show($app['ApplicationID']) ?></dd>
 
-    <h2>Status</h2>
-    <p><strong><?= show($app['Status']) ?></strong></p>
+        <dt>Status</dt>
+        <dd><strong><?= show($app['Status']) ?></strong><?php if ($locked): ?> (your application is <?= e(strtolower($app['Status'])) ?> and can no longer be edited)<?php endif; ?></dd>
 
-    <?php if ($locked): ?>
-        <p>Your application is <?= e(strtolower($app['Status'])) ?></p>
-    <?php endif; ?>
+        <dt>Job</dt>
+        <dd><?= $job_title !== '' ? e($job_title) . ' (' . show($app['JobReference']) . ')' : show($app['JobReference']) ?></dd>
+    </dl>
 
-    <h2>Job Reference</h2>
-    <p><?= show($app['JobReference']) ?></p>
+    <h2>Your details</h2>
+    <dl class="details">
+        <dt>Name</dt>
+        <dd><?= show($app['FirstName'] . ' ' . $app['LastName']) ?></dd>
 
-    <h2>First Name</h2>
-    <p><?= show($app['FirstName']) ?></p>
+        <dt>Date of birth</dt>
+        <dd><?= e(date('d/m/Y', strtotime($app['DOB']))) ?></dd>
 
-    <h2>Last Name</h2>
-    <p><?= show($app['LastName']) ?></p>
+        <dt>Gender</dt>
+        <dd><?= show($app['Gender']) ?></dd>
 
-    <h2>Date of Birth</h2>
-    <p><?= e(date('d/m/Y', strtotime($app['DOB']))) ?></p>
+        <dt>Address</dt>
+        <dd><?= show($app['StreetAddress']) ?><br><?= show($app['Suburb'] . ' ' . $app['State'] . ' ' . $app['Postcode']) ?></dd>
 
-    <h2>Gender</h2>
-    <p><?= show($app['Gender']) ?></p>
+        <dt>Email</dt>
+        <dd><?= show($app['Email']) ?></dd>
 
-    <h2>Street Address</h2>
-    <p><?= show($app['StreetAddress']) ?></p>
+        <dt>Phone</dt>
+        <dd><?= show($app['Phone']) ?></dd>
 
-    <h2>Suburb/Town</h2>
-    <p><?= show($app['Suburb']) ?></p>
+        <dt>Skills</dt>
+        <dd><?= $app['Skills'] === '' ? '-' : show(str_replace(',', ', ', $app['Skills'])) ?></dd>
 
-    <h2>State</h2>
-    <p><?= show($app['State']) ?></p>
-
-    <h2>Postcode</h2>
-    <p><?= show($app['Postcode']) ?></p>
-
-    <h2>Email</h2>
-    <p><?= show($app['Email']) ?></p>
-
-    <h2>Phone</h2>
-    <p><?= show($app['Phone']) ?></p>
-
-    <h2>Skills</h2>
-    <p><?= $app['Skills'] === '' ? '-' : show(str_replace(',', ', ', $app['Skills'])) ?></p>
-
-    <h2>Other Skills</h2>
-    <p><?= trim((string) $app['OtherSkills']) === '' ? '-' : nl2br(show($app['OtherSkills'])) ?></p>
+        <dt>Other skills</dt>
+        <dd><?= trim((string) $app['OtherSkills']) === '' ? '-' : nl2br(show($app['OtherSkills'])) ?></dd>
+    </dl>
 
     <div class="group">
     <?php if (!$locked): ?>
