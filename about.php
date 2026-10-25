@@ -37,7 +37,7 @@ if (!$group || !$members) {
 $page_title = "About the Team";
 $page_description = "Meet the HD team behind Community Connect and how the project was built.";
 $current_page = "about";
-$page_style = '    .quote { font-family: "Source Serif 4", serif; font-style: italic; }
+$page_style = '    .quote { font-family: var(--font-heading); font-style: italic; }
     blockquote { margin: 0; }
     dd { margin-left: 0; }
     figure { margin: 0; }';

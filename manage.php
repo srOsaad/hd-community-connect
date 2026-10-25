@@ -52,7 +52,7 @@ $sort_fields = [
     "State"        => "State",
     "Status"       => "Status",
 ];
- 
+
 $sort = field($_GET, "sort");
 if (!array_key_exists($sort, $sort_fields)) {
     $sort = "EOInumber";
@@ -96,26 +96,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && field($_POST, "action
     } elseif ($eoi_number < 1 || !in_array($new_status, $statuses, true)) {
         $messages[] = "Please choose a valid status.";
     } else {
-        $stmt = $conn->prepare("SELECT Status FROM eoi WHERE EOInumber = ?");
-        $stmt->bind_param("i", $eoi_number);
-        $stmt->execute();
-        $current = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
+        $stmt = mysqli_prepare($conn, "SELECT Status FROM eoi WHERE EOInumber = ?");
+        mysqli_stmt_bind_param($stmt, "i", $eoi_number);
+        mysqli_stmt_execute($stmt);
+        $current = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
 
         if (!$current) {
             $messages[] = "EOI $eoi_number doesn't exist.";
         } elseif ($current["Status"] === $new_status) {
             $_SESSION["success"] = "EOI $eoi_number already had the status $new_status.";
         } else {
-            $stmt = $conn->prepare("UPDATE eoi SET Status = ? WHERE EOInumber = ?");
-            $stmt->bind_param("si", $new_status, $eoi_number);
-            if ($stmt->execute()) {
+            $stmt = mysqli_prepare($conn, "UPDATE eoi SET Status = ? WHERE EOInumber = ?");
+            mysqli_stmt_bind_param($stmt, "si", $new_status, $eoi_number);
+            if (mysqli_stmt_execute($stmt)) {
                 $_SESSION["success"] = "EOI $eoi_number is now $new_status.";
             } else {
-                error_log("Status update failed: " . $stmt->error);
+                error_log("Status update failed: " . mysqli_stmt_error($stmt));
                 $messages[] = "The status could not be changed. Please try again.";
             }
-            $stmt->close();
+            mysqli_stmt_close($stmt);
         }
 
         # Redirect so refreshing doesn't send the form again
@@ -138,11 +138,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && ($action === "confirm
     } elseif (!preg_match('/^[A-Z0-9]{6}$/', $job_ref)) {
         $messages[] = "A job reference is exactly 6 letters or numbers.";
     } elseif ($action === "confirm_delete") {
-        $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM eoi WHERE JobReference = ?");
-        $stmt->bind_param("s", $job_ref);
-        $stmt->execute();
-        $delete_count = (int) $stmt->get_result()->fetch_assoc()["total"];
-        $stmt->close();
+        $stmt = mysqli_prepare($conn, "SELECT COUNT(*) AS total FROM eoi WHERE JobReference = ?");
+        mysqli_stmt_bind_param($stmt, "s", $job_ref);
+        mysqli_stmt_execute($stmt);
+        $delete_count = (int) mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))["total"];
+        mysqli_stmt_close($stmt);
 
         if ($delete_count === 0) {
             $messages[] = "There are no applications for job $job_ref.";
@@ -150,15 +150,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && ($action === "confirm
             $delete_job = $job_ref;
         }
     } else {
-        $stmt = $conn->prepare("DELETE FROM eoi WHERE JobReference = ?");
-        $stmt->bind_param("s", $job_ref);
-        if ($stmt->execute()) {
-            $_SESSION["success"] = "Deleted " . $stmt->affected_rows . " application(s) for job $job_ref.";
+        $stmt = mysqli_prepare($conn, "DELETE FROM eoi WHERE JobReference = ?");
+        mysqli_stmt_bind_param($stmt, "s", $job_ref);
+        if (mysqli_stmt_execute($stmt)) {
+            $_SESSION["success"] = "Deleted " . mysqli_stmt_affected_rows($stmt) . " application(s) for job $job_ref.";
         } else {
-            error_log("EOI delete failed: " . $stmt->error);
+            error_log("EOI delete failed: " . mysqli_stmt_error($stmt));
             $messages[] = "The applications could not be deleted. Please try again.";
         }
-        $stmt->close();
+        mysqli_stmt_close($stmt);
 
         if (isset($_SESSION["success"])) {
             header("Location: " . $page_url);
@@ -220,16 +220,16 @@ if ($has_table && !$filter_invalid) {
     $order_by = $sort === "State" ? "CAST(State AS CHAR)" : $sort;
     $sql .= " ORDER BY " . $order_by . " " . strtoupper($order) . ", EOInumber";
 
-    $stmt = $conn->prepare($sql);
+    $stmt = mysqli_prepare($conn, $sql);
     if ($stmt) {
         if ($params) {
-            $stmt->bind_param($types, ...$params);
+            mysqli_stmt_bind_param($stmt, $types, ...$params);
         }
-        $stmt->execute();
-        $eois = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
+        mysqli_stmt_execute($stmt);
+        $eois = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
     } else {
-        error_log("EOI list query failed: " . $conn->error);
+        error_log("EOI list query failed: " . mysqli_error($conn));
         $messages[] = "Applications could not be loaded. Please try again later.";
     }
 }
@@ -324,16 +324,16 @@ include "header.inc";
     <h1>Manage Applications</h1>
     <p class="intro">Signed in as <strong><?php echo e($_SESSION["username"]); ?></strong>.
       <a href="staffregister.php">Add a manager</a></p>
- 
+
 <?php if ($success !== "") { ?>
     <p class="message message-success" role="status"><?php echo e($success); ?></p>
 <?php } ?>
 
 <?php show_errors($messages); ?>
- 
+
 <?php if (!$has_table) { ?>
     <p>No applications have been submitted yet. They will appear here after the first one arrives.</p>
- 
+
 <?php } else { ?>
     <p><strong><?php echo $total_count; ?></strong> application(s) in total:
 <?php foreach ($status_counts as $status => $count) { ?>
@@ -422,13 +422,13 @@ include "header.inc";
 <?php if (!$filter_invalid) { ?>
       <p><?php echo count($eois); ?> application(s) found.</p>
 <?php } ?>
- 
+
 <?php if ($filter_invalid) { ?>
       <p>Fix the search above to see results.</p>
 <?php } elseif (count($eois) === 0 && $is_filtered) { ?>
       <p>No applications match your search.</p>
 <?php } ?>
- 
+
 <?php if (count($eois) > 0) { ?>
       <div class="table-wrap">
         <table class="eoi-table">
@@ -487,5 +487,5 @@ include "header.inc";
     </section>
 <?php } ?>
   </main>
- 
+
 <?php include "footer.inc"; ?>

@@ -7,7 +7,7 @@ require_once "jobs.inc";
 
 if (!$conn)
 {
-	show_database_error();
+    show_database_error();
 }
 
 $page_title = "Jobs";
@@ -16,72 +16,75 @@ $current_page = "jobs";
 
 $page_style = <<<'CSS'
     .job-tools {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-		align-items: end;
-		justify-content: space-between;
-		margin-bottom: 1.5rem;
-	}
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: end;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
 
-	.job-tools form {
-		display: flex;
-		flex: 1 1 22rem;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-		align-items: end;
-		max-width: 36rem;
-	}
+    .job-tools form {
+        display: flex;
+        flex: 1 1 22rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: end;
+        max-width: 36rem;
+    }
 
-	.job-tools label {
-		flex-basis: 100%;
-	}
+    .job-tools label {
+        flex-basis: 100%;
+    }
 
-	.job-tools input[type='text'] {
-		flex: 1 1 14rem;
-	}
+    .job-tools input[type='text'] {
+        flex: 1 1 14rem;
+    }
 CSS;
 
-include("header.inc");
+include "header.inc";
 ?>
 
-	<main id="main">
+    <main id="main">
 
-	<h1>Jobs</h1>
-	<p class="intro">List of currently available positions at Community Connect.</p>
+    <h1>Jobs</h1>
+    <p class="intro">List of currently available positions at Community Connect.</p>
 
-	<div class="job-tools">
-		<!-- search bar -->
-		<form method="get" action="jobs_search.php">
-			<label for="search">Search for a job title</label>
-			<input type="text" name="search" id="search" required>
-			<input class="btn" style="width: 8em" type="submit" value="Search">
-		</form>
+    <div class="job-tools">
+        <!-- search bar -->
+        <form method="get" action="jobs_search.php">
+            <label for="search">Search for a job title</label>
+            <input type="text" name="search" id="search" required>
+            <input class="btn" style="width: 8em" type="submit" value="Search">
+        </form>
 
-		<!-- applied jobs button, goes to login page -->
-		<a href="userlogin.php" class="btn-secondary">Check Application</a>
-	</div>
+        <!-- applied jobs button, goes to login page -->
+        <a href="userlogin.php" class="btn-secondary">Check Application</a>
+    </div>
 
-	 <!-- group containing all job boxes -->
-	<div class="group" style="gap: 2rem;/*overriding style.css*/">
+     <!-- group containing all job boxes -->
+    <div class="group" style="gap: 2rem;/*overriding style.css*/">
 
-		<?php
-		$query = "SELECT * FROM jobs ORDER BY reference"; // retrieve all job listing
-		$result = mysqli_query($conn, $query);
+        <?php
+        $query = "SELECT * FROM jobs ORDER BY reference"; // retrieve all job listing
+        $result = mysqli_query($conn, $query);
 
-		if ($result && mysqli_num_rows($result) > 0)
-		{
-			while ($row = mysqli_fetch_assoc($result))
-			{
-				job_card($row);
-			}
-		}
-		else echo "<p>There are no jobs at the moment.</p>"; // if db connected, but no listings
-		?>
+        if ($result && mysqli_num_rows($result) > 0)
+        {
+            while ($row = mysqli_fetch_assoc($result))
+            {
+                job_card($row);
+            }
+        }
+        else
+        {
+            echo "<p>There are no jobs at the moment.</p>"; // if db connected, but no listings
+        }
+        ?>
 
-	</div>
+    </div>
 
   </main>
 
-	<!-- footer from included file -->
-	<?php include("footer.inc"); ?>
+    <!-- footer from included file -->
+    <?php include "footer.inc"; ?>

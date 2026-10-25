@@ -7,7 +7,7 @@ require_once "jobs.inc";
 
 if (!$conn)
 {
-	show_database_error();
+    show_database_error();
 }
 
 $page_title = "Search Jobs";
@@ -16,71 +16,74 @@ $current_page = "jobs";
 
 $page_style = <<<'CSS'
     .search-again {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-		align-items: end;
-		margin-bottom: 1.5rem;
-	}
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: end;
+        margin-bottom: 1.5rem;
+    }
 
-	.search-again label {
-		flex-basis: 100%;
-	}
+    .search-again label {
+        flex-basis: 100%;
+    }
 
-	.search-again input[type='text'] {
-		flex: 1 1 14rem;
-	}
+    .search-again input[type='text'] {
+        flex: 1 1 14rem;
+    }
 CSS;
 
-include("header.inc");
+include "header.inc";
 ?>
 
 <main id="main">
 
-	<h1>Search Jobs</h1>
+    <h1>Search Jobs</h1>
 
-	<?php
-	$search = isset($_GET["search"]) ? clean_input($_GET["search"]) : "";
-	?>
+    <?php
+    $search = isset($_GET["search"]) ? clean_input($_GET["search"]) : "";
+    ?>
 
-	<form method="get" action="jobs_search.php" class="search-again">
-		<label for="search">Search for a job title</label>
-		<input type="text" name="search" id="search" value="<?php echo $search; ?>" required>
-		<input class="btn" style="width: 8em" type="submit" value="Search">
-	</form>
+    <form method="get" action="jobs_search.php" class="search-again">
+        <label for="search">Search for a job title</label>
+        <input type="text" name="search" id="search" value="<?php echo $search; ?>" required>
+        <input class="btn" style="width: 8em" type="submit" value="Search">
+    </form>
 
-	<?php
-	if ($search === "")
-	{
-		echo "<p>Enter a job title to search.</p>";
-	}
-	else
-	{
-		$like = like_pattern(html_entity_decode($search, ENT_QUOTES, "UTF-8"));
-		$stmt = mysqli_prepare($conn, "SELECT * FROM jobs WHERE title LIKE ? ORDER BY reference"); // retrieve job listings based on search from user
-		mysqli_stmt_bind_param($stmt, "s", $like);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
+    <?php
+    if ($search === "")
+    {
+        echo "<p>Enter a job title to search.</p>";
+    }
+    else
+    {
+        $like = like_pattern(html_entity_decode($search, ENT_QUOTES, "UTF-8"));
+        $stmt = mysqli_prepare($conn, "SELECT * FROM jobs WHERE title LIKE ? ORDER BY reference"); // retrieve job listings based on search from user
+        mysqli_stmt_bind_param($stmt, "s", $like);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
 
-		echo "<p class='intro'> Search results for &#34;" . $search . "&#34;</p>";
+        echo "<p class='intro'> Search results for &#34;" . $search . "&#34;</p>";
 
-		echo "<div class='group' style='gap: 2rem;/*overriding style.css*/'>"; // group containing all job boxes
+        echo "<div class='group' style='gap: 2rem;/*overriding style.css*/'>"; // group containing all job boxes
 
-		if ($result && mysqli_num_rows($result) > 0)
-		{
-			while ($row = mysqli_fetch_assoc($result))
-			{
-				job_card($row);
-			}
-		}
-		else echo "<p>No job listings found. Search for something else or check back later.</p>"; // if db connected, but no listings
+        if ($result && mysqli_num_rows($result) > 0)
+        {
+            while ($row = mysqli_fetch_assoc($result))
+            {
+                job_card($row);
+            }
+        }
+        else
+        {
+            echo "<p>No job listings found. Search for something else or check back later.</p>"; // if db connected, but no listings
+        }
 
-		echo "</div>";
-		mysqli_stmt_close($stmt);
-	}
-	?>
+        echo "</div>";
+        mysqli_stmt_close($stmt);
+    }
+    ?>
 
 </main>
 
-	<!-- footer from included file -->
-<?php include("footer.inc"); ?>
+    <!-- footer from included file -->
+<?php include "footer.inc"; ?>

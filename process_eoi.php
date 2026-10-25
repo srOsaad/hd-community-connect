@@ -93,12 +93,13 @@ $errors = array_merge($errors, validate_application([
     'skills' => $skills_arr, 'other_skills' => $other_skill,
 ]));
 
-if (strlen($password) < 8)
+if (strlen($password) < 8) {
     $errors[] = "Password must be at least 8 characters.";
-elseif (strpos($password, "\0") !== false)
+} elseif (strpos($password, "\0") !== false) {
     $errors[] = "Password contains a character that is not allowed.";
-elseif ($password !== $confirm)
+} elseif ($password !== $confirm) {
     $errors[] = "Passwords do not match.";
+}
 
 if ($errors) {
     keep_form_values();

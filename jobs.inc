@@ -15,32 +15,32 @@ function get_job_map($conn) {
 }
 
 function job_card($row) {
-	// only title, salary, description, and reporting line are shown on the card
-	echo "<section class='outline job-card'>
-		<h2>" . show($row["title"]) . "</h2>
-		<p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
-		<p>" . show($row["description"]) . "</p>
-		<p>Reports to: " . show($row["reporting_line"]) . "</p>";
+    // only title, salary, description, and reporting line are shown on the card
+    echo "<section class='outline job-card'>
+        <h2>" . show($row["title"]) . "</h2>
+        <p class='coloured'>Salary: $" . number_format((float) $row["salary"]) . "</p>
+        <p>" . show($row["description"]) . "</p>
+        <p>Reports to: " . show($row["reporting_line"]) . "</p>";
 
-	// button is a form so the job reference can be sent via get
-	echo "<form method='get' action='job_details.php'>" .
-		"<input type='hidden' name='reference' value='" . show($row["reference"]) . "'>" .
-		"<input class='btn' type='submit' value='Read More'>" .
-		"</form>";
+    // button is a form so the job reference can be sent via get
+    echo "<form method='get' action='job_details.php'>" .
+        "<input type='hidden' name='reference' value='" . show($row["reference"]) . "'>" .
+        "<input class='btn' type='submit' value='Read More'>" .
+        "</form>";
 
-	echo "</section>";
+    echo "</section>";
 }
 
 function job_list($heading, $text) {
-	echo "<div class='outline'>" .
-		"<h2 class='coloured'>" . e($heading) . "</h2>" .
-		"<ul>";
-	$separated = explode("\n", trim((string) $text)); // separate text by newline
-	foreach ($separated as $item)
-	{
-		echo "<li>" . show($item) . "</li>";
-	}
-	echo "</ul>" .
-		"</div>";
+    echo "<div class='outline'>" .
+        "<h2 class='coloured'>" . e($heading) . "</h2>" .
+        "<ul>";
+    $separated = explode("\n", trim((string) $text)); // separate text by newline
+    foreach ($separated as $item)
+    {
+        echo "<li>" . show($item) . "</li>";
+    }
+    echo "</ul>" .
+        "</div>";
 }
 ?>
