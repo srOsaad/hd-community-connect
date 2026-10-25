@@ -66,6 +66,13 @@ $order = field($_GET, "order") === "desc" ? "desc" : "asc";
 
 $statuses = ["New", "Current", "Final"];
 
+$filter_status = field($_GET, "status");
+if ($filter_status !== "" && !in_array($filter_status, $statuses, true)) {
+    $messages[] = "Please choose a valid status.";
+    $filter_status = "";
+}
+$is_filtered = $is_filtered || $filter_status !== "";
+
 # CSRF token: forms that change data must send this back
 if (empty($_SESSION["csrf_token"])) {
     $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
@@ -80,7 +87,7 @@ if (isset($_SESSION["success"])) {
 
 $page_url = "manage.php?" . http_build_query([
     "job_ref" => $filter_job, "first_name" => $filter_first, "last_name" => $filter_last,
-    "application_id" => $filter_app,
+    "application_id" => $filter_app, "status" => $filter_status,
     "sort" => $sort, "order" => $order,
 ]);
 
@@ -179,6 +186,11 @@ if ($conn && $has_table) {
     $types = "";
     $params = [];
 
+    if ($filter_status !== "") {
+        $conditions[] = "Status = ?";
+        $types .= "s";
+        $params[] = $filter_status;
+    }
     if ($filter_app !== "") {
         $conditions[] = "ApplicationID = ?";
         $types .= "s";
@@ -353,6 +365,15 @@ include "header.inc";
         <div class="field">
           <label for="last_name">Last name</label>
           <input type="text" id="last_name" name="last_name" maxlength="20" value="<?php echo e($filter_last); ?>">
+        </div>
+        <div class="field">
+          <label for="status_filter">Status</label>
+          <select id="status_filter" name="status">
+            <option value="">Any status</option>
+<?php foreach ($statuses as $status) { ?>
+            <option<?php if ($status === $filter_status) { echo " selected"; } ?>><?php echo $status; ?></option>
+<?php } ?>
+          </select>
         </div>
         <div class="field">
           <label for="sort">Sort by</label>
