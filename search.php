@@ -5,8 +5,7 @@ require_once "functions.inc";    // gives you clean_input() and e()
 require_once "error.inc";
 require_once "jobs.inc";
 
-if (!$conn)
-{
+if (!$conn) {
     show_database_error();
 }
 
@@ -34,27 +33,20 @@ include "header.inc";
     <?php job_search_form($search); ?>
 
     <?php
-    if ($search === "")
-    {
+    if ($search === "") {
         echo "<p>Enter a job title to search.</p>";
-    }
-    else
-    {
+    } else {
         $jobs = find_jobs($conn, $search); // retrieve job listings based on search from user
 
         echo "<p class='intro'> Search results for &#34;" . $search . "&#34;</p>";
 
         echo "<div class='group job-list'>"; // group containing all job boxes
 
-        if ($jobs)
-        {
-            foreach ($jobs as $row)
-            {
+        if ($jobs) {
+            foreach ($jobs as $row) {
                 job_card($row);
             }
-        }
-        else
-        {
+        } else {
             echo "<p>No job listings found. Search for something else or check back later.</p>"; // if db connected, but no listings
         }
 

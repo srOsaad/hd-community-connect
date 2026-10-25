@@ -78,8 +78,7 @@ function job_list($heading, $items) {
     echo "<div class='outline'>" .
         "<h2 class='coloured'>" . e($heading) . "</h2>" .
         "<ul>";
-    foreach ($items as $item)
-    {
+    foreach ($items as $item) {
         echo "<li>" . show($item) . "</li>";
     }
     echo "</ul>" .

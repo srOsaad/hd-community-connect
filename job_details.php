@@ -22,16 +22,14 @@ $page_style = <<<'CSS'
     }
 CSS;
 
-if (!$conn)
-{
+if (!$conn) {
     show_database_error("jobs.php", "Back to Jobs");
 }
 
 $reference = isset($_GET["reference"]) && is_string($_GET["reference"]) ? strtoupper(clean_input($_GET["reference"])) : "";
 $row = null;
 
-if (preg_match('/^[A-Z0-9]{6}$/D', $reference))
-{
+if (preg_match('/^[A-Z0-9]{6}$/D', $reference)) {
     $stmt = db_prepare($conn, "SELECT * FROM jobs WHERE reference = ?"); // get job listing from reference number
     mysqli_stmt_bind_param($stmt, "s", $reference);
     mysqli_stmt_execute($stmt);
@@ -40,8 +38,7 @@ if (preg_match('/^[A-Z0-9]{6}$/D', $reference))
     mysqli_stmt_close($stmt);
 }
 
-if (!$row)
-{
+if (!$row) {
     show_error_page("Job Not Found", ["We couldn't find that job. It may have been filled or removed."], "jobs.php", "Back to Jobs", 404);
 }
 

@@ -5,8 +5,7 @@ require_once "functions.inc";    // gives you clean_input() and e()
 require_once "error.inc";
 require_once "jobs.inc";
 
-if (!$conn)
-{
+if (!$conn) {
     show_database_error();
 }
 
@@ -51,15 +50,11 @@ include "header.inc";
         <?php
         $jobs = find_jobs($conn); // retrieve all job listing
 
-        if ($jobs)
-        {
-            foreach ($jobs as $row)
-            {
+        if ($jobs) {
+            foreach ($jobs as $row) {
                 job_card($row);
             }
-        }
-        else
-        {
+        } else {
             echo "<p>There are no jobs at the moment.</p>"; // if db connected, but no listings
         }
         ?>
