@@ -15,8 +15,30 @@ $page_description = "The jobs listing page.";
 $current_page = "jobs";
 
 $page_style = <<<'CSS'
-    .inline {
-		display: inline;
+    .job-tools {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		align-items: end;
+		justify-content: space-between;
+		margin-bottom: 1.5rem;
+	}
+
+	.job-tools form {
+		display: flex;
+		flex: 1 1 22rem;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		align-items: end;
+		max-width: 36rem;
+	}
+
+	.job-tools label {
+		flex-basis: 100%;
+	}
+
+	.job-tools input[type='text'] {
+		flex: 1 1 14rem;
 	}
 
 	.coloured {
@@ -46,15 +68,17 @@ include("header.inc");
 	<h1>Jobs</h1>
 	<p class="intro">List of currently available positions at Community Connect.</p>
 
-	<!-- search bar -->
-	<form method="get" action="jobs_search.php" class="inline">
-		<label for="search">Search for a job title</label>
-		<input type="text" name="search" id="search" required>
-		<input class="btn" style="width: 8em" type="submit" value="Search">
-	</form>
+	<div class="job-tools">
+		<!-- search bar -->
+		<form method="get" action="jobs_search.php">
+			<label for="search">Search for a job title</label>
+			<input type="text" name="search" id="search" required>
+			<input class="btn" style="width: 8em" type="submit" value="Search">
+		</form>
 
-	<!-- applied jobs button, goes to login page -->
-	<a href="userlogin.php" class="inline btn-secondary" style="float: right;">Check Application</a>
+		<!-- applied jobs button, goes to login page -->
+		<a href="userlogin.php" class="btn-secondary">Check Application</a>
+	</div>
 
 	 <!-- group containing all job boxes -->
 	<div class="group" style="gap: 2rem;/*overriding style.css*/">
