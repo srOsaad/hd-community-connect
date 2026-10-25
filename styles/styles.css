@@ -516,6 +516,10 @@ input[type="checkbox"] {
   color: var(--ink-inverse);
 }
 
+.site-footer a:focus-visible {
+  outline-color: var(--ink-inverse);
+}
+
 /* Jira and GitHub row */
 .footer-links {
   display: flex;
