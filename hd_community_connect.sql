@@ -14,7 +14,7 @@ CREATE TABLE `jobs` (
   `title` varchar(128) NOT NULL,
   `reference` varchar(6) NOT NULL,
   `description` text NOT NULL,
-  `salary` float NOT NULL,
+  `salary` decimal(10,2) NOT NULL,
   `reporting_line` text NOT NULL,
   `responsibilities` text NOT NULL,
   `essential` text NOT NULL,
