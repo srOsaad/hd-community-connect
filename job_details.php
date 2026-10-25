@@ -46,6 +46,7 @@ if (!$row)
 }
 
 $page_title = $row["title"];
+$lists = get_job_requirements($conn, (int) $row["job_id"]);
 
 include "header.inc";
 ?>
@@ -71,13 +72,13 @@ include "header.inc";
         echo "<section class='group lists'>";
 
         // responsibilities list
-        job_list("Key Responsibilities", $row["responsibilities"]);
+        job_list("Key Responsibilities", $lists["responsibility"]);
 
         // essential requirements list
-        job_list("Essential Requirements", $row["essential"]);
+        job_list("Essential Requirements", $lists["essential"]);
 
         // preferred requirements list
-        job_list("Preferred Requirements", $row["preferred"]);
+        job_list("Preferred Requirements", $lists["preferred"]);
 
         echo "</section>
             </section>";

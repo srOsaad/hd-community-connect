@@ -32,12 +32,26 @@ function job_card($row) {
     echo "</section>";
 }
 
-function job_list($heading, $text) {
+function get_job_requirements($conn, $job_id) {
+    $lists = ["responsibility" => [], "essential" => [], "preferred" => []];
+    $stmt = mysqli_prepare($conn, "SELECT list_type, item_text FROM job_requirements WHERE job_id = ? ORDER BY list_type, sort_order");
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, "i", $job_id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        while ($item = mysqli_fetch_assoc($result)) {
+            $lists[$item["list_type"]][] = $item["item_text"];
+        }
+        mysqli_stmt_close($stmt);
+    }
+    return $lists;
+}
+
+function job_list($heading, $items) {
     echo "<div class='outline'>" .
         "<h2 class='coloured'>" . e($heading) . "</h2>" .
         "<ul>";
-    $separated = explode("\n", trim((string) $text)); // separate text by newline
-    foreach ($separated as $item)
+    foreach ($items as $item)
     {
         echo "<li>" . show($item) . "</li>";
     }
