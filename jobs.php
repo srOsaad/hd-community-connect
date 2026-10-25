@@ -51,6 +51,7 @@ $page_style = <<<'CSS'
 		border: 1px solid var(--border-strong);
 		border-radius: var(--radius);
 		max-width: 21rem;
+		margin: 0;
 		display: flex;
 		flex-direction: column;
 	}
