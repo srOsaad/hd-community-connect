@@ -29,10 +29,6 @@ function make_application_id() {
          . $now->format('d') . $now->format('m') . $now->format('Y');
 }
 
-if (!$conn) {
-    show_database_error("apply.php", "Return to Application Form");
-}
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: apply.php");
     exit();
@@ -50,6 +46,11 @@ foreach ($required_fields as $field) {
 if (!csrf_ok()) {
     keep_form_values();
     show_application_error(["That request could not be verified. Please try again."]);
+}
+
+if (!$conn) {
+    keep_form_values();
+    show_database_error("apply.php", "Return to Application Form");
 }
 
 // Sanitise
