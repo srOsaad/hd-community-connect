@@ -12,7 +12,7 @@ function clean_input($data) {
     }
     $data = stripslashes($data);
     $data = trim($data);
-    $data = htmlspecialchars($data, ENT_QUOTES, "UTF-8");
+    $data = htmlspecialchars($data, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
     return $data;
 }
 
@@ -180,6 +180,9 @@ function validate_application($f) {
     }
     if (text_length($f["other_skills"]) > 1000) {
         $errors[] = "Other skills must be 1000 characters or fewer.";
+    }
+    if (preg_match('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', html_entity_decode($f["other_skills"], ENT_QUOTES, "UTF-8"))) {
+        $errors[] = "Other skills contains characters that are not allowed.";
     }
 
     return $errors;
