@@ -3,7 +3,7 @@ require_once "session.inc";
 require_once "functions.inc";   // gives you e()
 
 if (empty($_SESSION['apply_success'])) {
-    header("Location: apply.php");
+    header("Location: " . (!empty($_SESSION['eoi_id']) ? "applicant.php" : "apply.php"));
     exit();
 }
 
