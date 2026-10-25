@@ -189,8 +189,9 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     Phone         VARCHAR(10)  NOT NULL,
     Skills        SET('Problem solving','Communication','Teamwork') NOT NULL,
     OtherSkills   TEXT NULL,
-    Status        ENUM('New','Current','Final') NOT NULL DEFAULT 'New'
-) ENGINE=InnoDB";
+    Status        ENUM('New','Current','Final') NOT NULL DEFAULT 'New',
+    FOREIGN KEY (JobReference) REFERENCES jobs(reference) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 $create_users_sql = "CREATE TABLE IF NOT EXISTS users (
     eoi_number       INT UNSIGNED NOT NULL PRIMARY KEY,
     password_hash    VARCHAR(255) NOT NULL,
@@ -198,7 +199,7 @@ $create_users_sql = "CREATE TABLE IF NOT EXISTS users (
     lockout_until    DATETIME     NULL,
     lockout_minutes  INT UNSIGNED NOT NULL DEFAULT 15,
     FOREIGN KEY (eoi_number) REFERENCES eoi(EOInumber) ON DELETE CASCADE
-) ENGINE=InnoDB";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 if (!mysqli_query($conn, $create_sql) || !mysqli_query($conn, $create_users_sql)) {
     render_page("Database Error", "Sorry, we could not process your application",
         ["Could not prepare the database table."], true);
