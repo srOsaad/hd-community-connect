@@ -77,6 +77,10 @@ $errors = [];
 $job_exists = false;
 if (preg_match('/^[A-Z0-9]{6}$/', $job_ref)) {
     $job_stmt = mysqli_prepare($conn, "SELECT 1 FROM jobs WHERE reference = ?");
+    if (!$job_stmt) {
+        keep_form_values();
+        show_error_page("Sorry, we could not process your application", ["Please try again later."], "apply.php", "Return to Application Form", 503);
+    }
     mysqli_stmt_bind_param($job_stmt, "s", $job_ref);
     mysqli_stmt_execute($job_stmt);
     mysqli_stmt_store_result($job_stmt);
