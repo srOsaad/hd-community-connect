@@ -128,7 +128,7 @@ INSERT INTO `users` (`eoi_number`, `password_hash`, `failed_attempts`, `lockout_
 (6, '$2y$10$VJ1PRb3/y4EpsFWATkNovel41cibLdSWLZ5lXxXdN2DQxhJd2bjcG', 0, NULL, 15);
 
 INSERT INTO `staff` (`username`, `password_hash`, `failed_attempts`, `lockout_until`, `lockout_minutes`) VALUES
-('admin', '$2y$10$ioi25gIcURU7giCkK5jJeeOQ.HVXloCh1AiHXtz4MV3r/djh0BFfG', 0, NULL, 15);
+('admin', '$2y$10$a5DOvGwSWi.i0oKgKjQYYe3l.iTtsjsFAanUlmYkP.iZyw1C.GctS', 0, NULL, 15);
 
 INSERT INTO `group_info` (`group_id`, `group_name`, `intro`, `lecture_time`, `lecture_staff`, `tutorial_time`, `tutorial_staff`, `photo_path`, `photo_alt`, `photo_caption`) VALUES
 (1, 'HD', 'Community Connect''s site was designed and built by a four-person student team over Semester 2, 2026. This page introduces who we are, what each of us contributed, and a little about us outside of the project.', 'Monday 4:30pm to 5:30pm', 'Dr Atie Kia', 'Tuesday 12:30pm to 2:30pm', 'Razeen Hashmi', 'images/HD-team-photo.jpg', 'The HD team standing together on campus', 'The HD team: Sam, Tom, Shash and Declan.');

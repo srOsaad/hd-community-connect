@@ -29,7 +29,7 @@ Database settings are in `settings.php` (XAMPP defaults: user `root`, no passwor
 ### Test accounts
 | Account | Login | Password |
 | --- | --- | --- |
-| HR manager | `admin` (Staff login) | `pass` |
+| HR manager | `admin` (Staff Login) | `admin` |
 | Sample applications 1 to 6 | Application ID from the `eoi` table, e.g. `23337561325102026` (Check Application) | `Test1234` |
 
 ### Pages
