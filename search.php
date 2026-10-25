@@ -34,7 +34,7 @@ include "header.inc";
 
     <?php
     if ($search === "") {
-        echo "<p>Enter a job title or reference to search.</p>";
+        echo "<p>Enter a job title, keyword or reference to search.</p>";
     } else {
         $jobs = find_jobs($conn, $search); // retrieve job listings based on search from user
 

@@ -23,14 +23,21 @@ function find_jobs($conn, $search = "") {
     $text = html_entity_decode($search, ENT_QUOTES, "UTF-8");
     $words = array_slice(preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY), 0, 10);
     $conditions = [];
+    $title_conditions = [];
     $params = [];
+    $title_params = [];
     foreach ($words as $word) {
-        $conditions[] = "title LIKE ?";
+        $conditions[] = "(title LIKE ? OR description LIKE ?)";
+        $title_conditions[] = "title LIKE ?";
         $params[] = like_pattern($word);
+        $params[] = like_pattern($word);
+        $title_params[] = like_pattern($word);
     }
     $params[] = $text;
+    $params = array_merge($params, $title_params);
 
-    $stmt = db_prepare($conn, "SELECT * FROM jobs WHERE (" . implode(" AND ", $conditions) . ") OR reference = ? ORDER BY reference");
+    $stmt = db_prepare($conn, "SELECT * FROM jobs WHERE (" . implode(" AND ", $conditions) . ") OR reference = ?
+                               ORDER BY (" . implode(" AND ", $title_conditions) . ") DESC, reference");
     mysqli_stmt_bind_param($stmt, str_repeat("s", count($params)), ...$params);
     mysqli_stmt_execute($stmt);
     $jobs = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
@@ -48,7 +55,7 @@ function job_facts($row) {
 
 function job_search_form($value = "") {
     echo "<form method='get' action='search.php' class='job-search'>" .
-        "<label for='search'>Search by job title or reference</label>" .
+        "<label for='search'>Search by job title, keyword or reference</label>" .
         "<input type='text' name='search' id='search' maxlength='128' value='" . show($value) . "' required>" .
         "<input class='btn' type='submit' value='Search'>" .
         "</form>";

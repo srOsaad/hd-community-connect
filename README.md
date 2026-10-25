@@ -36,7 +36,7 @@ Database settings are in `settings.php` (XAMPP defaults: user `root`, no passwor
 | Page | Purpose |
 | --- | --- |
 | `index.php` | Home page |
-| `jobs.php`, `search.php`, `job_details.php` | Job listings, search by title words (in any order) or job reference, and full job details from the `jobs` and `job_requirements` tables |
+| `jobs.php`, `search.php`, `job_details.php` | Job listings, search by words in the job title or description (in any order, title matches first) or job reference, and full job details from the `jobs` and `job_requirements` tables |
 | `apply.php`, `process_eoi.php`, `success.php` | Job application form, server-side validation and saving, confirmation with the EOI number and application ID |
 | `userlogin.php`, `applicant.php` | Applicants log in with their application ID and password to check status and edit while it is still New |
 | `about.php` | Team page from the `group_info`, `members` and `contributions` tables |
