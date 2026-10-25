@@ -93,7 +93,7 @@ if ($app) {
 
         foreach (['FirstName','LastName','DOB','Gender','StreetAddress','Suburb',
                   'State','Postcode','Email','Phone','OtherSkills'] as $f) {
-            $form[$f] = clean_input($_POST[$f] ?? '');
+            $form[$f] = post_value($f);
         }
         $form['Skills'] = allowed_skills($_POST['Skills'] ?? []);
 

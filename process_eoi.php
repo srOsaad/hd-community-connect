@@ -32,37 +32,28 @@ function make_application_id() {
 
 if (!$conn) {
     show_database_error("apply.php", "Return to application form");
-} else {
-    $required_fields = ['job_reference_number','first_name','last_name','DateOfBirth','streetaddress','suburb_town',
-                    'state','postcode','email','phone','password','confirm_password'];
+}
 
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header("Location: apply.php");
-        exit();
-}
-    foreach ($required_fields as $f) {
-        if (!isset($_POST[$f])) {          // field not even submitted => not from our form
-            header("Location: apply.php");
-            exit();
-    }
-}
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: apply.php");
+    exit();
 }
 
 /* ---------- Sanitise ---------- */
-$job_ref     = strtoupper(clean_input($_POST['job_reference_number']));
-$password    = (string) $_POST['password'];
-$confirm     = (string) $_POST['confirm_password'];
-$first_name  = clean_input($_POST['first_name']);
-$last_name   = clean_input($_POST['last_name']);
-$DOB         = clean_input($_POST['DateOfBirth']);
-$gender      = isset($_POST['Gender']) ? clean_input($_POST['Gender']) : "";
-$street      = clean_input($_POST['streetaddress']);
-$suburb      = clean_input($_POST['suburb_town']);
-$state       = strtoupper(clean_input($_POST['state']));
-$postcode    = clean_input($_POST['postcode']);
-$email       = clean_input($_POST['email']);
-$phone       = clean_input($_POST['phone']);
-$other_skill = isset($_POST['Other_skill']) ? clean_input($_POST['Other_skill']) : "";
+$job_ref     = strtoupper(post_value('job_reference_number'));
+$password    = is_string($_POST['password'] ?? null) ? $_POST['password'] : "";
+$confirm     = is_string($_POST['confirm_password'] ?? null) ? $_POST['confirm_password'] : "";
+$first_name  = post_value('first_name');
+$last_name   = post_value('last_name');
+$DOB         = post_value('DateOfBirth');
+$gender      = post_value('Gender');
+$street      = post_value('streetaddress');
+$suburb      = post_value('suburb_town');
+$state       = strtoupper(post_value('state'));
+$postcode    = post_value('postcode');
+$email       = post_value('email');
+$phone       = post_value('phone');
+$other_skill = post_value('Other_skill');
 $skills_arr  = allowed_skills($_POST['skills'] ?? []);
 
 

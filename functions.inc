@@ -27,6 +27,10 @@ function show($value) {
     return e(html_entity_decode((string) $value, ENT_QUOTES, "UTF-8"));
 }
 
+function post_value($key) {
+    return isset($_POST[$key]) && is_string($_POST[$key]) ? clean_input($_POST[$key]) : "";
+}
+
 function text_length($value) {
     return mb_strlen(html_entity_decode((string) $value, ENT_QUOTES, "UTF-8"));
 }
