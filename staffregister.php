@@ -5,7 +5,7 @@ require_once "functions.inc";
 require_once "error.inc";
 
 if (!$conn) {
-    show_database_error("manage.php", "Back to manage");
+    show_database_error("manage.php", "Back to Manage");
 }
 
 if (empty($_SESSION["csrf_token"])) {
@@ -64,13 +64,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-$page_title = "Add a manager";
+$page_title = "Add a Manager";
 $page_description = "Create a new HR manager account for Community Connect.";
 $current_page = "manage";
 include "header.inc";
 ?>
   <main id="main">
-    <h1>Add a manager</h1>
+    <h1>Add a Manager</h1>
     <p class="intro">Create a login for another HR manager.</p>
 
 <?php if ($success !== "") { ?>
@@ -104,8 +104,8 @@ include "header.inc";
         <input type="password" id="confirm_password" name="confirm_password" minlength="8" autocomplete="new-password" required>
       </div>
       <div class="group">
-        <input class="btn" type="submit" value="Create account">
-        <a class="btn-secondary" href="manage.php">Back to manage</a>
+        <input class="btn" type="submit" value="Create Account">
+        <a class="btn-secondary" href="manage.php">Back to Manage</a>
       </div>
     </form>
   </main>

@@ -81,8 +81,8 @@ include "header.inc";
         services to support community programs, volunteer registration, event
         information, donations and access to support resources.</p>
       <div class="group">
-        <a class="btn" href="jobs.php">View job openings</a>
-        <a class="btn-secondary" href="about.php">Learn about us</a>
+        <a class="btn" href="jobs.php">View Job Openings</a>
+        <a class="btn-secondary" href="about.php">Learn About Us</a>
       </div>
     </section>
 

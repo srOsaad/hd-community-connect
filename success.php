@@ -22,8 +22,8 @@ include "header.inc";
   <h2>Your application has been received.</h2>
   <p>Your application ID is <strong><?php echo e($application_id); ?></strong>. Keep it with your password to check your application later.</p>
   <div class="group">
-    <a class="btn" href="applicant.php">View your application</a>
-    <a class="btn-secondary" href="index.php">Back to home</a>
+    <a class="btn" href="applicant.php">View Your Application</a>
+    <a class="btn-secondary" href="index.php">Back to Home</a>
   </div>
 </main>
 <?php include "footer.inc"; ?>

@@ -2,7 +2,7 @@
 /*
 nav.inc: main navigation menu, included by header.inc.
 Add a page by adding a line to $nav_links. The current page's link is highlighted.
-Staff link: "Staff login" for visitors; "Manage" and "Log out" for logged-in managers.
+Staff link: "Staff Login" for visitors; "Manage" and "Log Out" for logged-in managers.
 */
 
 $is_logged_in = isset($_SESSION["username"]) && ($_SESSION["role"] ?? "") === "staff"
@@ -22,9 +22,9 @@ if ($is_logged_in) {
 
 # Staff link, styled separately (class "nav-staff"): [file, link text, $current_page value]
 if ($is_logged_in) {
-    $staff_link = ["logout.php?who=staff&amp;token=" . urlencode($_SESSION["csrf_token"] ?? ""), "Log out (" . htmlspecialchars($_SESSION["username"]) . ")", "logout"];
+    $staff_link = ["logout.php?who=staff&amp;token=" . urlencode($_SESSION["csrf_token"] ?? ""), "Log Out (" . htmlspecialchars($_SESSION["username"]) . ")", "logout"];
 } else {
-    $staff_link = ["stafflogin.php", "Staff login", "stafflogin"];
+    $staff_link = ["stafflogin.php", "Staff Login", "stafflogin"];
 }
 ?>
     <nav class="site-nav" aria-label="Main navigation">

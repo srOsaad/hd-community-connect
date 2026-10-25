@@ -35,7 +35,7 @@ CSS;
 
 if (!$conn)
 {
-	show_database_error("jobs.php", "Back to jobs");
+	show_database_error("jobs.php", "Back to Jobs");
 }
 
 $reference = isset($_GET["reference"]) && is_string($_GET["reference"]) ? strtoupper(clean_input($_GET["reference"])) : "";
@@ -53,7 +53,7 @@ if (preg_match('/^[A-Z0-9]{6}$/', $reference))
 
 if (!$row)
 {
-	show_error_page("Job not found", ["We couldn't find that job. It may have been filled or removed."], "jobs.php", "Back to jobs", 404);
+	show_error_page("Job Not Found", ["We couldn't find that job. It may have been filled or removed."], "jobs.php", "Back to Jobs", 404);
 }
 
 $_SESSION["reference"] = $row["reference"]; // set the current job reference for the session, for other pages

@@ -81,14 +81,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !csrf_ok()) {
     mysqli_commit($conn);
 }
 
-$page_title = 'Check your application';
+$page_title = 'Check Your Application';
 $page_description = 'Check the status of your Community Connect job application.';
 $current_page = 'userlogin';
 include 'header.inc';
 ?>
 
 <main id="main">
-  <h1>Check your application</h1>
+  <h1>Check Your Application</h1>
 
   <?php if (isset($_GET['expired'])) { ?>
     <p class="message message-error">You were logged out after 30 minutes of inactivity. Please log in again.</p>
@@ -113,7 +113,7 @@ include 'header.inc';
 
     <div class="group">
       <button type="submit" class="btn">Check Application</button>
-      <a class="btn-secondary" href="stafflogin.php">Staff login</a>
+      <a class="btn-secondary" href="stafflogin.php">Staff Login</a>
     </div>
   </form>
 </main>

@@ -237,7 +237,7 @@ if ($has_table && !$filter_invalid) {
     }
 }
 
-$page_title = "Manage applications";
+$page_title = "Manage Applications";
 $page_description = "HR page for viewing and managing job applications at Community Connect.";
 $current_page = "manage";
 
@@ -324,7 +324,7 @@ CSS;
 include "header.inc";
 ?>
   <main id="main">
-    <h1>Manage applications</h1>
+    <h1>Manage Applications</h1>
     <p class="intro">Signed in as <strong><?php echo e($_SESSION["username"]); ?></strong>.
       <a href="staffregister.php">Add a manager</a></p>
  
@@ -359,7 +359,7 @@ include "header.inc";
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="token" value="<?php echo $token; ?>">
         <input type="hidden" name="job_ref" value="<?php echo e($delete_job); ?>">
-        <input class="btn btn-danger" type="submit" value="Yes, delete them">
+        <input class="btn btn-danger" type="submit" value="Yes, Delete Them">
         <a class="btn-secondary" href="<?php echo e($page_url); ?>">Cancel</a>
       </form>
     </section>
@@ -410,7 +410,7 @@ include "header.inc";
         </div>
         <div class="group">
           <input class="btn" type="submit" value="Search">
-          <a class="btn-secondary" href="manage.php">Show all</a>
+          <a class="btn-secondary" href="manage.php">Show All</a>
         </div>
       </form>
     </section>

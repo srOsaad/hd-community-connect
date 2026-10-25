@@ -44,7 +44,7 @@ if (isset($_SESSION['applicant_last_activity']) && time() - $_SESSION['applicant
 $_SESSION['applicant_last_activity'] = time();
 
 if (!$conn) {
-    show_database_error('userlogin.php', 'Back to check application');
+    show_database_error('userlogin.php', 'Back to Check Application');
 }
 
 $stmt = mysqli_prepare($conn, 'SELECT * FROM eoi WHERE EOInumber = ? AND ApplicationID = ?');
@@ -57,7 +57,7 @@ if ($stmt) {
 
 if (!$app) {
     unset($_SESSION['eoi_id'], $_SESSION['application_id'], $_SESSION['applicant_last_activity']);
-    show_error_page('Application not found', ['We could not find this application. It may have been removed.'], 'userlogin.php', 'Check another application', 404);
+    show_error_page('Application Not Found', ['We could not find this application. It may have been removed.'], 'userlogin.php', 'Check Application', 404);
 }
 
 // Job title for the page heading (JobReference in eoi = reference in jobs)
@@ -232,7 +232,7 @@ include 'header.inc';
     <?php if (!$locked): ?>
         <a class="btn" href="applicant.php?edit=1">Edit</a>
     <?php endif; ?>
-        <a class="btn-secondary" href="logout.php?who=applicant&amp;token=<?= urlencode($token) ?>">Log out</a>
+        <a class="btn-secondary" href="logout.php?who=applicant&amp;token=<?= urlencode($token) ?>">Log Out</a>
     </div>
 
 <?php else: ?>
