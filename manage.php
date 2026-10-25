@@ -29,20 +29,16 @@ $filter_app   = field($_GET, "application_id");
 # Check the search values the same way the apply form checks them. Anything invalid is ignored
 if ($filter_job !== "" && !preg_match('/^[A-Z0-9]{6}$/', $filter_job)) {
     $messages[] = "A job reference is exactly 6 letters or numbers.";
-    $filter_job = "";
 }
 if ($filter_first !== "" && !preg_match('/^[A-Za-z ]{1,20}$/', $filter_first)) {
     $messages[] = "First name can only contain letters and spaces (up to 20).";
-    $filter_first = "";
 }
 if ($filter_last !== "" && !preg_match('/^[A-Za-z ]{1,20}$/', $filter_last)) {
     $messages[] = "Last name can only contain letters and spaces (up to 20).";
-    $filter_last = "";
 }
 
 if ($filter_app !== "" && !preg_match('/^[0-9]{16,17}$/', $filter_app)) {
     $messages[] = "An application ID is 16 or 17 digits.";
-    $filter_app = "";
 }
 
 $is_filtered = $filter_job !== "" || $filter_first !== "" || $filter_last !== "" || $filter_app !== "";
@@ -68,7 +64,6 @@ $statuses = ["New", "Current", "Final"];
 $filter_status = field($_GET, "status");
 if ($filter_status !== "" && !in_array($filter_status, $statuses, true)) {
     $messages[] = "Please choose a valid status.";
-    $filter_status = "";
 }
 $filter_invalid = count($messages) > 0;
 $is_filtered = $is_filtered || $filter_status !== "" || $filter_invalid;
@@ -435,7 +430,9 @@ include "header.inc";
 
     <section aria-labelledby="results-heading">
       <h2 id="results-heading"><?php echo $is_filtered ? "Search results" : "All applications"; ?></h2>
+<?php if (!$filter_invalid) { ?>
       <p><?php echo count($eois); ?> application(s) found.</p>
+<?php } ?>
  
 <?php if ($filter_invalid) { ?>
       <p>Fix the search above to see results.</p>

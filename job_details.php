@@ -20,6 +20,12 @@ $page_style = <<<'CSS'
 		min-width: min(21rem, 100%);
 	}
 
+	.lists {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+		gap: 2rem;
+	}
+
 	.outline h2 {
 		margin: 0 0 0.5rem;
 		font-family: inherit;
@@ -65,14 +71,15 @@ include("header.inc");
 			<p>" . show($row["description"]) . "</p>
 			<p>Reports to: " . show($row["reporting_line"]) . "</p>";
 
-		// this div contains two buttons, so they can be displayed spaced as the group class
+		// this div contains three buttons, so they can be displayed spaced as the group class
 		echo "<div class='group'>" .
 			"<a class='btn' href='apply.php?reference=" . urlencode($row["reference"]) . "'>Apply Now</a>" .
 			"<a class='btn-secondary' href='userlogin.php'>Check Application</a>" .
+			"<a class='btn-secondary' href='jobs.php'>Back to Jobs</a>" .
 			"</div>";
 
 		// the group containing the 3 lists
-		echo "<section class='group'>";
+		echo "<section class='group lists'>";
 
 		// responsibilities list
 		echo "<div class='outline'>" .

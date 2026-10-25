@@ -161,7 +161,7 @@ $page_style = <<<'CSS'
         border-color: #1a3a6e;
         box-shadow: 0 0 0 2px rgba(26, 58, 110, 0.2);
     }
-    input.static { pointer-events: none; cursor: default; }
+    input.static { pointer-events: none; cursor: default; background-color: var(--surface-alt); color: var(--ink-muted); }
 
     .details {
         display: grid;
