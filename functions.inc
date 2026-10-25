@@ -139,12 +139,18 @@ function validate_application($f) {
         $errors[] = "Please select a gender.";
     }
 
-    foreach (["street" => "Street address", "suburb" => "Suburb or town"] as $key => $label) {
-        if ($f[$key] === "") {
-            $errors[] = "Please enter your " . strtolower($label) . ".";
-        } elseif (text_length($f[$key]) > 40) {
-            $errors[] = "$label must be 40 characters or fewer.";
-        }
+    $street = html_entity_decode($f["street"], ENT_QUOTES, "UTF-8");
+    if ($street === "") {
+        $errors[] = "Please enter your street address.";
+    } elseif (!preg_match("/^[A-Za-z0-9 \\/,.'-]{3,40}$/D", $street)) {
+        $errors[] = "Street address must be 3 to 40 characters using only letters, numbers, spaces and / , . ' -";
+    }
+
+    $suburb = html_entity_decode($f["suburb"], ENT_QUOTES, "UTF-8");
+    if ($suburb === "") {
+        $errors[] = "Please enter your suburb or town.";
+    } elseif (!preg_match('/^[A-Za-z ]{3,40}$/D', $suburb)) {
+        $errors[] = "Suburb or town must be 3 to 40 characters using only letters and spaces.";
     }
 
     $postcode_starts = [
