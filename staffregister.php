@@ -31,6 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
         if (strlen($password) < 8 || !preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
             $errors[] = "Password must be at least 8 characters and include at least one letter and one number.";
+        } elseif (strpos($password, "\0") !== false) {
+            $errors[] = "Password contains a character that is not allowed.";
         } elseif ($password !== $confirm) {
             $errors[] = "Passwords do not match.";
         }

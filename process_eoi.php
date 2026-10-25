@@ -89,6 +89,8 @@ $errors = array_merge($errors, validate_application([
 
 if (strlen($password) < 8)
     $errors[] = "Password must be at least 8 characters.";
+elseif (strpos($password, "\0") !== false)
+    $errors[] = "Password contains a character that is not allowed.";
 elseif ($password !== $confirm)
     $errors[] = "Passwords do not match.";
 
