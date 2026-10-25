@@ -23,6 +23,12 @@ $page_style = <<<'CSS'
 		border-radius: var(--radius);
 		min-width: 21rem;
 	}
+
+	.outline h2 {
+		margin: 0 0 0.5rem;
+		font-family: inherit;
+		font-size: 1rem;
+	}
 CSS;
 
 if (!$conn)
@@ -74,7 +80,7 @@ include("header.inc");
 
 		// responsibilities list
 		echo "<div class='outline'>" .
-			"<p class='coloured'>Key Responsibilities:</p>" .
+			"<h2 class='coloured'>Key Responsibilities</h2>" .
 			"<ul>";
 		$separated = explode("\n", trim((string) $row["responsibilities"])); // separate text by newline
 		for ($i = 0; $i < count($separated); $i++)
@@ -86,7 +92,7 @@ include("header.inc");
 
 		// essential requirements list
 		echo "<div class='outline'>" .
-			"<p class='coloured'>Essential Requirements:</p>" .
+			"<h2 class='coloured'>Essential Requirements</h2>" .
 			"<ul>";
 		$separated = explode("\n", trim((string) $row["essential"])); // separate text by newline
 		for ($i = 0; $i < count($separated); $i++)
@@ -98,7 +104,7 @@ include("header.inc");
 
 		// preferred requirements list
 		echo "<div class='outline'>" .
-			"<p class='coloured'>Preferred Requirements:</p>" .
+			"<h2 class='coloured'>Preferred Requirements</h2>" .
 			"<ul>";
 		$separated = explode("\n", trim((string) $row["preferred"])); // separate text by newline
 		for ($i = 0; $i < count($separated); $i++)
