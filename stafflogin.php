@@ -1,5 +1,11 @@
 <?php
 require_once 'session.inc';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' && is_staff_logged_in()) {
+    header('Location: manage.php');
+    exit();
+}
+
 require_once 'db_connect.inc';
 require_once 'error.inc';
 require_once 'functions.inc';
