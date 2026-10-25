@@ -100,10 +100,6 @@ include("header.inc");
 
 	</div>
 
-	<aside class="hint" style="float: right">
-		<p>See the apply page for information on how to apply.</p>
-	</aside>
-
   </main>
 
 	<!-- footer from included file -->
