@@ -18,4 +18,10 @@ function clean_input($data) {
 function e($value) {
     return htmlspecialchars((string) $value, ENT_QUOTES, "UTF-8");
 }
+
+# The form data was already escaped by clean_input() before saving,
+# so we undo that first, otherwise "&" would show up as "&amp;" on the page
+function show($value) {
+    return e(html_entity_decode((string) $value, ENT_QUOTES, "UTF-8"));
+}
 ?>

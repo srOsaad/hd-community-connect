@@ -87,7 +87,7 @@ if ($app) {
         if ($form['Suburb'] === '' || mb_strlen($form['Suburb']) > 40) $errors[] = 'Suburb/town is required (max 40 characters).';
         if (!in_array($form['State'], $states, true)) $errors[] = 'Please choose a valid state.';
         if (!preg_match('/^\d{4}$/', $form['Postcode'])) $errors[] = 'Postcode must be exactly 4 digits.';
-        if (!filter_var($form['Email'], FILTER_VALIDATE_EMAIL) || strlen($form['Email']) > 150) $errors[] = 'Please enter a valid email address.';
+        if (!filter_var(html_entity_decode($form['Email'], ENT_QUOTES, 'UTF-8'), FILTER_VALIDATE_EMAIL) || strlen($form['Email']) > 150) $errors[] = 'Please enter a valid email address.';
         if (!preg_match('/^\d{10}$/', $form['Phone'])) $errors[] = 'Phone must be exactly 10 digits.';
         if (mb_strlen($form['OtherSkills']) > 1000) $errors[] = 'Other skills: max 1000 characters.';
 
@@ -143,53 +143,53 @@ include 'header.inc';
     <?php if ($notice): ?><p class="success"><?= e($notice) ?></p><?php endif; ?>
 
     <h2>Application ID</h2>
-    <p><?= e($app['ApplicationID']) ?></p>
+    <p><?= show($app['ApplicationID']) ?></p>
 
     <h2>Status</h2>
-    <p><strong><?= e($app['Status']) ?></strong></p>
+    <p><strong><?= show($app['Status']) ?></strong></p>
 
     <?php if ($locked): ?>
         <p>Your application is <?= e(strtolower($app['Status'])) ?></p>
     <?php endif; ?>
 
     <h2>Job Reference</h2>
-    <p><?= e($app['JobReference']) ?></p>
+    <p><?= show($app['JobReference']) ?></p>
 
     <h2>First Name</h2>
-    <p><?= e($app['FirstName']) ?></p>
+    <p><?= show($app['FirstName']) ?></p>
 
     <h2>Last Name</h2>
-    <p><?= e($app['LastName']) ?></p>
+    <p><?= show($app['LastName']) ?></p>
 
     <h2>Date of Birth</h2>
     <p><?= e(date('d/m/Y', strtotime($app['DOB']))) ?></p>
 
     <h2>Gender</h2>
-    <p><?= e($app['Gender']) ?></p>
+    <p><?= show($app['Gender']) ?></p>
 
     <h2>Street Address</h2>
-    <p><?= e($app['StreetAddress']) ?></p>
+    <p><?= show($app['StreetAddress']) ?></p>
 
     <h2>Suburb/Town</h2>
-    <p><?= e($app['Suburb']) ?></p>
+    <p><?= show($app['Suburb']) ?></p>
 
     <h2>State</h2>
-    <p><?= e($app['State']) ?></p>
+    <p><?= show($app['State']) ?></p>
 
     <h2>Postcode</h2>
-    <p><?= e($app['Postcode']) ?></p>
+    <p><?= show($app['Postcode']) ?></p>
 
     <h2>Email</h2>
-    <p><?= e($app['Email']) ?></p>
+    <p><?= show($app['Email']) ?></p>
 
     <h2>Phone</h2>
-    <p><?= e($app['Phone']) ?></p>
+    <p><?= show($app['Phone']) ?></p>
 
     <h2>Skills</h2>
-    <p><?= $app['Skills'] === '' ? '-' : e(str_replace(',', ', ', $app['Skills'])) ?></p>
+    <p><?= $app['Skills'] === '' ? '-' : show(str_replace(',', ', ', $app['Skills'])) ?></p>
 
     <h2>Other Skills</h2>
-    <p><?= trim((string) $app['OtherSkills']) === '' ? '-' : nl2br(e($app['OtherSkills'])) ?></p>
+    <p><?= trim((string) $app['OtherSkills']) === '' ? '-' : nl2br(show($app['OtherSkills'])) ?></p>
 
     <div class="group">
     <?php if (!$locked): ?>
@@ -201,7 +201,7 @@ include 'header.inc';
 <?php else: ?>
 
     <!-- ===== EDIT FORM ===== -->
-    <p>Status: <strong><?= e($app['Status']) ?></strong></p>
+    <p>Status: <strong><?= show($app['Status']) ?></strong></p>
 
     <?php if ($errors): ?>
         <ul class="errors"><?php foreach ($errors as $err): ?><li><?= e($err) ?></li><?php endforeach; ?></ul>
@@ -212,19 +212,19 @@ include 'header.inc';
         <!-- Never editable -->
         <p>
             <label for="JobReference">Job Reference</label>
-            <input type="text" id="JobReference" class="static" value="<?= e($app['JobReference']) ?>" readonly>
+            <input type="text" id="JobReference" class="static" value="<?= show($app['JobReference']) ?>" readonly>
         </p>
         <p>
             <label for="FirstName">First Name</label>
-            <input type="text" id="FirstName" name="FirstName" maxlength="20" value="<?= e($form['FirstName']) ?>">
+            <input type="text" id="FirstName" name="FirstName" maxlength="20" value="<?= show($form['FirstName']) ?>">
         </p>
         <p>
             <label for="LastName">Last Name</label>
-            <input type="text" id="LastName" name="LastName" maxlength="20" value="<?= e($form['LastName']) ?>">
+            <input type="text" id="LastName" name="LastName" maxlength="20" value="<?= show($form['LastName']) ?>">
         </p>
         <p>
             <label for="DOB">Date of Birth</label>
-            <input type="date" id="DOB" name="DOB" value="<?= e($form['DOB']) ?>">
+            <input type="date" id="DOB" name="DOB" value="<?= show($form['DOB']) ?>">
         </p>
         <p>
             <label for="Gender">Gender</label>
@@ -236,11 +236,11 @@ include 'header.inc';
         </p>
         <p>
             <label for="StreetAddress">Street Address</label>
-            <input type="text" id="StreetAddress" name="StreetAddress" maxlength="40" value="<?= e($form['StreetAddress']) ?>">
+            <input type="text" id="StreetAddress" name="StreetAddress" maxlength="40" value="<?= show($form['StreetAddress']) ?>">
         </p>
         <p>
             <label for="Suburb">Suburb/Town</label>
-            <input type="text" id="Suburb" name="Suburb" maxlength="40" value="<?= e($form['Suburb']) ?>">
+            <input type="text" id="Suburb" name="Suburb" maxlength="40" value="<?= show($form['Suburb']) ?>">
         </p>
         <p>
             <label for="State">State</label>
@@ -252,15 +252,15 @@ include 'header.inc';
         </p>
         <p>
             <label for="Postcode">Postcode</label>
-            <input type="text" id="Postcode" name="Postcode" maxlength="4" value="<?= e($form['Postcode']) ?>">
+            <input type="text" id="Postcode" name="Postcode" maxlength="4" value="<?= show($form['Postcode']) ?>">
         </p>
         <p>
             <label for="Email">Email</label>
-            <input type="text" id="Email" name="Email" maxlength="150" value="<?= e($form['Email']) ?>">
+            <input type="text" id="Email" name="Email" maxlength="150" value="<?= show($form['Email']) ?>">
         </p>
         <p>
             <label for="Phone">Phone</label>
-            <input type="text" id="Phone" name="Phone" maxlength="10" value="<?= e($form['Phone']) ?>">
+            <input type="text" id="Phone" name="Phone" maxlength="10" value="<?= show($form['Phone']) ?>">
         </p>
 
         <fieldset>
@@ -276,7 +276,7 @@ include 'header.inc';
 
         <p>
             <label for="OtherSkills">Other Skills</label>
-            <textarea id="OtherSkills" name="OtherSkills" rows="4" cols="40"><?= e((string) $form['OtherSkills']) ?></textarea>
+            <textarea id="OtherSkills" name="OtherSkills" rows="4" cols="40"><?= show($form['OtherSkills']) ?></textarea>
         </p>
 
         <p>
