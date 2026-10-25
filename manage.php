@@ -8,14 +8,10 @@ require_once "auth.inc";          // keep this first, it sends anyone not logged
 require_once "db_connect.inc";    // connects to the database ($conn)
 require_once "functions.inc";     // our helpers: clean_input() and e()
 require_once "error.inc";
+require_once "manage.inc";
 
 if (!$conn) {
     show_database_error();
-}
-
-// Reads one text value from the URL or a form. If it's missing (or someone sends an array), we just get ""
-function field($source, $key) {
-    return (isset($source[$key]) && is_string($source[$key])) ? clean_input($source[$key]) : "";
 }
 
 $messages = [];   // error messages to show above the results
@@ -83,9 +79,7 @@ $page_url = "manage.php?" . http_build_query([
     "sort" => $sort, "order" => $order,
 ]);
 
-// The eoi table only exists after the first application is sent, so check for it first
-$check = mysqli_query($conn, "SHOW TABLES LIKE 'eoi'");
-$has_table = $check && mysqli_num_rows($check) > 0;
+$has_table = eoi_table_exists($conn);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && field($_POST, "action") === "update_status") {
     $eoi_number = (int) field($_POST, "eoi_number");
@@ -96,33 +90,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && field($_POST, "action
     } elseif ($eoi_number < 1 || !in_array($new_status, $statuses, true)) {
         $messages[] = "Please choose a valid status.";
     } else {
-        $stmt = mysqli_prepare($conn, "SELECT Status FROM eoi WHERE EOInumber = ?");
-        mysqli_stmt_bind_param($stmt, "i", $eoi_number);
-        mysqli_stmt_execute($stmt);
-        $current = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-        mysqli_stmt_close($stmt);
-
-        if (!$current) {
-            $messages[] = "EOI $eoi_number doesn't exist.";
-        } elseif ($current["Status"] === $new_status) {
-            $_SESSION["success"] = "EOI $eoi_number already had the status $new_status.";
-        } else {
-            $stmt = mysqli_prepare($conn, "UPDATE eoi SET Status = ? WHERE EOInumber = ?");
-            mysqli_stmt_bind_param($stmt, "si", $new_status, $eoi_number);
-            if (mysqli_stmt_execute($stmt)) {
-                $_SESSION["success"] = "EOI $eoi_number is now $new_status.";
-            } else {
-                error_log("Status update failed: " . mysqli_stmt_error($stmt));
-                $messages[] = "The status could not be changed. Please try again.";
-            }
-            mysqli_stmt_close($stmt);
-        }
+        $result = update_eoi_status($conn, $eoi_number, $new_status);
 
         // Redirect so refreshing doesn't send the form again
-        if (isset($_SESSION["success"])) {
+        if (isset($result["success"])) {
+            $_SESSION["success"] = $result["success"];
             header("Location: " . $page_url);
             exit();
         }
+        $messages[] = $result["error"];
     }
 }
 
@@ -138,11 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && ($action === "confirm
     } elseif (!preg_match('/^[A-Z0-9]{6}$/', $job_ref)) {
         $messages[] = "A job reference is exactly 6 letters or numbers.";
     } elseif ($action === "confirm_delete") {
-        $stmt = mysqli_prepare($conn, "SELECT COUNT(*) AS total FROM eoi WHERE JobReference = ?");
-        mysqli_stmt_bind_param($stmt, "s", $job_ref);
-        mysqli_stmt_execute($stmt);
-        $delete_count = (int) mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))["total"];
-        mysqli_stmt_close($stmt);
+        $delete_count = count_job_eois($conn, $job_ref);
 
         if ($delete_count === 0) {
             $messages[] = "There are no applications for job $job_ref.";
@@ -150,86 +122,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && ($action === "confirm
             $delete_job = $job_ref;
         }
     } else {
-        $stmt = mysqli_prepare($conn, "DELETE FROM eoi WHERE JobReference = ?");
-        mysqli_stmt_bind_param($stmt, "s", $job_ref);
-        if (mysqli_stmt_execute($stmt)) {
-            $_SESSION["success"] = "Deleted " . mysqli_stmt_affected_rows($stmt) . " application(s) for job $job_ref.";
-        } else {
-            error_log("EOI delete failed: " . mysqli_stmt_error($stmt));
-            $messages[] = "The applications could not be deleted. Please try again.";
-        }
-        mysqli_stmt_close($stmt);
+        $deleted = delete_job_eois($conn, $job_ref);
 
-        if (isset($_SESSION["success"])) {
+        if ($deleted !== null) {
+            $_SESSION["success"] = "Deleted " . $deleted . " application(s) for job $job_ref.";
             header("Location: " . $page_url);
             exit();
         }
+        $messages[] = "The applications could not be deleted. Please try again.";
     }
 }
 
-$status_counts = array_fill_keys($statuses, 0);
-if ($has_table) {
-    $result = mysqli_query($conn, "SELECT Status, COUNT(*) AS total FROM eoi GROUP BY Status");
-    if ($result) {
-        while ($count_row = mysqli_fetch_assoc($result)) {
-            $status_counts[$count_row["Status"]] = (int) $count_row["total"];
-        }
-    }
-}
+$status_counts = $has_table ? count_by_status($conn, $statuses) : array_fill_keys($statuses, 0);
 $total_count = array_sum($status_counts);
 
-// Get the applications in the chosen order. Each filled search box adds a condition,
-// and the values go in as ? placeholders so they can't change the SQL
 $eois = [];
 if ($has_table && !$filter_invalid) {
-    $conditions = [];
-    $types = "";
-    $params = [];
+    $eois = find_eois($conn, [
+        "status" => $filter_status, "application_id" => $filter_app, "job_ref" => $filter_job,
+        "first_name" => $filter_first, "last_name" => $filter_last,
+    ], $sort, $order);
 
-    if ($filter_status !== "") {
-        $conditions[] = "Status = ?";
-        $types .= "s";
-        $params[] = $filter_status;
-    }
-    if ($filter_app !== "") {
-        $conditions[] = "ApplicationID = ?";
-        $types .= "s";
-        $params[] = $filter_app;
-    }
-    if ($filter_job !== "") {
-        $conditions[] = "JobReference = ?";
-        $types .= "s";
-        $params[] = $filter_job;
-    }
-    if ($filter_first !== "") {
-        $conditions[] = "FirstName LIKE ?";      // LIKE with % on both sides means "contains"
-        $types .= "s";
-        $params[] = like_pattern($filter_first);
-    }
-    if ($filter_last !== "") {
-        $conditions[] = "LastName LIKE ?";
-        $types .= "s";
-        $params[] = like_pattern($filter_last);
-    }
-
-    $sql = "SELECT * FROM eoi";
-    if ($conditions) {
-        $sql .= " WHERE " . implode(" AND ", $conditions);
-    }
-
-    $order_by = $sort === "State" ? "CAST(State AS CHAR)" : $sort;
-    $sql .= " ORDER BY " . $order_by . " " . strtoupper($order) . ", EOInumber";
-
-    $stmt = mysqli_prepare($conn, $sql);
-    if ($stmt) {
-        if ($params) {
-            mysqli_stmt_bind_param($stmt, $types, ...$params);
-        }
-        mysqli_stmt_execute($stmt);
-        $eois = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
-        mysqli_stmt_close($stmt);
-    } else {
-        error_log("EOI list query failed: " . mysqli_error($conn));
+    if ($eois === null) {
+        $eois = [];
         $messages[] = "Applications could not be loaded. Please try again later.";
     }
 }
