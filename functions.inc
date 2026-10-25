@@ -39,6 +39,22 @@ function skill_options() {
     return ["Problem solving", "Communication", "Teamwork"];
 }
 
+function gender_options() {
+    return ["Male", "Female", "Other"];
+}
+
+function state_options() {
+    return ["VIC", "NSW", "QLD", "NT", "WA", "SA", "TAS", "ACT"];
+}
+
+function status_options() {
+    return ["New", "Current", "Final"];
+}
+
+function locked_statuses() {
+    return ["Current", "Final"];
+}
+
 function allowed_skills($values) {
     if (!is_array($values)) {
         return [];
@@ -154,7 +170,7 @@ function validate_application($f) {
         }
     }
 
-    if (!in_array($f["gender"], ["Male", "Female", "Other"], true)) {
+    if (!in_array($f["gender"], gender_options(), true)) {
         $errors[] = "Please select a gender.";
     }
 
@@ -176,7 +192,7 @@ function validate_application($f) {
         "VIC" => ["3", "8"], "NSW" => ["1", "2"], "QLD" => ["4", "9"], "NT" => ["0"],
         "WA"  => ["6"],      "SA"  => ["5"],      "TAS" => ["7"],      "ACT" => ["0", "2"],
     ];
-    if (!isset($postcode_starts[$f["state"]])) {
+    if (!in_array($f["state"], state_options(), true)) {
         $errors[] = "Please select a valid state.";
     }
     if (!preg_match('/^\d{4}$/D', $f["postcode"])) {

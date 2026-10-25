@@ -10,8 +10,8 @@ require_once 'db_connect.inc';   // $conn
 require_once 'functions.inc';    // clean_input(), e()
 require_once 'error.inc';
 
-$genders = ['Male', 'Female', 'Other'];
-$states  = ['VIC', 'NSW', 'QLD', 'NT', 'WA', 'SA', 'TAS', 'ACT'];
+$genders = gender_options();
+$states  = state_options();
 $skill_options = skill_options();
 
 $errors = [];
@@ -67,7 +67,7 @@ $job = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 $job_title = $job['title'] ?? '';
 
-$locked = in_array($app['Status'], ['Current', 'Final'], true);    // only Current,Final can't be edited
+$locked = in_array($app['Status'], locked_statuses(), true);    // only Current,Final can't be edited
 
 $form = $app;
 $form['Skills'] = $app['Skills'] === '' ? [] : explode(',', $app['Skills']);
@@ -144,7 +144,7 @@ if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $current = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
             mysqli_stmt_close($stmt);
 
-            if ($current && in_array($current['Status'], ['Current', 'Final'], true)) {
+            if ($current && in_array($current['Status'], locked_statuses(), true)) {
                 $ok = false;
                 $locked = true;
                 $editing = false;

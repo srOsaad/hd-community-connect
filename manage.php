@@ -55,7 +55,7 @@ if (!array_key_exists($sort, $sort_fields)) {
 }
 $order = field($_GET, "order") === "desc" ? "desc" : "asc";
 
-$statuses = ["New", "Current", "Final"];
+$statuses = status_options();
 
 $filter_status = field($_GET, "status");
 if ($filter_status !== "" && !in_array($filter_status, $statuses, true)) {

@@ -83,11 +83,9 @@ include "header.inc";
       <fieldset class="field">
         <legend>Gender</legend>
 
-        <label for="Male" class="choice"><input type="radio" name="Gender" id="Male" value="Male"<?= old_value('Gender') === 'Male' ? ' checked' : '' ?> required> Male </label>
-
-        <label for="Female" class="choice"><input type="radio" name="Gender" id="Female" value="Female"<?= old_value('Gender') === 'Female' ? ' checked' : '' ?> required> Female </label>
-
-        <label for="Other" class="choice"><input type="radio" name="Gender" value="Other" id="Other"<?= old_value('Gender') === 'Other' ? ' checked' : '' ?> required> Other </label>
+        <?php foreach (gender_options() as $gender): ?>
+        <label for="<?= $gender ?>" class="choice"><input type="radio" name="Gender" id="<?= $gender ?>" value="<?= $gender ?>"<?= old_value('Gender') === $gender ? ' checked' : '' ?> required> <?= $gender ?> </label>
+        <?php endforeach; ?>
       </fieldset>
 
       <!-- Form fields for user address -->
@@ -100,14 +98,9 @@ include "header.inc";
         <label for="state">State</label>
         <select id="state" name="state" required>
           <option value="">Please select your state</option>
-          <option value="vic"<?= strtoupper(old_value('state')) === 'VIC' ? ' selected' : '' ?>>VIC</option>
-          <option value="nsw"<?= strtoupper(old_value('state')) === 'NSW' ? ' selected' : '' ?>>NSW</option>
-          <option value="qld"<?= strtoupper(old_value('state')) === 'QLD' ? ' selected' : '' ?>>QLD</option>
-          <option value="NT"<?= strtoupper(old_value('state')) === 'NT' ? ' selected' : '' ?>>NT</option>
-          <option value="WA"<?= strtoupper(old_value('state')) === 'WA' ? ' selected' : '' ?>>WA</option>
-          <option value="SA"<?= strtoupper(old_value('state')) === 'SA' ? ' selected' : '' ?>>SA</option>
-          <option value="tas"<?= strtoupper(old_value('state')) === 'TAS' ? ' selected' : '' ?>>TAS</option>
-          <option value="ACT"<?= strtoupper(old_value('state')) === 'ACT' ? ' selected' : '' ?>>ACT</option>
+          <?php foreach (state_options() as $state): ?>
+          <option value="<?= $state ?>"<?= strtoupper(old_value('state')) === $state ? ' selected' : '' ?>><?= $state ?></option>
+          <?php endforeach; ?>
         </select>
         <label for="postcode">Postcode</label>
         <input type="text" name="postcode" id="postcode" pattern="[0-9]{4}" maxlength="4" placeholder="Enter your postcode" title="Please enter your postcode" value="<?= e(old_value('postcode')) ?>" required>
@@ -136,14 +129,10 @@ include "header.inc";
       <!-- Form fields for user skills -->
       <fieldset class="field">
         <legend>Skills</legend>
-        <label class="choice" for="skill1">
-          <input type="checkbox" name="skills[]" id="skill1" value="Problem solving"<?= in_array('Problem solving', $old_skills, true) ? ' checked' : '' ?>> Problem solving </label>
-
-        <label class="choice" for="skill2">
-          <input type="checkbox" name="skills[]" id="skill2" value="Communication"<?= in_array('Communication', $old_skills, true) ? ' checked' : '' ?>> Communication </label>
-
-        <label class="choice" for="skill3">
-          <input type="checkbox" name="skills[]" id="skill3" value="Teamwork"<?= in_array('Teamwork', $old_skills, true) ? ' checked' : '' ?>> Teamwork </label>
+        <?php foreach (skill_options() as $i => $skill): ?>
+        <label class="choice" for="skill<?= $i + 1 ?>">
+          <input type="checkbox" name="skills[]" id="skill<?= $i + 1 ?>" value="<?= e($skill) ?>"<?= in_array($skill, $old_skills, true) ? ' checked' : '' ?>> <?= e($skill) ?> </label>
+        <?php endforeach; ?>
 
         <label for="Other_skill">Other skills</label>
         <textarea name="Other_skill" id="Other_skill" rows="4" cols="50" placeholder="List any other relevant skills"><?= e(old_value('Other_skill')) ?></textarea>
