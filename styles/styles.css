@@ -476,6 +476,7 @@ legend + .hint {
 .btn:hover {
   border-color: var(--brand-dark);
   background-color: var(--brand-dark);
+  color: var(--ink-inverse);
 }
 
 /* Outlined variant */
