@@ -18,15 +18,12 @@ function check_login($conn, $find_sql, $find_value, $table, $id_column, $passwor
     $dummy_hash = '$2y$10$E4UH1PSby88iafe4viaiduqs8xxqYnEwXvd2IlIAk6LrRF5ilhA5e';
 
     mysqli_begin_transaction($conn);
-    $stmt = mysqli_prepare($conn, $find_sql);
-    $found = false;
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "s", $find_value);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_bind_result($stmt, $id, $hash, $attempts, $lock_until);
-        $found = (bool) mysqli_stmt_fetch($stmt);
-        mysqli_stmt_close($stmt);
-    }
+    $stmt = db_prepare($conn, $find_sql);
+    mysqli_stmt_bind_param($stmt, "s", $find_value);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $id, $hash, $attempts, $lock_until);
+    $found = (bool) mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
 
     $is_locked = $found && $lock_until !== null && strtotime($lock_until) > time();
     $correct = password_verify($password, $found ? $hash : $dummy_hash) && $found && !$is_locked;
@@ -38,12 +35,10 @@ function check_login($conn, $find_sql, $find_value, $table, $id_column, $passwor
             $lock_time = date("Y-m-d H:i:s", time() + LOCKOUT_MINUTES * 60);
             $attempts = 0;
         }
-        $stmt = mysqli_prepare($conn, "UPDATE $table SET failed_attempts = ?, lockout_until = ? WHERE $id_column = ?");
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "iss", $attempts, $lock_time, $id);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
-        }
+        $stmt = db_prepare($conn, "UPDATE $table SET failed_attempts = ?, lockout_until = ? WHERE $id_column = ?");
+        mysqli_stmt_bind_param($stmt, "iss", $attempts, $lock_time, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
     }
     mysqli_commit($conn);
 

@@ -5,19 +5,16 @@ function get_job_map($conn) {
     if (!$conn) {
         return $map;
     }
-    $res = mysqli_query($conn, "SELECT reference, title FROM jobs ORDER BY reference");
-    if ($res) {
-        while ($row = mysqli_fetch_assoc($res)) {
-            $map[$row['reference']] = $row['title'];
-        }
+    $res = db_query($conn, "SELECT reference, title FROM jobs ORDER BY reference");
+    while ($row = mysqli_fetch_assoc($res)) {
+        $map[$row['reference']] = $row['title'];
     }
     return $map;
 }
 
 function find_jobs($conn, $search = "") {
     if ($search === "") {
-        $result = mysqli_query($conn, "SELECT * FROM jobs ORDER BY reference");
-        return $result ? mysqli_fetch_all($result, MYSQLI_ASSOC) : [];
+        return mysqli_fetch_all(db_query($conn, "SELECT * FROM jobs ORDER BY reference"), MYSQLI_ASSOC);
     }
 
     $text = html_entity_decode($search, ENT_QUOTES, "UTF-8");
@@ -78,16 +75,14 @@ function job_card($row) {
 
 function get_job_requirements($conn, $job_id) {
     $lists = ["responsibility" => [], "essential" => [], "preferred" => []];
-    $stmt = mysqli_prepare($conn, "SELECT list_type, item_text FROM job_requirements WHERE job_id = ? ORDER BY list_type, sort_order");
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "i", $job_id);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        while ($item = mysqli_fetch_assoc($result)) {
-            $lists[$item["list_type"]][] = $item["item_text"];
-        }
-        mysqli_stmt_close($stmt);
+    $stmt = db_prepare($conn, "SELECT list_type, item_text FROM job_requirements WHERE job_id = ? ORDER BY list_type, sort_order");
+    mysqli_stmt_bind_param($stmt, "i", $job_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    while ($item = mysqli_fetch_assoc($result)) {
+        $lists[$item["list_type"]][] = $item["item_text"];
     }
+    mysqli_stmt_close($stmt);
     return $lists;
 }
 

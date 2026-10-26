@@ -36,6 +36,15 @@ function db_prepare($conn, $sql) {
     return $stmt;
 }
 
+function db_query($conn, $sql) {
+    $result = mysqli_query($conn, $sql);
+    if (!$result) {
+        error_log("Query failed: " . mysqli_error($conn));
+        show_database_error();
+    }
+    return $result;
+}
+
 function show_database_error($back_href = "index.php", $back_text = "Back to Home") {
     global $db_error_message;
     show_error_page("Something went wrong", [$db_error_message ?? "Sorry, we can't reach our database right now. Please try again later."], $back_href, $back_text, 503);

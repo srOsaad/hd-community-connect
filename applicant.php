@@ -40,13 +40,11 @@ if (!$conn) {
     show_database_error('userlogin.php', 'Back to Check Application');
 }
 
-$stmt = mysqli_prepare($conn, 'SELECT * FROM eoi WHERE EOInumber = ? AND ApplicationID = ?');
-if ($stmt) {
-    mysqli_stmt_bind_param($stmt, 'is', $id, $application_id);
-    mysqli_stmt_execute($stmt);
-    $app = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt)) ?: null;
-    mysqli_stmt_close($stmt);
-}
+$stmt = db_prepare($conn, 'SELECT * FROM eoi WHERE EOInumber = ? AND ApplicationID = ?');
+mysqli_stmt_bind_param($stmt, 'is', $id, $application_id);
+mysqli_stmt_execute($stmt);
+$app = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt)) ?: null;
+mysqli_stmt_close($stmt);
 
 if (!$app) {
     end_applicant_session();

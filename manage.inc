@@ -55,11 +55,9 @@ function delete_job_eois($conn, $job_ref) {
 
 function count_by_status($conn, $statuses) {
     $status_counts = array_fill_keys($statuses, 0);
-    $result = mysqli_query($conn, "SELECT Status, COUNT(*) AS total FROM eoi GROUP BY Status");
-    if ($result) {
-        while ($count_row = mysqli_fetch_assoc($result)) {
-            $status_counts[$count_row["Status"]] = (int) $count_row["total"];
-        }
+    $result = db_query($conn, "SELECT Status, COUNT(*) AS total FROM eoi GROUP BY Status");
+    while ($count_row = mysqli_fetch_assoc($result)) {
+        $status_counts[$count_row["Status"]] = (int) $count_row["total"];
     }
     return $status_counts;
 }
