@@ -31,7 +31,6 @@ $page_style = <<<'CSS'
 
     .apply-help {
         width: 100%;
-        max-width: 40rem;
         margin: 0 0 2rem;
         padding: 1.25rem 1.5rem;
         border: 1px solid var(--border-strong);
@@ -43,6 +42,19 @@ $page_style = <<<'CSS'
     .apply-help h2 {
         margin-top: 0;
         font-size: var(--step-1);
+    }
+
+    .apply-help ol {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+        gap: 0.5rem 2rem;
+        margin: 0 0 1rem;
+        padding-left: 1.25rem;
+    }
+
+    .apply-help li,
+    .apply-help p {
+        max-width: none;
     }
 
     .apply-help p {
