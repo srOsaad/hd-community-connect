@@ -13,7 +13,7 @@ $search = field($_GET, "search");
 $jobs = $search === "" ? [] : find_jobs($conn, $search); // retrieve job listings based on search from user
 
 $page_title = "Search Jobs";
-$page_description = "Search Community Connect job openings by title.";
+$page_description = "Search Community Connect job openings by title, keyword or reference.";
 $current_page = "jobs";
 
 $page_style = <<<'CSS'
