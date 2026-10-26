@@ -45,7 +45,7 @@ $page_style = <<<'CSS'
         font-size: var(--step-1);
     }
 
-    .apply-help ol {
+    .apply-help p {
         margin-bottom: 0;
     }
 CSS;
@@ -73,6 +73,8 @@ include "header.inc";
             <li>Fill in the <a href="apply.php">application form</a>. You will be given an application ID.</li>
             <li>Use your application ID and password to <a href="userlogin.php">check your application</a> at any time.</li>
         </ol>
+        <p>We welcome applications from Aboriginal and Torres Strait Islander peoples, people with disability,
+            and people of all cultures and backgrounds. We will make reasonable adjustments at any stage of recruitment.</p>
     </aside>
 
      <!-- group containing all job boxes -->
