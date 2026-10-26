@@ -79,8 +79,7 @@ img {
 /* Serif headings, brand navy */
 h1,
 h2,
-h3,
-h4 {
+h3 {
   margin: 0 0 0.5em;
   color: var(--brand);
   font-family: var(--font-heading);
@@ -372,9 +371,7 @@ textarea {
   resize: vertical;
 }
 
-input[type="submit"],
-input[type="reset"],
-input[type="button"] {
+input[type="submit"] {
   width: auto;
 }
 
