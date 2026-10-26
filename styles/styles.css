@@ -1,10 +1,11 @@
-/* Global values to use below mostly inspired by the page refered */
+/* Global values to use below mostly inspired by the page referred */
 
 :root {
   --brand:          #1C3872;   /* navy: header, headings, buttons */
   --brand-dark:     #142850;   /* hover states, footer */
   --brand-light:    #E7EBF3;   /* tints, table headers */
   --accent:         #004A80;   /* links */
+  --danger:         #B00020;
 
   --ink:            #231F20;   /* body text */
   --ink-muted:      #54585C;   /* captions, hints, IDs */
@@ -31,7 +32,7 @@
 }
 
 
-/* Reseting default config */
+/* Resetting default config */
 
 /* Predictable box sizing */
 * {
@@ -40,6 +41,10 @@
 
 /* Page defaults */
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   background-color: var(--surface);
   color: var(--ink);
@@ -74,8 +79,7 @@ img {
 /* Serif headings, brand navy */
 h1,
 h2,
-h3,
-h4 {
+h3 {
   margin: 0 0 0.5em;
   color: var(--brand);
   font-family: var(--font-heading);
@@ -83,17 +87,11 @@ h4 {
   line-height: 1.25;
 }
 
-/* Cap line length */
-main p,
-main li {
-  max-width: var(--measure);
-}
-
 p {
   margin: 0 0 1em;
 }
 
-/* Links — underline marks them */
+/* Links: underline marks them */
 a {
   color: var(--accent);
   text-decoration: underline;
@@ -111,8 +109,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
-summary:focus-visible,
-table:focus-visible {
+summary:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
@@ -194,7 +191,7 @@ main:focus {
   font-weight: 700;
 }
 
-/* Links in a row — always expanded, hamburger only shows up under 40em */
+/* Links in a row; the hamburger only shows up at 760px and below */
 .site-nav ul {
   display: flex;
   flex-wrap: wrap;
@@ -240,15 +237,34 @@ main:focus {
   margin-left: 0.75rem;
 }
 
-.site-nav .nav-staff a {
+.site-nav .nav-staff form {
+  margin: 0;
+}
+
+.site-nav .nav-staff button {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius);
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.site-nav .nav-staff a,
+.site-nav .nav-staff button {
   padding: 0.35rem 0.85rem;
   border: 1px solid var(--border-strong);
   color: var(--ink-muted);
   font-size: var(--step--1);
 }
 
-.site-nav .nav-staff a:hover {
+.site-nav .nav-staff a:hover,
+.site-nav .nav-staff button:hover {
   border-color: var(--brand-dark);
+}
+
+.site-nav .nav-staff button:hover {
+  background-color: var(--brand-light);
 }
 
 
@@ -256,6 +272,8 @@ main:focus {
 
 /* Centred content column */
 main {
+  flex: 1 0 auto;
+  width: 100%;
   max-width: var(--page-max);
   margin: 0 auto;
   padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem);
@@ -270,7 +288,6 @@ section {
 /* Tables */
 
 table {
-  overflow-x: auto;
   width: 100%;
   border-collapse: collapse;
   background-color: var(--surface);
@@ -345,7 +362,11 @@ textarea {
 /* Taller, vertical resize only */
 textarea {
   min-height: 8rem;
-  resize: both;
+  resize: vertical;
+}
+
+input[type="submit"] {
+  width: auto;
 }
 
 input[type="radio"],
@@ -357,6 +378,14 @@ input[type="checkbox"] {
 /* Label and input pair */
 .field {
   margin-bottom: 1.25rem;
+}
+
+fieldset.field > label:not(.choice) {
+  margin-top: 1rem;
+}
+
+fieldset.field > label:first-of-type {
+  margin-top: 0;
 }
 
 /* for radio label */
@@ -375,6 +404,10 @@ input[type="checkbox"] {
   font-size: var(--step--1);
 }
 
+legend + .hint {
+  margin: 0 0 0.75rem;
+}
+
 /* Feedback messages (login, forms, management) */
 .message {
   max-width: var(--measure);
@@ -385,7 +418,7 @@ input[type="checkbox"] {
 }
 
 .message-error {
-  border-color: #B00020;
+  border-color: var(--danger);
   background-color: #FDECEE;
   color: #7A0016;
 }
@@ -398,6 +431,19 @@ input[type="checkbox"] {
 
 
 /* Components */
+
+.student-id {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--radius);
+  background-color: var(--brand-light);
+  color: var(--brand-dark);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
 
 /* Turns links into a button */
 .btn,
@@ -424,6 +470,7 @@ input[type="checkbox"] {
 .btn:hover {
   border-color: var(--brand-dark);
   background-color: var(--brand-dark);
+  color: var(--ink-inverse);
 }
 
 /* Outlined variant */
@@ -504,6 +551,10 @@ input[type="checkbox"] {
   color: var(--ink-inverse);
 }
 
+.site-footer a:focus-visible {
+  outline-color: var(--ink-inverse);
+}
+
 /* Jira and GitHub row */
 .footer-links {
   display: flex;
@@ -516,14 +567,89 @@ input[type="checkbox"] {
 
 /* Copyright and credits */
 .footer-note {
-  max-width: var(--measure);
   margin: 0 0 0.5rem;
   color: var(--brand-light);
   font-size: var(--step--1);
 }
 
+.coloured {
+  color: var(--brand);
+  font-weight: bold;
+}
 
-/* Reponses from and within 760px */
+.outline {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+
+.job-card {
+  display: flex;
+  flex-direction: column;
+  max-width: 21rem;
+  margin: 0;
+}
+
+.job-card form {
+  margin-top: auto;
+}
+
+/* The table is wide, so on phones it scrolls inside this box instead of the whole page */
+.table-wrap {
+  position: relative;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.job-list {
+  gap: 2rem;
+}
+
+.job-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: end;
+  max-width: 36rem;
+}
+
+.job-search label {
+  flex-basis: 100%;
+}
+
+.job-search input[type="text"] {
+  flex: 1 1 14rem;
+}
+
+.job-search input[type="submit"] {
+  width: 8em;
+}
+
+
+@media (min-width: 47.5625em) and (max-width: 60em) {
+  .brand-name {
+    font-size: var(--step-1);
+  }
+
+  .site-nav ul {
+    gap: 0;
+  }
+
+  .site-nav a {
+    padding: 0.5rem 0.4rem;
+  }
+
+  .site-nav .nav-staff {
+    margin-left: 0.25rem;
+  }
+
+  .site-nav .nav-staff a,
+  .site-nav .nav-staff button {
+    padding: 0.35rem 0.6rem;
+  }
+}
+
+/* Responses at 760px and below */
 
 @media (max-width: 47.5em) {
   /* Smaller logo */
@@ -584,7 +710,8 @@ input[type="checkbox"] {
   }
 
   /* Nav link positioning */
-  .site-nav details[open] ~ ul a {
+  .site-nav details[open] ~ ul a,
+  .site-nav details[open] ~ ul button {
     text-align: center;
   }
 
@@ -594,7 +721,33 @@ input[type="checkbox"] {
     margin-left: 0;
   }
 
-  .site-nav .nav-staff a {
+  .site-nav .nav-staff a,
+  .site-nav .nav-staff button {
     border: none;
+  }
+
+  .site-header:has(.staff-only) {
+    flex-wrap: nowrap;
+  }
+
+  .site-nav.staff-only ul {
+    display: flex;
+  }
+
+  .site-nav.staff-only .nav-staff {
+    align-self: center;
+  }
+
+  .site-nav.staff-only {
+    flex-shrink: 0;
+  }
+
+  .site-nav.staff-only .nav-staff button {
+    border: 1px solid var(--border-strong);
+    white-space: nowrap;
+  }
+
+  .site-nav.staff-only .nav-user {
+    display: none;
   }
 }

@@ -1,0 +1,5 @@
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(inc|sql|md)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>

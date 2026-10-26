@@ -1,283 +1,265 @@
 <?php
-// applicant.php - shows ONE applicant's own row from the eoi table.
-//   Default view -> data shown as headings + paragraphs, with an Edit button
-//                   (no button when Current or Final)
-//   ?edit=1      -> editable form with Save / Cancel
+// applicant.php: shows the logged in applicant's own application from the eoi table.
+// The default view lists the details with an Edit button (hidden when Current or Final).
+// ?edit=1 shows the editable form with Save and Cancel.
 
-session_start();
+require_once 'session.inc';
 
 require_once 'db_connect.inc';   // $conn
-require_once 'functions.inc';    // clean_input(), e()
-
-    
-
-$genders = ['Male', 'Female', 'Other'];
-$states  = ['VIC', 'NSW', 'QLD', 'NT', 'WA', 'SA', 'TAS', 'ACT'];
-$skill_options = ['Problem solving', 'Communication', 'Teamwork'];
+require_once 'functions.inc';    // post_value(), e(), show()
+require_once 'error.inc';
+require_once 'application_form.inc';
 
 $errors = [];
+$locked_notice = '';
+
+$token = csrf_token();
 $notice = $_SESSION['flash'] ?? '';
 unset($_SESSION['flash']);
 
-// ---------- Load this user's row ----------
+// Load this user's row
 $app = null;
 $id  = (int) ($_SESSION['eoi_id'] ?? 0);
+$application_id = (string) ($_SESSION['application_id'] ?? '');
 
-if ($id < 1) {
+if ($id < 1 || $application_id === '') {
+    end_applicant_session();
     header('Location: userlogin.php');
     exit;
 }
 
-if ($conn && $id > 0) {
-    $stmt = mysqli_prepare($conn, 'SELECT * FROM eoi WHERE EOInumber = ?');
-    mysqli_stmt_bind_param($stmt, 'i', $id);
-    mysqli_stmt_execute($stmt);
-    $app = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt)) ?: null;
-    mysqli_stmt_close($stmt);
+if (isset($_SESSION['applicant_last_activity']) && time() - $_SESSION['applicant_last_activity'] > SESSION_TIMEOUT) {
+    end_applicant_session();
+    header('Location: userlogin.php?expired=1');
+    exit;
+}
+$_SESSION['applicant_last_activity'] = time();
+
+if (!$conn) {
+    show_database_error('userlogin.php', 'Back to Check Application');
+}
+
+$stmt = db_prepare($conn, 'SELECT * FROM eoi WHERE EOInumber = ? AND ApplicationID = ?');
+mysqli_stmt_bind_param($stmt, 'is', $id, $application_id);
+mysqli_stmt_execute($stmt);
+$app = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt)) ?: null;
+mysqli_stmt_close($stmt);
+
+if (!$app) {
+    end_applicant_session();
+    show_error_page('Application Not Found', ['We could not find this application. It may have been removed.'], 'userlogin.php', 'Check Application', 404);
 }
 
 // Job title for the page heading (JobReference in eoi = reference in jobs)
 $job_title = '';
-if ($app) {
-    $stmt = mysqli_prepare($conn, 'SELECT title FROM jobs WHERE reference = ?');
-    $jn = $app['JobReference'];
-    mysqli_stmt_bind_param($stmt, 's', $jn);
-    mysqli_stmt_execute($stmt);
-    $job = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-    mysqli_stmt_close($stmt);
-    $job_title = $job['title'] ?? '';
+$stmt = db_prepare($conn, 'SELECT title FROM jobs WHERE reference = ?');
+$jn = $app['JobReference'];
+mysqli_stmt_bind_param($stmt, 's', $jn);
+mysqli_stmt_execute($stmt);
+$job = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
+$job_title = $job['title'] ?? '';
+
+$locked = in_array($app['Status'], locked_statuses(), true);    // Current and Final applications can't be edited
+
+$values = [];
+foreach (['first_name' => 'FirstName', 'last_name' => 'LastName', 'Gender' => 'Gender', 'streetaddress' => 'StreetAddress',
+          'suburb_town' => 'Suburb', 'state' => 'State', 'postcode' => 'Postcode', 'email' => 'Email',
+          'phone' => 'Phone', 'Other_skill' => 'OtherSkills'] as $key => $column) {
+    $values[$key] = html_entity_decode((string) $app[$column], ENT_QUOTES, 'UTF-8');
+}
+$values['DateOfBirth'] = date('d/m/Y', strtotime($app['DOB']));
+$values['skills'] = $app['Skills'] === '' ? [] : explode(',', $app['Skills']);
+
+// Edit mode is only available when not locked
+$editing = !$locked && (isset($_GET['edit']) || $_SERVER['REQUEST_METHOD'] === 'POST');
+
+if ($locked && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $locked_notice = 'Your changes were not saved because your application is now ' . strtolower($app['Status']) . '.';
 }
 
-$editing = false;
+// Save
+if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $values = sent_form_values();
+    $form = read_application_form();
 
-if ($app) {
-    $locked = in_array($app['Status'], ['Current', 'Final'], true);    // only Current,Final can't be edited
-
-    $form = $app;
-    $form['Skills'] = $app['Skills'] === '' ? [] : explode(',', $app['Skills']);
-
-    // Edit mode is only available when not locked
-    if (!$locked && (isset($_GET['edit']) || $_SERVER['REQUEST_METHOD'] === 'POST')) {
-        $editing = true;
+    if (!csrf_ok()) {
+        $errors[] = 'That request could not be verified. Please try again.';
+    } else {
+        $errors = validate_application($form);
     }
 
-    // ---------- Save ----------
-    if ($editing && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        foreach (['FirstName','LastName','DOB','Gender','StreetAddress','Suburb',
-                  'State','Postcode','Email','Phone','OtherSkills'] as $f) {
-            $form[$f] = clean_input($_POST[$f] ?? '');
+    if (!$errors) {
+        $stmt = db_prepare($conn, 'SELECT 1 FROM eoi WHERE JobReference = ? AND Email = ? AND EOInumber <> ?');
+        mysqli_stmt_bind_param($stmt, 'ssi', $app['JobReference'], $form['email'], $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        $email_taken = mysqli_stmt_num_rows($stmt) > 0;
+        mysqli_stmt_close($stmt);
+
+        if ($email_taken) {
+            $errors[] = 'Another application for this job already uses this email address.';
         }
-        $form['Skills'] = array_values(array_intersect($skill_options, (array) ($_POST['Skills'] ?? [])));
+    }
 
-        $d = DateTime::createFromFormat('Y-m-d', $form['DOB']);
-        if (!preg_match("/^[\p{L}' -]{1,20}$/u", $form['FirstName'])) $errors[] = 'First name: letters only, max 20 characters.';
-        if (!preg_match("/^[\p{L}' -]{1,20}$/u", $form['LastName']))  $errors[] = 'Last name: letters only, max 20 characters.';
-        if (!$d || $d->format('Y-m-d') !== $form['DOB'] || $d > new DateTime('today')) $errors[] = 'Please enter a valid date of birth.';
-        if (!in_array($form['Gender'], $genders, true)) $errors[] = 'Please choose a gender.';
-        if ($form['StreetAddress'] === '' || mb_strlen($form['StreetAddress']) > 40) $errors[] = 'Street address is required (max 40 characters).';
-        if ($form['Suburb'] === '' || mb_strlen($form['Suburb']) > 40) $errors[] = 'Suburb/town is required (max 40 characters).';
-        if (!in_array($form['State'], $states, true)) $errors[] = 'Please choose a valid state.';
-        if (!preg_match('/^\d{4}$/', $form['Postcode'])) $errors[] = 'Postcode must be exactly 4 digits.';
-        if (!filter_var($form['Email'], FILTER_VALIDATE_EMAIL) || strlen($form['Email']) > 150) $errors[] = 'Please enter a valid email address.';
-        if (!preg_match('/^\d{10}$/', $form['Phone'])) $errors[] = 'Phone must be exactly 10 digits.';
-        if (mb_strlen($form['OtherSkills']) > 1000) $errors[] = 'Other skills: max 1000 characters.';
+    if (!$errors) {
+        $skills = implode(',', $form['skills']);
+        // Status is re-checked in SQL, so a Current application can't be changed
+        $stmt = db_prepare($conn,
+            "UPDATE eoi SET FirstName=?, LastName=?, DOB=?, Gender=?, StreetAddress=?, Suburb=?,
+                    State=?, Postcode=?, Email=?, Phone=?, Skills=?, OtherSkills=?
+             WHERE EOInumber=? AND Status NOT IN ('Current', 'Final')");
+        mysqli_stmt_bind_param($stmt, 'ssssssssssssi',
+            $form['first_name'], $form['last_name'], $form['dob_sql'], $form['gender'],
+            $form['street'], $form['suburb'], $form['state'], $form['postcode'],
+            $form['email'], $form['phone'], $skills, $form['other_skills'], $id);
+        $ok = mysqli_stmt_execute($stmt);
+        $duplicate_email = !$ok && mysqli_stmt_errno($stmt) === 1062;
+        $changed = mysqli_stmt_affected_rows($stmt);
+        mysqli_stmt_close($stmt);
 
-        if (!$errors) {
-            $skills = implode(',', $form['Skills']);
-            // Status is re-checked in SQL, so a Current application can't be changed
-            $stmt = mysqli_prepare($conn,
-                "UPDATE eoi SET FirstName=?, LastName=?, DOB=?, Gender=?, StreetAddress=?, Suburb=?,
-                        State=?, Postcode=?, Email=?, Phone=?, Skills=?, OtherSkills=?
-                 WHERE EOInumber=? AND Status NOT IN ('Current', 'Final')");
-            mysqli_stmt_bind_param($stmt, 'ssssssssssssi',
-                $form['FirstName'], $form['LastName'], $form['DOB'], $form['Gender'],
-                $form['StreetAddress'], $form['Suburb'], $form['State'], $form['Postcode'],
-                $form['Email'], $form['Phone'], $skills, $form['OtherSkills'], $id);
-            $ok = mysqli_stmt_execute($stmt);
+        if ($ok && $changed === 0) {
+            $stmt = db_prepare($conn, 'SELECT Status FROM eoi WHERE EOInumber = ?');
+            mysqli_stmt_bind_param($stmt, 'i', $id);
+            mysqli_stmt_execute($stmt);
+            $current = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
             mysqli_stmt_close($stmt);
 
-            if ($ok) {
-                $_SESSION['flash'] = 'Your application has been updated.';
-                header('Location: applicant.php');
-                exit;
+            if ($current && in_array($current['Status'], locked_statuses(), true)) {
+                $ok = false;
+                $locked = true;
+                $editing = false;
+                $app['Status'] = $current['Status'];
+                $locked_notice = 'Your changes were not saved because your application is now ' . strtolower($current['Status']) . '.';
             }
-            $errors[] = 'Sorry, we could not save your changes. Please try again later.';
+        }
+
+        if ($ok) {
+            $_SESSION['flash'] = 'Your application has been updated.';
+            header('Location: applicant.php');
+            exit;
+        }
+        if (!$locked) {
+            $errors[] = $duplicate_email ? 'Another application for this job already uses this email address.'
+                                         : 'Sorry, we could not save your changes. Please try again later.';
         }
     }
+}
+
+if ($errors) {
+    http_response_code(400);
 }
 
 $page_title = 'Your Application';
 $page_description = 'Check the status of your Community Connect job application.';
-include 'header.inc';
-?>
-<style>
-    html { height: 100%; }
-    body { min-height: 100vh; display: flex; flex-direction: column; margin: 0; }
-    main { flex: 1 0 auto; }
-    footer { margin-top: auto; flex-shrink: 0; }
-
+$page_style = <<<'CSS'
     /* Edit form: fields react on hover (Job Reference is never editable) */
     form input:not(.static):hover,
     form select:hover,
     form textarea:hover {
-        border-color: #1a3a6e;
+        border-color: var(--brand);
         box-shadow: 0 0 0 2px rgba(26, 58, 110, 0.2);
     }
-    input.static { pointer-events: none; cursor: default; }
-</style>
+    input.static { pointer-events: none; cursor: default; background-color: var(--surface-alt); color: var(--ink-muted); }
+
+    .details {
+        display: grid;
+        grid-template-columns: 8.5rem 1fr;
+        gap: 0.6rem 1.5rem;
+        max-width: var(--measure);
+        margin: 0 0 1.75rem;
+    }
+    .details dt { font-weight: 600; color: var(--brand); }
+    .details dd { margin: 0; }
+
+    @media (max-width: 30em) {
+        .details { grid-template-columns: 1fr; gap: 0.15rem; }
+        .details dd { margin-bottom: 0.75rem; }
+    }
+CSS;
+include 'header.inc';
+?>
 <main id="main">
     <h1>Your Application<?= $job_title !== '' ? ' for ' . e($job_title) : '' ?></h1>
 
-<?php if (!$app): ?>
+<?php if (!$editing): ?>
 
-    <p>No application was found for this ID.</p>
+    <!-- View mode: details list -->
+    <?php if ($notice): ?><p class="message message-success" role="status"><?= e($notice) ?></p><?php endif; ?>
+    <?php if ($locked_notice): ?><p class="message message-error" role="alert"><?= e($locked_notice) ?></p><?php endif; ?>
 
-<?php elseif (!$editing): ?>
+    <h2>Application</h2>
+    <dl class="details">
+        <dt>Application ID</dt>
+        <dd><?= show($app['ApplicationID']) ?></dd>
 
-    <!-- ===== VIEW: headings + paragraphs ===== -->
-    <?php if ($notice): ?><p class="success"><?= e($notice) ?></p><?php endif; ?>
+        <dt>Status</dt>
+        <dd><strong><?= show($app['Status']) ?></strong><?php if ($locked): ?> (your application is <?= e(strtolower($app['Status'])) ?> and can no longer be edited)<?php endif; ?></dd>
 
-    <h2>Application ID</h2>
-    <p><?= e($app['ApplicationID']) ?></p>
+        <dt>Job</dt>
+        <dd><?= $job_title !== '' ? e($job_title) . ' (' . show($app['JobReference']) . ')' : show($app['JobReference']) ?></dd>
+    </dl>
 
-    <h2>Status</h2>
-    <p><strong><?= e($app['Status']) ?></strong></p>
+    <h2>Your Details</h2>
+    <dl class="details">
+        <dt>Name</dt>
+        <dd><?= show($app['FirstName'] . ' ' . $app['LastName']) ?></dd>
 
-    <?php if ($locked): ?>
-        <p>Your application is <?= e(strtolower($app['Status'])) ?></p>
-    <?php endif; ?>
+        <dt>Date of birth</dt>
+        <dd><?= e(date('d/m/Y', strtotime($app['DOB']))) ?></dd>
 
-    <h2>Job Reference</h2>
-    <p><?= e($app['JobReference']) ?></p>
+        <dt>Gender</dt>
+        <dd><?= show($app['Gender']) ?></dd>
 
-    <h2>First Name</h2>
-    <p><?= e($app['FirstName']) ?></p>
+        <dt>Address</dt>
+        <dd><?= show($app['StreetAddress']) ?><br><?= show($app['Suburb'] . ' ' . $app['State'] . ' ' . $app['Postcode']) ?></dd>
 
-    <h2>Last Name</h2>
-    <p><?= e($app['LastName']) ?></p>
+        <dt>Email</dt>
+        <dd><?= show($app['Email']) ?></dd>
 
-    <h2>Date of Birth</h2>
-    <p><?= e(date('d/m/Y', strtotime($app['DOB']))) ?></p>
+        <dt>Phone</dt>
+        <dd><?= show($app['Phone']) ?></dd>
 
-    <h2>Gender</h2>
-    <p><?= e($app['Gender']) ?></p>
+        <dt>Skills</dt>
+        <dd><?= $app['Skills'] === '' ? '-' : show(str_replace(',', ', ', $app['Skills'])) ?></dd>
 
-    <h2>Street Address</h2>
-    <p><?= e($app['StreetAddress']) ?></p>
-
-    <h2>Suburb/Town</h2>
-    <p><?= e($app['Suburb']) ?></p>
-
-    <h2>State</h2>
-    <p><?= e($app['State']) ?></p>
-
-    <h2>Postcode</h2>
-    <p><?= e($app['Postcode']) ?></p>
-
-    <h2>Email</h2>
-    <p><?= e($app['Email']) ?></p>
-
-    <h2>Phone</h2>
-    <p><?= e($app['Phone']) ?></p>
-
-    <h2>Skills</h2>
-    <p><?= $app['Skills'] === '' ? '-' : e(str_replace(',', ', ', $app['Skills'])) ?></p>
-
-    <h2>Other Skills</h2>
-    <p><?= trim((string) $app['OtherSkills']) === '' ? '-' : nl2br(e($app['OtherSkills'])) ?></p>
+        <dt>Other skills</dt>
+        <dd><?= trim((string) $app['OtherSkills']) === '' ? '-' : nl2br(show($app['OtherSkills'])) ?></dd>
+    </dl>
 
     <div class="group">
     <?php if (!$locked): ?>
         <a class="btn" href="applicant.php?edit=1">Edit</a>
     <?php endif; ?>
-        <a class="btn-secondary" href="logout.php">Log out</a>
+        <form method="post" action="logout.php">
+            <input type="hidden" name="who" value="applicant">
+            <input type="hidden" name="token" value="<?= e($token) ?>">
+            <button class="btn-secondary" type="submit">Log Out</button>
+        </form>
     </div>
 
 <?php else: ?>
 
-    <!-- ===== EDIT FORM ===== -->
-    <p>Status: <strong><?= e($app['Status']) ?></strong></p>
+    <!-- Edit mode: form -->
+    <p>Status: <strong><?= show($app['Status']) ?></strong></p>
 
-    <?php if ($errors): ?>
-        <ul class="errors"><?php foreach ($errors as $err): ?><li><?= e($err) ?></li><?php endforeach; ?></ul>
-    <?php endif; ?>
+    <?php show_errors($errors); ?>
 
     <form method="post" action="applicant.php" novalidate="novalidate">
+        <input type="hidden" name="token" value="<?= e($token) ?>">
 
         <!-- Never editable -->
-        <p>
-            <label for="JobReference">Job Reference</label>
-            <input type="text" id="JobReference" class="static" value="<?= e($app['JobReference']) ?>" readonly>
-        </p>
-        <p>
-            <label for="FirstName">First Name</label>
-            <input type="text" id="FirstName" name="FirstName" maxlength="20" value="<?= e($form['FirstName']) ?>">
-        </p>
-        <p>
-            <label for="LastName">Last Name</label>
-            <input type="text" id="LastName" name="LastName" maxlength="20" value="<?= e($form['LastName']) ?>">
-        </p>
-        <p>
-            <label for="DOB">Date of Birth</label>
-            <input type="date" id="DOB" name="DOB" value="<?= e($form['DOB']) ?>">
-        </p>
-        <p>
-            <label for="Gender">Gender</label>
-            <select id="Gender" name="Gender">
-                <?php foreach ($genders as $g): ?>
-                    <option value="<?= $g ?>"<?= $form['Gender'] === $g ? ' selected' : '' ?>><?= $g ?></option>
-                <?php endforeach; ?>
-            </select>
-        </p>
-        <p>
-            <label for="StreetAddress">Street Address</label>
-            <input type="text" id="StreetAddress" name="StreetAddress" maxlength="40" value="<?= e($form['StreetAddress']) ?>">
-        </p>
-        <p>
-            <label for="Suburb">Suburb/Town</label>
-            <input type="text" id="Suburb" name="Suburb" maxlength="40" value="<?= e($form['Suburb']) ?>">
-        </p>
-        <p>
-            <label for="State">State</label>
-            <select id="State" name="State">
-                <?php foreach ($states as $s): ?>
-                    <option value="<?= $s ?>"<?= $form['State'] === $s ? ' selected' : '' ?>><?= $s ?></option>
-                <?php endforeach; ?>
-            </select>
-        </p>
-        <p>
-            <label for="Postcode">Postcode</label>
-            <input type="text" id="Postcode" name="Postcode" maxlength="4" value="<?= e($form['Postcode']) ?>">
-        </p>
-        <p>
-            <label for="Email">Email</label>
-            <input type="text" id="Email" name="Email" maxlength="150" value="<?= e($form['Email']) ?>">
-        </p>
-        <p>
-            <label for="Phone">Phone</label>
-            <input type="text" id="Phone" name="Phone" maxlength="10" value="<?= e($form['Phone']) ?>">
-        </p>
+        <div class="field">
+            <label for="JobReference">Job reference</label>
+            <input type="text" id="JobReference" class="static" value="<?= show($app['JobReference']) ?>" readonly>
+        </div>
+        <?php application_fields($values); ?>
+        <?php skill_fields($values); ?>
 
-        <fieldset>
-            <legend>Skills</legend>
-            <?php foreach ($skill_options as $opt): ?>
-                <label>
-                    <input type="checkbox" name="Skills[]" value="<?= e($opt) ?>"
-                        <?= in_array($opt, $form['Skills'], true) ? 'checked' : '' ?>>
-                    <?= e($opt) ?>
-                </label><br>
-            <?php endforeach; ?>
-        </fieldset>
-
-        <p>
-            <label for="OtherSkills">Other Skills</label>
-            <textarea id="OtherSkills" name="OtherSkills" rows="4" cols="40"><?= e((string) $form['OtherSkills']) ?></textarea>
-        </p>
-
-        <p>
+        <div class="group">
             <input class="btn" type="submit" value="Save">
-            <a href="applicant.php">Cancel</a>
-        </p>
+            <a class="btn-secondary" href="applicant.php">Cancel</a>
+        </div>
     </form>
 
 <?php endif; ?>

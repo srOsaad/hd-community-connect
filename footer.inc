@@ -1,12 +1,12 @@
 <?php
 /*
 footer.inc: shared site footer and closing tags for every page.
-For team: Add anything you didn't make itself to the acknowledgements below.
+Credits for content the team did not create go in the acknowledgements below.
 */
 ?>
   <!-- Footer : project links, contact and acknowledgements -->
   <footer class="site-footer">
-    <h2 class="visually-hidden">Site information</h2>
+    <h2 class="visually-hidden">Site Information</h2>
 
     <ul class="footer-links">
       <li><a href="https://hd-community-connect.atlassian.net/jira/software/projects/CSW/boards/3"
@@ -23,14 +23,19 @@ For team: Add anything you didn't make itself to the acknowledgements below.
     </ul>
 
     <p class="footer-note">
+      Community Connect acknowledges the Traditional Owners of the lands on which we work
+      and pays respect to Elders past and present.
+    </p>
+
+    <p class="footer-note">
       &copy; 2026 Community Connect. A student project by Group HD for
       Web Technology, Swinburne University of Technology.
       Community Connect is a fictional organisation created for assessment purposes.
     </p>
 
-    <!-- add anything you didn't make yourself to this list -->
+    <?php // credits for content the team did not create ?>
     <p class="footer-note">
-      Acknowledgements: logo generated with Google Gemini.
+      Acknowledgements: logo generated with Google Gemini. Team photo processed with ChatGPT (OpenAI) and compressed by generative AI.
       "What Is a Community?" quotation adapted from the Wikipedia article
       <a href="https://en.wikipedia.org/wiki/Community"
          target="_blank" rel="noopener noreferrer">Community<span

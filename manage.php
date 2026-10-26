@@ -4,45 +4,42 @@ manage.php: the HR manager's page. Only logged-in staff can see it.
 Shows every job application saved by process_eoi.php.
 */
 
-require_once "auth.inc";          # keep this first, it sends anyone not logged in back to the login page
-require_once "db_connect.inc";    # connects to the database ($conn)
-require_once "functions.inc";     # our helpers: clean_input() and e()
+require_once "auth.inc";          // keep this first, it sends anyone not logged in back to the login page
+require_once "db_connect.inc";    // connects to the database ($conn)
+require_once "functions.inc";     // helpers: field(), e() and show()
+require_once "error.inc";
+require_once "manage.inc";
 
-# The form data was already escaped by clean_input() before saving,
-# so we undo that first, otherwise "&" would show up as "&amp;" on the page
-function show($value) {
-    return e(html_entity_decode((string) $value, ENT_QUOTES, "UTF-8"));
+if (!$conn) {
+    show_database_error();
 }
 
-# Reads one text value from the URL. If it's missing (or someone sends an array), we just get ""
-function field($source, $key) {
-    return (isset($source[$key]) && is_string($source[$key])) ? clean_input($source[$key]) : "";
-}
+$messages = [];   // error messages to show above the results
 
-$messages = [];   # error messages to show above the results
-
-# What the manager is searching for (empty means "don't filter by this")
+// What the manager is searching for (empty means "don't filter by this")
 $filter_job   = strtoupper(field($_GET, "job_ref"));
 $filter_first = field($_GET, "first_name");
 $filter_last  = field($_GET, "last_name");
+$filter_app   = field($_GET, "application_id");
 
-# Check the search values the same way the apply form checks them. Anything invalid is ignored
-if ($filter_job !== "" && !preg_match('/^[A-Z0-9]{6}$/', $filter_job)) {
+// Check the search values the same way the apply form checks them. Anything invalid is ignored
+if ($filter_job !== "" && !preg_match('/^[A-Z0-9]{6}$/D', $filter_job)) {
     $messages[] = "A job reference is exactly 6 letters or numbers.";
-    $filter_job = "";
 }
-if ($filter_first !== "" && !preg_match('/^[A-Za-z ]{1,20}$/', $filter_first)) {
+if ($filter_first !== "" && !preg_match('/^[A-Za-z ]{1,20}$/D', $filter_first)) {
     $messages[] = "First name can only contain letters and spaces (up to 20).";
-    $filter_first = "";
 }
-if ($filter_last !== "" && !preg_match('/^[A-Za-z ]{1,20}$/', $filter_last)) {
+if ($filter_last !== "" && !preg_match('/^[A-Za-z ]{1,20}$/D', $filter_last)) {
     $messages[] = "Last name can only contain letters and spaces (up to 20).";
-    $filter_last = "";
 }
 
-$is_filtered = $filter_job !== "" || $filter_first !== "" || $filter_last !== "";
+if ($filter_app !== "" && !preg_match('/^[0-9]{16,17}$/D', $filter_app)) {
+    $messages[] = "An application ID is 16 or 17 digits.";
+}
 
-# Columns the manager can sort by.
+$is_filtered = $filter_job !== "" || $filter_first !== "" || $filter_last !== "" || $filter_app !== "";
+
+// Columns the manager can sort by.
 $sort_fields = [
     "EOInumber"    => "EOI number",
     "JobReference" => "Job reference",
@@ -51,20 +48,24 @@ $sort_fields = [
     "State"        => "State",
     "Status"       => "Status",
 ];
- 
+
 $sort = field($_GET, "sort");
 if (!array_key_exists($sort, $sort_fields)) {
     $sort = "EOInumber";
 }
 $order = field($_GET, "order") === "desc" ? "desc" : "asc";
 
-$statuses = ["New", "Current", "Final"];
+$statuses = status_options();
 
-# CSRF token: forms that change data must send this back
-if (empty($_SESSION["csrf_token"])) {
-    $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+$filter_status = field($_GET, "status");
+if ($filter_status !== "" && !in_array($filter_status, $statuses, true)) {
+    $messages[] = "Please choose a valid status.";
 }
-$token = $_SESSION["csrf_token"];
+$filter_invalid = count($messages) > 0;
+$is_filtered = $is_filtered || $filter_status !== "" || $filter_invalid;
+
+// CSRF token: forms that change data must send this back
+$token = csrf_token();
 
 $success = "";
 if (isset($_SESSION["success"])) {
@@ -72,74 +73,52 @@ if (isset($_SESSION["success"])) {
     unset($_SESSION["success"]);
 }
 
-$page_url = "manage.php?" . http_build_query([
+$page = max(1, (int) field($_GET, "page"));
+$per_page = 20;
+
+$list_query = [
     "job_ref" => $filter_job, "first_name" => $filter_first, "last_name" => $filter_last,
+    "application_id" => $filter_app, "status" => $filter_status,
     "sort" => $sort, "order" => $order,
-]);
+];
+$page_url = "manage.php?" . http_build_query($list_query + ["page" => $page]);
 
-# The eoi table only exists after the first application is sent, so check for it first
-$has_table = false;
-if ($conn) {
-    $check = mysqli_query($conn, "SHOW TABLES LIKE 'eoi'");
-    $has_table = $check && mysqli_num_rows($check) > 0;
-}
+$has_table = eoi_table_exists($conn);
+$action = field($_POST, "action");
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table && field($_POST, "action") === "update_status") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && $action === "update_status") {
     $eoi_number = (int) field($_POST, "eoi_number");
     $new_status = field($_POST, "status");
 
-    if (!hash_equals($token, field($_POST, "token"))) {
+    if (!csrf_ok()) {
         $messages[] = "That request could not be verified. Please try again.";
     } elseif ($eoi_number < 1 || !in_array($new_status, $statuses, true)) {
         $messages[] = "Please choose a valid status.";
     } else {
-        $stmt = $conn->prepare("SELECT Status FROM eoi WHERE EOInumber = ?");
-        $stmt->bind_param("i", $eoi_number);
-        $stmt->execute();
-        $current = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
+        $result = update_eoi_status($conn, $eoi_number, $new_status);
 
-        if (!$current) {
-            $messages[] = "EOI $eoi_number doesn't exist.";
-        } elseif ($current["Status"] === $new_status) {
-            $_SESSION["success"] = "EOI $eoi_number already had the status $new_status.";
-        } else {
-            $stmt = $conn->prepare("UPDATE eoi SET Status = ? WHERE EOInumber = ?");
-            $stmt->bind_param("si", $new_status, $eoi_number);
-            if ($stmt->execute()) {
-                $_SESSION["success"] = "EOI $eoi_number is now $new_status.";
-            } else {
-                error_log("Status update failed: " . $stmt->error);
-                $messages[] = "The status could not be changed. Please try again.";
-            }
-            $stmt->close();
-        }
-
-        # Redirect so refreshing doesn't send the form again
-        if (isset($_SESSION["success"])) {
+        // Redirect so refreshing doesn't send the form again
+        if (isset($result["success"])) {
+            $_SESSION["success"] = $result["success"];
             header("Location: " . $page_url);
             exit();
         }
+        $messages[] = $result["error"];
     }
 }
 
 $delete_job = "";
 $delete_count = 0;
 
-$action = field($_POST, "action");
-if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table && ($action === "confirm_delete" || $action === "delete")) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $has_table && ($action === "confirm_delete" || $action === "delete")) {
     $job_ref = strtoupper(field($_POST, "job_ref"));
 
-    if (!hash_equals($token, field($_POST, "token"))) {
+    if (!csrf_ok()) {
         $messages[] = "That request could not be verified. Please try again.";
-    } elseif (!preg_match('/^[A-Z0-9]{6}$/', $job_ref)) {
+    } elseif (!preg_match('/^[A-Z0-9]{6}$/D', $job_ref)) {
         $messages[] = "A job reference is exactly 6 letters or numbers.";
     } elseif ($action === "confirm_delete") {
-        $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM eoi WHERE JobReference = ?");
-        $stmt->bind_param("s", $job_ref);
-        $stmt->execute();
-        $delete_count = (int) $stmt->get_result()->fetch_assoc()["total"];
-        $stmt->close();
+        $delete_count = count_job_eois($conn, $job_ref);
 
         if ($delete_count === 0) {
             $messages[] = "There are no applications for job $job_ref.";
@@ -147,74 +126,51 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $conn && $has_table && ($action ===
             $delete_job = $job_ref;
         }
     } else {
-        $stmt = $conn->prepare("DELETE FROM eoi WHERE JobReference = ?");
-        $stmt->bind_param("s", $job_ref);
-        if ($stmt->execute()) {
-            $_SESSION["success"] = "Deleted " . $stmt->affected_rows . " application(s) for job $job_ref.";
-        } else {
-            error_log("EOI delete failed: " . $stmt->error);
-            $messages[] = "The applications could not be deleted. Please try again.";
-        }
-        $stmt->close();
+        $deleted = delete_job_eois($conn, $job_ref);
 
-        if (isset($_SESSION["success"])) {
+        if ($deleted !== null) {
+            $_SESSION["success"] = "Deleted " . $deleted . " application(s) for job $job_ref.";
             header("Location: " . $page_url);
             exit();
         }
+        $messages[] = "The applications could not be deleted. Please try again.";
     }
 }
 
-# Get the applications, oldest first. Each filled search box adds a condition,
-# and the values go in as ? placeholders so they can't change the SQL
+$status_counts = $has_table ? count_by_status($conn, $statuses) : array_fill_keys($statuses, 0);
+$total_count = array_sum($status_counts);
+
 $eois = [];
-if ($conn && $has_table) {
-    $conditions = [];
-    $types = "";
-    $params = [];
+$match_count = 0;
+$page_count = 1;
+if ($has_table && !$filter_invalid) {
+    $filters = [
+        "status" => $filter_status, "application_id" => $filter_app, "job_ref" => $filter_job,
+        "first_name" => $filter_first, "last_name" => $filter_last,
+    ];
+    $match_count = count_eois($conn, $filters);
 
-    if ($filter_job !== "") {
-        $conditions[] = "JobReference = ?";
-        $types .= "s";
-        $params[] = $filter_job;
-    }
-    if ($filter_first !== "") {
-        $conditions[] = "FirstName LIKE ?";      # LIKE with % on both sides means "contains"
-        $types .= "s";
-        $params[] = "%" . $filter_first . "%";
-    }
-    if ($filter_last !== "") {
-        $conditions[] = "LastName LIKE ?";
-        $types .= "s";
-        $params[] = "%" . $filter_last . "%";
+    if ($match_count !== null && $match_count <= $per_page) {
+        $page = 1;
+        $eois = find_eois($conn, $filters, $sort, $order);
+    } elseif ($match_count !== null) {
+        $page_count = (int) ceil($match_count / $per_page);
+        $page = min($page, $page_count);
+        $eois = find_eois($conn, $filters, $sort, $order, $per_page, ($page - 1) * $per_page);
     }
 
-    $sql = "SELECT * FROM eoi";
-    if ($conditions) {
-        $sql .= " WHERE " . implode(" AND ", $conditions);
-    }
-
-    $order_by = $sort === "State" ? "CAST(State AS CHAR)" : $sort;
-    $sql .= " ORDER BY " . $order_by . " " . strtoupper($order) . ", EOInumber";
-
-    $stmt = $conn->prepare($sql);
-    if ($stmt) {
-        if ($params) {
-            $stmt->bind_param($types, ...$params);
-        }
-        $stmt->execute();
-        $eois = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-    } else {
-        error_log("EOI list query failed: " . $conn->error);
+    if ($match_count === null || $eois === null) {
+        $eois = [];
+        $match_count = 0;
         $messages[] = "Applications could not be loaded. Please try again later.";
     }
 }
 
-$page_title = "Manage applications";
+$page_title = "Manage Applications";
 $page_description = "HR page for viewing and managing job applications at Community Connect.";
 $current_page = "manage";
 
-# Embedded CSS for this page
+// Embedded CSS for this page
 $page_style = <<<'CSS'
     /* Search boxes sit side by side on wide screens and stack on phones */
     .search-form {
@@ -229,19 +185,26 @@ $page_style = <<<'CSS'
       margin: 0.25rem 0 0;
     }
 
-    /* The table is wide, so on phones it scrolls inside this box instead of the whole page */
-    .table-wrap {
-      position: relative;
-      overflow-x: auto;
-      margin-bottom: 1rem;
+    .eoi-table th,
+    .eoi-table td {
+      padding: 0.5rem 0.6rem;
     }
 
     .eoi-table td {
       font-size: var(--step--1);
     }
 
+    .pager {
+      align-items: center;
+    }
+
+    .pager p {
+      margin: 0;
+    }
+
     .status-form {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.4rem;
     }
 
@@ -258,15 +221,15 @@ $page_style = <<<'CSS'
 
     .btn-danger,
     .btn-danger:hover {
-      border-color: #B00020;
-      background-color: #B00020;
+      border-color: var(--danger);
+      background-color: var(--danger);
     }
 
     .confirm-box {
       max-width: var(--measure);
       margin-bottom: 1.5rem;
       padding: 1rem 1.25rem;
-      border: 2px solid #B00020;
+      border: 2px solid var(--danger);
       border-radius: var(--radius);
     }
 
@@ -291,41 +254,46 @@ CSS;
 include "header.inc";
 ?>
   <main id="main">
-    <h1>Manage applications</h1>
-    <p class="intro">Signed in as <strong><?php echo e($_SESSION["username"]); ?></strong>.</p>
- 
+    <h1>Manage Applications</h1>
+    <p class="intro">Signed in as <strong><?php echo e($_SESSION["username"]); ?></strong>.
+      <a href="staffregister.php">Add a manager</a></p>
+
 <?php if ($success !== "") { ?>
     <p class="message message-success" role="status"><?php echo e($success); ?></p>
 <?php } ?>
 
-<?php foreach ($messages as $message) { ?>
-    <p class="message message-error" role="alert"><?php echo e($message); ?></p>
-<?php } ?>
- 
-<?php if (!$conn) { ?>
-    <p class="message message-error"><?php echo e($db_error_message); ?></p>
- 
-<?php } elseif (!$has_table) { ?>
+<?php show_errors($messages); ?>
+
+<?php if (!$has_table) { ?>
     <p>No applications have been submitted yet. They will appear here after the first one arrives.</p>
- 
+
 <?php } else { ?>
+    <p><strong><?php echo $total_count; ?></strong> application(s) in total:
+<?php foreach ($status_counts as $status => $count) { ?>
+      <strong><?php echo $count; ?></strong> <?php echo $status; ?><?php echo $status === "Final" ? "." : ","; ?>
+<?php } ?>
+    </p>
 <?php if ($delete_job !== "") { ?>
     <section class="confirm-box" aria-labelledby="confirm-heading">
-      <h2 id="confirm-heading">Delete applications for job <?php echo e($delete_job); ?>?</h2>
+      <h2 id="confirm-heading">Delete Applications for Job <?php echo e($delete_job); ?>?</h2>
       <p>This will permanently delete <strong><?php echo $delete_count; ?></strong> application(s). It can't be undone.</p>
       <form method="post" action="<?php echo e($page_url); ?>">
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="token" value="<?php echo $token; ?>">
         <input type="hidden" name="job_ref" value="<?php echo e($delete_job); ?>">
-        <input class="btn btn-danger" type="submit" value="Yes, delete them">
+        <input class="btn btn-danger" type="submit" value="Yes, Delete Them">
         <a class="btn-secondary" href="<?php echo e($page_url); ?>">Cancel</a>
       </form>
     </section>
 <?php } ?>
 
     <section aria-labelledby="search-heading">
-      <h2 id="search-heading">Find and sort applications</h2>
+      <h2 id="search-heading">Find and Sort Applications</h2>
       <form class="search-form" method="get" action="manage.php">
+        <div class="field">
+          <label for="application_id">Application ID</label>
+          <input type="text" id="application_id" name="application_id" inputmode="numeric" maxlength="17" value="<?php echo e($filter_app); ?>">
+        </div>
         <div class="field">
           <label for="job_ref">Job reference</label>
           <input type="text" id="job_ref" name="job_ref" maxlength="6" value="<?php echo e($filter_job); ?>">
@@ -337,6 +305,15 @@ include "header.inc";
         <div class="field">
           <label for="last_name">Last name</label>
           <input type="text" id="last_name" name="last_name" maxlength="20" value="<?php echo e($filter_last); ?>">
+        </div>
+        <div class="field">
+          <label for="status_filter">Status</label>
+          <select id="status_filter" name="status">
+            <option value="">Any status</option>
+<?php foreach ($statuses as $status) { ?>
+            <option<?php if ($status === $filter_status) { echo " selected"; } ?>><?php echo $status; ?></option>
+<?php } ?>
+          </select>
         </div>
         <div class="field">
           <label for="sort">Sort by</label>
@@ -355,13 +332,13 @@ include "header.inc";
         </div>
         <div class="group">
           <input class="btn" type="submit" value="Search">
-          <a class="btn-secondary" href="manage.php">Show all</a>
+          <a class="btn-secondary" href="manage.php">Show All</a>
         </div>
       </form>
     </section>
 
     <section aria-labelledby="delete-heading">
-      <h2 id="delete-heading">Delete applications for a job</h2>
+      <h2 id="delete-heading">Delete Applications for a Job</h2>
       <form class="delete-form" method="post" action="<?php echo e($page_url); ?>">
         <input type="hidden" name="action" value="confirm_delete">
         <input type="hidden" name="token" value="<?php echo $token; ?>">
@@ -374,13 +351,17 @@ include "header.inc";
     </section>
 
     <section aria-labelledby="results-heading">
-      <h2 id="results-heading"><?php echo $is_filtered ? "Search results" : "All applications"; ?></h2>
-      <p><?php echo count($eois); ?> application(s) found.</p>
- 
-<?php if (count($eois) === 0 && $is_filtered) { ?>
+      <h2 id="results-heading"><?php echo $is_filtered ? "Search Results" : "All Applications"; ?></h2>
+<?php if (!$filter_invalid) { ?>
+      <p><?php echo $match_count; ?> application(s) found.<?php if ($page_count > 1) { ?> Showing <?php echo ($page - 1) * $per_page + 1; ?> to <?php echo ($page - 1) * $per_page + count($eois); ?>.<?php } ?></p>
+<?php } ?>
+
+<?php if ($filter_invalid) { ?>
+      <p>Fix the search above to see results.</p>
+<?php } elseif (count($eois) === 0 && $is_filtered) { ?>
       <p>No applications match your search.</p>
 <?php } ?>
- 
+
 <?php if (count($eois) > 0) { ?>
       <div class="table-wrap">
         <table class="eoi-table">
@@ -388,6 +369,7 @@ include "header.inc";
           <thead>
             <tr>
               <th scope="col">EOI</th>
+              <th scope="col">Application ID</th>
               <th scope="col">Job</th>
               <th scope="col">Name</th>
               <th scope="col">Date of birth</th>
@@ -403,6 +385,7 @@ include "header.inc";
 ?>
             <tr>
               <th scope="row"><?php echo (int) $row["EOInumber"]; ?></th>
+              <td><?php echo show($row["ApplicationID"]); ?></td>
               <td><?php echo show($row["JobReference"]); ?></td>
               <td><?php echo show($row["FirstName"] . " " . $row["LastName"]); ?><br><?php echo show($row["Gender"]); ?></td>
               <td><?php echo date("d/m/Y", strtotime($row["DOB"])); ?></td>
@@ -434,8 +417,20 @@ include "header.inc";
         </table>
       </div>
 <?php } ?>
+
+<?php if ($page_count > 1) { ?>
+      <nav class="group pager" aria-label="Pages of applications">
+<?php if ($page > 1) { ?>
+        <a class="btn-secondary" href="<?php echo e("manage.php?" . http_build_query($list_query + ["page" => $page - 1])); ?>">Previous</a>
+<?php } ?>
+        <p>Page <?php echo $page; ?> of <?php echo $page_count; ?></p>
+<?php if ($page < $page_count) { ?>
+        <a class="btn-secondary" href="<?php echo e("manage.php?" . http_build_query($list_query + ["page" => $page + 1])); ?>">Next</a>
+<?php } ?>
+      </nav>
+<?php } ?>
     </section>
 <?php } ?>
   </main>
- 
+
 <?php include "footer.inc"; ?>

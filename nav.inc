@@ -2,12 +2,12 @@
 /*
 nav.inc: main navigation menu, included by header.inc.
 Add a page by adding a line to $nav_links. The current page's link is highlighted.
-Staff link: "Staff login" for visitors; "Manage" and "Log out" for logged-in managers.
+Staff link: "Staff Login" for visitors; "Manage" and "Log Out" for logged-in managers.
 */
 
-$is_logged_in = isset($_SESSION["username"]) && ($_SESSION["role"] ?? "") === "staff";
+$is_logged_in = is_staff_logged_in();
 
-# key = $current_page value => [file, link text]
+// key = $current_page value => [file, link text]
 $nav_links = [
     "index" => ["index.php", "Home"],
     "jobs"  => ["jobs.php",  "Jobs"],
@@ -19,23 +19,36 @@ if ($is_logged_in) {
     $nav_links["manage"] = ["manage.php", "Manage"];
 }
 
-# Staff link, styled separately (class "nav-staff"): [file, link text, $current_page value]
-if ($is_logged_in) {
-    $staff_link = ["logout.php", "Log out (" . htmlspecialchars($_SESSION["username"]) . ")", "logout"];
-} else {
-    $staff_link = ["stafflogin.php", "Staff login", "stafflogin"];
+$staff_only = $is_logged_in && isset($current_page) && $current_page === "manage";
+if ($staff_only) {
+    $nav_links = [];
 }
+
+// Staff link, styled separately (class "nav-staff"): [file, link text, $current_page value]
+$staff_link = ["stafflogin.php", "Staff Login", "stafflogin"];
 ?>
-    <nav class="site-nav" aria-label="Main navigation">
+    <nav class="site-nav<?php if ($staff_only) { echo " staff-only"; } ?>" aria-label="Main navigation">
+<?php if (!$staff_only) { ?>
       <details>
         <summary aria-label="Menu"></summary>
       </details>
+<?php } ?>
       <ul>
 <?php foreach ($nav_links as $key => $link) {
     $is_current = isset($current_page) && $current_page === $key;
 ?>
         <li><a href="<?php echo $link[0]; ?>"<?php if ($is_current) { echo ' aria-current="page"'; } ?>><?php echo $link[1]; ?></a></li>
 <?php } ?>
+<?php if (!$is_logged_in) { ?>
         <li class="nav-staff"><a href="<?php echo $staff_link[0]; ?>"<?php if (isset($current_page) && $current_page === $staff_link[2]) { echo ' aria-current="page"'; } ?>><?php echo $staff_link[1]; ?></a></li>
+<?php } else { ?>
+        <li class="nav-staff">
+          <form method="post" action="logout.php">
+            <input type="hidden" name="who" value="staff">
+            <input type="hidden" name="token" value="<?php echo e($_SESSION["csrf_token"] ?? ""); ?>">
+            <button type="submit">Log Out<span class="nav-user"> (<?php echo e($_SESSION["username"]); ?>)</span></button>
+          </form>
+        </li>
+<?php } ?>
       </ul>
     </nav>

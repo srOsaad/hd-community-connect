@@ -8,7 +8,7 @@ $page_title = "Home";
 $page_description = "Community Connect is a not-for-profit supporting community programs, volunteer registration, events, donations and access to support resources.";
 $current_page = "index";
 
-// Embedded CSS for this page (Part 1 requirement: embedded CSS on every page)
+// Embedded CSS for this page
 $page_style = <<<'CSS'
     /* Embedded CSS */
 
@@ -23,11 +23,12 @@ $page_style = <<<'CSS'
       color: var(--ink-muted);
       font-size: var(--step--1);
       font-weight: 600;
+      font-style: italic;
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
 
-    /* Just to make it more visible */
+    /* Round tinted badge behind each focus area icon */
     .focus-icon {
       display: flex;
       align-items: center;
@@ -57,11 +58,6 @@ $page_style = <<<'CSS'
       margin: 0 0 0.75rem;
     }
 
-    .table-wrap {
-      overflow-x: auto;
-      margin-bottom: 1rem;
-    }
-
     ul.grid {
       list-style: none;
       padding: 0;
@@ -74,15 +70,15 @@ include "header.inc";
   <main id="main">
 
     <section class="hero box">
-      <p class="eyebrow" style="font-style: italic;">Not-for-profit organisation</p>
+      <p class="eyebrow">Not-for-profit organisation</p>
       <h1>Community Connect</h1>
       <p class="intro">Bringing people and support closer together.</p>
       <p>Community Connect is a not-for-profit organisation improving its digital
         services to support community programs, volunteer registration, event
         information, donations and access to support resources.</p>
       <div class="group">
-        <a class="btn" href="jobs.php">View job openings</a>
-        <a class="btn-secondary" href="about.php">Learn about us</a>
+        <a class="btn" href="jobs.php">View Job Openings</a>
+        <a class="btn-secondary" href="about.php">Learn About Us</a>
       </div>
     </section>
 
@@ -109,7 +105,7 @@ include "header.inc";
     </section>
 
     <section aria-labelledby="focus-heading">
-      <h2 id="focus-heading">What we help with</h2>
+      <h2 id="focus-heading">What We Help With</h2>
       <ul class="grid">
         <li class="box">
           <span class="focus-icon" aria-hidden="true">C</span>
@@ -175,7 +171,7 @@ include "header.inc";
 
     <section class="acknowledgement" aria-labelledby="acknowledgement-heading">
       <h2 id="acknowledgement-heading">Acknowledgement of Country</h2>
-      <p style="text-align: justify;">Community Connect acknowledges the Traditional Owners of the lands on
+      <p>Community Connect acknowledges the Traditional Owners of the lands on
         which we work, connect and support our community, and recognises
         their continuing connection to land, waters and culture. We pay our
         respects to Elders past and present, and extend that respect to all

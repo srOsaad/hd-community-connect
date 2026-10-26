@@ -1,96 +1,110 @@
 <?php
-session_start();
+require_once "session.inc";
 require_once "db_connect.inc";   // gives you $conn
-require_once "functions.inc";    // gives you clean_input() and e()
+require_once "functions.inc";    // helpers that jobs.inc uses
+require_once "error.inc";
+require_once "jobs.inc";
+
+if (!$conn) {
+    show_database_error();
+}
+
+$jobs = find_jobs($conn); // retrieve all job listings
 
 $page_title = "Jobs";
-$page_description = "The jobs listing page.";
+$page_description = "Browse current job openings at Community Connect and find a role that suits you.";
 $current_page = "jobs";
 
 $page_style = <<<'CSS'
-    .inline {
-		display: inline;
-	}
+    .job-tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: end;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
 
-	.coloured {
-		color: #1C3872; /*from style.css*/
-		font-weight: bold;
-	}
+    .job-tools form {
+        flex: 1 1 22rem;
+    }
 
-	.outline {
-		padding: 1.25rem 1.5rem;
-		border: 1px solid var(--border-strong);
-		border-radius: var(--radius);
-		max-width: 21rem;
-		display: flex;
-		flex-direction: column;
-	}
-	
-	.outline form {
-		margin-top: auto;
-	}
+    .apply-help {
+        width: 100%;
+        margin: 0 0 2rem;
+        padding: 1.25rem 1.5rem;
+        border: 1px solid var(--border-strong);
+        border-left: 4px solid var(--brand);
+        border-radius: var(--radius);
+        background-color: var(--surface-alt);
+    }
+
+    .apply-help h2 {
+        margin-top: 0;
+        font-size: var(--step-1);
+    }
+
+    .apply-help ol {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+        gap: 0.5rem 2rem;
+        margin: 0 0 1rem;
+        padding-left: 1.25rem;
+    }
+
+    .apply-help li,
+    .apply-help p {
+        max-width: none;
+    }
+
+    .apply-help p {
+        margin-bottom: 0;
+    }
 CSS;
 
-include("header.inc");
+include "header.inc";
 ?>
 
-	<main id="main">
+    <main id="main">
 
-	<h1>Jobs</h1>
-	<p class="intro">List of currently avaliable positions at Community Connect.</p>
+    <h1>Jobs</h1>
+    <p class="intro">Browse the positions currently open at Community Connect.</p>
 
-	<!-- search bar -->
-	<form method="get" action="jobs_search.php" class="inline">
-		<label for="search">Search for a job listing</label>
-		<input type="text" name="search" id="search" required>
-		<input class="btn" style="width: 8em" type="submit" value="Search">
-	</form>
+    <div class="job-tools">
+        <!-- search bar -->
+        <?php job_search_form(); ?>
 
-	<!-- applied jobs button, goes to login page -->
-	<a href="userlogin.php" class="inline btn-secondary" style="float: right;">Check Application</a>
+        <!-- Check Application button, goes to the applicant login page -->
+        <a href="userlogin.php" class="btn-secondary">Check Application</a>
+    </div>
 
-	 <!-- group containing all job boxes -->
-	<div class="group" style="gap: 2rem;/*overriding style.css*/">
+    <aside class="apply-help" aria-labelledby="apply-help-heading">
+        <h2 id="apply-help-heading">How to Apply</h2>
+        <ol>
+            <li>Choose a job below and select Read More to see its responsibilities and requirements.</li>
+            <li>Fill in the <a href="apply.php">application form</a>. You will be given an application ID.</li>
+            <li>Use your application ID and password to <a href="userlogin.php">check your application</a> at any time.</li>
+        </ol>
+        <p>We welcome applications from Aboriginal and Torres Strait Islander peoples, people with disability,
+            and people of all cultures and backgrounds. We will make reasonable adjustments at any stage of recruitment.</p>
+    </aside>
 
-		<?php
-		if ($conn)
-		{
-			$query = "SELECT * FROM jobs ORDER BY reference"; // retrieve all job listing
-			$result = mysqli_query($conn, $query);
+     <!-- group containing all job boxes -->
+    <div class="group job-list">
 
-			if ($result && mysqli_num_rows($result) > 0)
-			{
-				while ($row = mysqli_fetch_assoc($result))
-				{
-					// only title, reference number, salary, description, and reporting line are shown on this page
-					echo "<section class='outline'>
-						<h2>" . $row["title"] . "</h2>
-						<p class='coloured'>Salary: $" . number_format($row["salary"]) . "</p>
-						<p>" . $row["description"] . "</p>
-						<p>" . $row["reporting_line"] . "</p>";
+        <?php
+        if ($jobs) {
+            foreach ($jobs as $row) {
+                job_card($row);
+            }
+        } else {
+            echo "<p>There are no jobs at the moment.</p>"; // the jobs table is empty
+        }
+        ?>
 
-					// button is a form so the job reference can by sent via get
-					echo "<form method='get' action='job_full.php'>" .
-						"<input type='hidden' name='reference' value='" . e($row["reference"]) . "'>" .
-						"<input class='btn' type='submit' value='Read More'>" .
-						"</form>";
-
-					echo "</section>";
-				}
-			}
-			else echo "<p>There are no jobs at the moment...</p>"; // if db connected, but no listings
-		}
-		else echo "<p>There was an error connecting to the database...</p>"; // if db failed to connect
-
-		?>
-
-	</div>
-
-	<aside class="hint" style="float: right">
-		<p>See the apply page for information on how to apply.</p>
-	</aside>
+    </div>
 
   </main>
 
-	<!-- footer from included file -->
-	<?php include("footer.inc"); ?>
+    <!-- footer from included file -->
+    <?php include "footer.inc"; ?>

@@ -1,28 +1,39 @@
 <?php
 /*
 Using header.inc (with nav.inc inside) and footer.inc.
-Page content is unchanged from Part 1 apart from links (.html to .php).
+Job list comes from the jobs table; entered values come back after a validation error.
 */
 require_once "db_connect.inc";
 require_once "functions.inc";
 require_once "jobs.inc";
+require_once "application_form.inc";
+require_once "error.inc";
+
+if (!$conn) {
+    show_database_error();
+}
 $job_map = get_job_map($conn);
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+require_once "session.inc";
+$old = isset($_SESSION['apply_old']) && is_array($_SESSION['apply_old']) ? $_SESSION['apply_old'] : [];
+unset($_SESSION['apply_old']);
+
+if (isset($_GET['reference']) && is_string($_GET['reference'])) {
+    $selected_job = strtoupper($_GET['reference']);
+} else {
+    $selected_job = strtoupper(form_value($old, 'job_reference_number'));
 }
-$selected_job = isset($_GET['reference']) && is_string($_GET['reference']) ? strtoupper($_GET['reference']) : (string) ($_SESSION['reference'] ?? '');
 
 
 $page_title = "Apply";
-$page_description = "Community Connect is a not-for-profit supporting community programs, volunteer registration, events, donations and access to support resources.";
+$page_description = "Apply for a position at Community Connect.";
 $current_page = "apply";
 
-// Embedded CSS for this page (Part 1 requirement: embedded CSS on every page)
+// Embedded CSS for this page
 $page_style = <<<'CSS'
   .benefit{
     font-weight: bold;
-    color: #007bff;
+    color: var(--accent);
   }
 CSS;
 
@@ -32,109 +43,43 @@ include "header.inc";
 ?>
 
   <main id="main">
-    <!-- The title of the apply.html -->
+    <!-- The title of the apply page -->
 
-    <h1><strong>Join the Community</strong></h1>
-    <p class="intro"  >Why should you join our community? We have movie nights, workshops, and social events!</p>
-    <h2><strong>Become our CSSO member today</strong></h2>
-    <p><em>Fill in your details below to <span class="benefit">access advice</span>, <span class="benefit">support</span>, <span class="benefit">member benefits</span> <br> <span style="opacity:0.5">and more ...</span></em></p>
+    <h1>Apply for a Position</h1>
+    <p class="intro">Join our team and help us support community programs, volunteers and local services.</p>
+    <h2>Application Form</h2>
+    <p>We welcome applications from Aboriginal and Torres Strait Islander peoples, people with disability,
+      and people of all cultures and backgrounds. We will make reasonable adjustments at any stage of recruitment.</p>
+    <p><em>Fill in your details below. When you submit, you will receive an <span class="benefit">application ID</span> so you can <a href="userlogin.php">check your application</a> later.</em></p>
     <form action="process_eoi.php" method="post" novalidate="novalidate">
-      <!-- Form fields for user information -->
+      <input type="hidden" name="token" value="<?= e(csrf_token()) ?>">
+      <?php application_fields($old); ?>
+      <!-- Form fields for job apply -->
       <fieldset class="field">
-        <legend><strong>Who Are Youuuu?</strong></legend>
-        <label for="first_name"><strong>First name:</strong></label>
-        <input type="text" name="first_name" id="first_name" pattern="[A-Za-z\s]{1,20}"
-          title="Please enter your first name" placeholder="Enter your first name" required>
-        <label for="last_name"><strong>Last name:</strong></label>
-        <input type="text" name="last_name" id="last_name" pattern="[A-Za-z\s]{1,20}" title="Please enter your last name"
-          placeholder="Enter your last name" required>
-
-        <label for="DateOfBirth"><strong>Date of birth:</strong></label>
-        <input type="text" pattern = "^\d{2}/\d{2}/\d{4}$" name="DateOfBirth" id="DateOfBirth" placeholder="Enter your date of birth (DD/MM/YYYY)" required>
+        <legend>Position</legend>
+        <label for="job_reference_number">Job</label>
+        <select id="job_reference_number" name="job_reference_number" required>
+          <option value="">Please select a position</option>
+          <?php foreach ($job_map as $reference => $title): ?>
+            <option value="<?= e($reference) ?>"<?= (string) $reference === $selected_job ? ' selected' : '' ?>><?= e($title) ?></option>
+          <?php endforeach; ?>
+        </select>
       </fieldset>
-      <!-- Form fields for user gender -->
+      <?php skill_fields($old); ?>
       <fieldset class="field">
-        <legend><strong>What is your gender?</strong></legend>
-        <label><strong>Gender:</strong></label>
-
-        <label for="Male" class="choice"><input type="radio" name="Gender" id="Male" value="Male" required> Male </label>
-
-        <label for="Female" class="choice"><input type="radio" name="Gender" id="Female" value="Female" required> Female </label>
-
-        <label for ="Other" class="choice"><input type="radio" name="Gender" value="Other" id="Other" required> Other </label>
+        <legend>Create a password</legend>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" minlength="8" maxlength="72" autocomplete="new-password" aria-describedby="password_hint" required>
+        <p class="hint" id="password_hint">8 to 72 characters. You will use it with your application ID to check your application.</p>
+        <label for="confirm_password">Confirm password</label>
+        <input type="password" id="confirm_password" name="confirm_password" minlength="8" autocomplete="new-password" required>
       </fieldset>
-
-      <!-- Form fields for user address -->
-      <fieldset class="field">
-        <legend><strong>Where Do You Liveeee?</strong></legend>
-    <label for="streetaddress"><strong>Street address:</strong></label>
-    <input type="text" name="streetaddress" id="streetaddress" pattern="[A-Za-z0-9\s\/,.'\-]{3,40}" style="width: 400px;" placeholder="Enter your street address" maxlength="40" title="Please enter your street address" required>
-    <label for="suburb_town"><strong>Suburb/Town:</strong></label>
-    <input type="text" name="suburb_town" id="suburb_town" pattern="[A-Za-z\s]{3,40}" placeholder="Enter your suburb or town" style="width: 400px;" maxlength="40" title="Please enter your suburb or town" required>
-    <label for="state"><strong>State:</strong></label>
-    <select id="state" name="state" required>
-        <option value="">Please select state where you live</option>
-        <option value="vic">VIC</option>
-        <option value="nsw">NSW</option>
-        <option value="qld">QLD</option>
-        <option value="NT">NT</option>
-        <option value="WA">WA</option>
-        <option value="SA">SA</option>
-        <option value="tas">TAS</option>
-        <option value="ACT">ACT</option>
-    </select>
-      <label for="postcode"><strong>Postcode:</strong></label>
-    <input type="text" name="postcode" id="postcode" pattern="[0-9]{4}" maxlength="4" placeholder="Enter your postcode" title="Please enter your postcode" required>
-</fieldset>
-
-<!-- Form fields for user contact information -->
-<fieldset class="field">
-    <legend><strong>Your contact informationnnn?</strong></legend>
-    <label for="email"><strong>Email:</strong></label>
-    <input type="email" name="email" id="email" style="width: 400px;" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" maxlength="150" placeholder="Enter your email address" title="Please enter your email address" required>
-
-    <label for="phone"><strong>Phone:</strong></label>
-    <input type="tel" name="phone" id="phone" pattern="[0-9]{10}" maxlength="10" placeholder="Enter your phone number" title="Please enter your phone number" required>
-</fieldset>
-<!-- Form fields for job apply -->
-<fieldset class="field">
-<legend><strong>Which Job you want to applyyyy?</strong></legend>
-<label for="job_reference_number"><strong>Jobs:</strong></label>
-<select id="job_reference_number" name="job_reference_number" required>
-    <option value="">Please select job you want to apply</option>
-    <?php foreach ($job_map as $reference => $title): ?>
-        <option value="<?= e($reference) ?>"<?= (string) $reference === $selected_job ? ' selected' : '' ?>><?= e($title) ?></option>
-    <?php endforeach; ?>
-</select>
-</fieldset>
-<!-- Form fields for user skills -->
-<fieldset class="field">
-  <legend><strong>What skills you have in this field?</strong></legend>
-    <label class="choice" for="skill1">
-    <input type="checkbox" name="skills[]" id="skill1" value="Problem solving"> Problem solving </label>
-    
-    <label class="choice" for="skill2">
-    <input type="checkbox" name="skills[]" id="skill2" value="Communication"> Communication </label>
-
-    <label class="choice" for="skill3">
-    <input type="checkbox" name="skills[]" id="skill3" value="Teamwork"> Teamwork </label>
-    
-     <label class ="choice" for="Other_skill">Other skills:</label>
-    <textarea name="Other_skill" id="Other_skill" rows="4" cols="50" placeholder="Please enter if you have other skills"></textarea>
-</fieldset>
-<fieldset class="field">
-<legend><strong>Create your password hereeee</strong></legend>
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" required>
-    <label for="confirm_password">Confirm password</label>
-    <input type="password" id="confirm_password" name="confirm_password" minlength="8" autocomplete="new-password" required>
-</fieldset>
-<!-- Form submission buttons -->
-<div class="grid">
-    <input class="btn" type="submit" value="Submit Application">
-    <input class="btn-secondary" type="reset" value="Reset Form">
-    </div>
-</form>
+      <!-- Form submission buttons -->
+      <div class="group">
+        <input class="btn" type="submit" value="Submit Application">
+        <a class="btn-secondary" href="apply.php">Reset Form</a>
+      </div>
+    </form>
   </main>
 
 <?php include "footer.inc"; ?>

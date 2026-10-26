@@ -5,14 +5,21 @@ header.inc: shared <head>, skip link and site header (includes nav.inc).
 Set these before including this file:
   $page_title        page name shown in the browser tab
   $page_description  one sentence for the meta description
-  $current_page      "index", "jobs", "apply" or "about" (highlights the menu link)
+  $current_page      "index", "jobs", "apply", "about", "userlogin", "manage" or "stafflogin" (highlights the menu link)
   $page_style        optional: this page's embedded CSS
 */
 
-# Every page needs the session so nav.inc can show the right staff links
-# Pages that redirect start it earlier themselves if it has not started.
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+// Every page needs the session so nav.inc can show the right staff links
+// Pages that redirect start it earlier themselves if it has not started.
+require_once "session.inc";
+require_once "functions.inc";
+
+if (!headers_sent()) {
+    header("X-Frame-Options: DENY");
+    header("X-Content-Type-Options: nosniff");
+    header("Referrer-Policy: same-origin");
+    header("Content-Security-Policy: default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+         . "font-src https://fonts.gstatic.com; img-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'");
 }
 
 // Safe defaults in case a page forgets to set these
@@ -25,8 +32,8 @@ $page_description = $page_description ?? "Community Connect, a not-for-profit co
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Community Connect - <?php echo htmlspecialchars($page_title); ?></title>
-  <meta name="description" content="<?php echo htmlspecialchars($page_description); ?>">
+  <title>Community Connect - <?php echo e($page_title); ?></title>
+  <meta name="description" content="<?php echo e($page_description); ?>">
 
   <!-- Google Fonts: credited in the footer -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
