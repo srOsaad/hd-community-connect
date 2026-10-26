@@ -19,7 +19,7 @@ function clean_input($data) {
     return $data;
 }
 
-// Escape database text before printing it, for team: echo "<h2>" . e($row["title"]) . "</h2>";
+// Escape database text before printing it, for example: echo "<h2>" . e($row["title"]) . "</h2>";
 function e($value) {
     return htmlspecialchars((string) $value, ENT_QUOTES, "UTF-8");
 }

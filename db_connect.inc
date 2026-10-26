@@ -9,7 +9,7 @@ require_once "settings.php";
 // Return false on errors instead of throwing exceptions
 mysqli_report(MYSQLI_REPORT_OFF);
 
-// @ hides PHP's raw warning so database details are never shown on the page (Added for security purpose)
+// @ hides PHP's raw warning so database details are never shown on the page
 $conn = @mysqli_connect($host, $user, $pwd, $sql_db);
 $db_error_message = "Sorry, we can't reach our database right now. Please try again later.";
 

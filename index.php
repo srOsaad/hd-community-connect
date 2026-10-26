@@ -28,7 +28,7 @@ $page_style = <<<'CSS'
       text-transform: uppercase;
     }
 
-    /* Just to make it more visible */
+    /* Round tinted badge behind each focus area icon */
     .focus-icon {
       display: flex;
       align-items: center;

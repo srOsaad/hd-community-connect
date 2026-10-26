@@ -28,7 +28,7 @@ For team: Add anything you didn't make yourself to the acknowledgements below.
       Community Connect is a fictional organisation created for assessment purposes.
     </p>
 
-    <?php // add anything you didn't make yourself to this list ?>
+    <?php // credits for content the team did not create ?>
     <p class="footer-note">
       Acknowledgements: logo generated with Google Gemini.
       "What Is a Community?" quotation adapted from the Wikipedia article

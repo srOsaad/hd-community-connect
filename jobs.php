@@ -9,7 +9,7 @@ if (!$conn) {
     show_database_error();
 }
 
-$jobs = find_jobs($conn); // retrieve all job listing
+$jobs = find_jobs($conn); // retrieve all job listings
 
 $page_title = "Jobs";
 $page_description = "Browse current job openings at Community Connect and find a role that suits you.";
@@ -62,7 +62,7 @@ include "header.inc";
         <!-- search bar -->
         <?php job_search_form(); ?>
 
-        <!-- applied jobs button, goes to login page -->
+        <!-- Check Application button, goes to the applicant login page -->
         <a href="userlogin.php" class="btn-secondary">Check Application</a>
     </div>
 
@@ -84,7 +84,7 @@ include "header.inc";
                 job_card($row);
             }
         } else {
-            echo "<p>There are no jobs at the moment.</p>"; // if db connected, but no listings
+            echo "<p>There are no jobs at the moment.</p>"; // the jobs table is empty
         }
         ?>
 

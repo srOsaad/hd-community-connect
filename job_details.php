@@ -55,7 +55,7 @@ include "header.inc";
             <h1>" . show($row["title"]) . "</h1>
             " . job_facts($row);
 
-        // this div contains three buttons, so they can be displayed spaced as the group class
+        // the three buttons sit in a .group row so they are spaced evenly
         echo "<div class='group'>" .
             "<a class='btn' href='apply.php?reference=" . urlencode($row["reference"]) . "'>Apply Now</a>" .
             "<a class='btn-secondary' href='userlogin.php'>Check Application</a>" .

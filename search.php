@@ -45,7 +45,7 @@ include "header.inc";
                 job_card($row);
             }
         } else {
-            echo "<p>No job listings found. Search for something else or check back later.</p>"; // if db connected, but no listings
+            echo "<p>No job listings found. Search for something else or check back later.</p>"; // no job matched the search
         }
 
         echo "</div>";

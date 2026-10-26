@@ -1,8 +1,7 @@
 <?php
-// applicant.php - shows ONE applicant's own row from the eoi table.
-//   Default view -> details list, with an Edit button
-//                   (no button when Current or Final)
-//   ?edit=1      -> editable form with Save / Cancel
+// applicant.php: shows the logged in applicant's own application from the eoi table.
+// The default view lists the details with an Edit button (hidden when Current or Final).
+// ?edit=1 shows the editable form with Save and Cancel.
 
 require_once 'session.inc';
 
@@ -61,7 +60,7 @@ $job = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 $job_title = $job['title'] ?? '';
 
-$locked = in_array($app['Status'], locked_statuses(), true);    // only Current,Final can't be edited
+$locked = in_array($app['Status'], locked_statuses(), true);    // Current and Final applications can't be edited
 
 $values = [];
 foreach (['first_name' => 'FirstName', 'last_name' => 'LastName', 'Gender' => 'Gender', 'streetaddress' => 'StreetAddress',
