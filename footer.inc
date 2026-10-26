@@ -35,7 +35,7 @@ Credits for content the team did not create go in the acknowledgements below.
 
     <?php // credits for content the team did not create ?>
     <p class="footer-note">
-      Acknowledgements: logo generated with Google Gemini.
+      Acknowledgements: logo generated with Google Gemini. Team photo compressed by generative AI.
       "What Is a Community?" quotation adapted from the Wikipedia article
       <a href="https://en.wikipedia.org/wiki/Community"
          target="_blank" rel="noopener noreferrer">Community<span
