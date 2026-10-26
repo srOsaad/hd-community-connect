@@ -87,12 +87,6 @@ h3 {
   line-height: 1.25;
 }
 
-/* Cap line length */
-main p,
-main li {
-  max-width: var(--measure);
-}
-
 p {
   margin: 0 0 1em;
 }
@@ -573,7 +567,6 @@ legend + .hint {
 
 /* Copyright and credits */
 .footer-note {
-  max-width: var(--measure);
   margin: 0 0 0.5rem;
   color: var(--brand-light);
   font-size: var(--step--1);
