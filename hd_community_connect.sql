@@ -222,7 +222,7 @@ INSERT INTO `group_info` (`group_id`, `group_name`, `intro`, `lecture_time`, `le
 (1, 'HD', 'Community Connect''s site was designed and built by a four-person student team over Semester 2, 2026. This page introduces who we are, what each of us contributed, and a little about us outside of the project.', 'Monday 4:30pm to 5:30pm', 'Dr Atie Kia', 'Tuesday 12:30pm to 2:30pm', 'Razeen Hashmi', 'images/HD-team-photo.jpg', 'The four HD team members together in a classroom', 'The HD team: Sam, Tom, Shash and Declan.');
 
 INSERT INTO `members` (`member_id`, `full_name`, `nickname`, `student_id`, `quote_text`, `quote_by`, `fun_fact`, `sort_order`) VALUES
-(1, 'Shahryar Rahman Saad', 'Sam', '106406031', 'You cannot shake hands with a clenched fist.', 'Indira Gandhi', 'I am interested in web development and enjoy creating interactive websites.', 1),
+(1, 'Shahryar Rahman Saad', 'Sam', '106406031', 'I never lose. Either I win or learn.', 'Shahryar', 'I am interested in web development and enjoy creating interactive websites.', 1),
 (2, 'Gia Nghia Le', 'Tom', '106424716', 'Doubt kills more dreams than failure ever will.', 'Suzy Kassem', 'I am a big fan of anime and manga, and I enjoy watching and reading them in my free time.', 2),
 (3, 'Shashwat Chhabra', 'Shash', '106514329', 'Never put off until tomorrow what can be done today.', 'Sensei Wu', 'I love to play Football/Soccer and I am very passionate about it.', 3),
 (4, 'Declan Elliott', NULL, '106052926', 'First we mine, then we craft. Let''s MINECRAFT', 'Steve', 'I am really into music and I play the guitar in my spare time.', 4);

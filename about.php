@@ -93,7 +93,14 @@ include "header.inc";
 <?php foreach ($quotes as $m) { ?>
         <blockquote class="box" lang="en">
           <p class="quote">"<?php echo e($m["quote_text"]); ?>"</p>
-          <footer><?php if (trim((string) $m["quote_by"]) !== "") { ?><cite><?php echo e($m["quote_by"]); ?></cite>, chosen<?php } else { ?>Chosen<?php } ?> by <?php echo e($m["full_name"]); ?></footer>
+<?php $by = trim((string) $m["quote_by"]); ?>
+<?php if ($by !== "" && stripos($m["full_name"], $by) === 0) { ?>
+          <footer><cite><?php echo e($by); ?></cite></footer>
+<?php } elseif ($by !== "") { ?>
+          <footer><cite><?php echo e($by); ?></cite>, chosen by <?php echo e($m["full_name"]); ?></footer>
+<?php } else { ?>
+          <footer>Chosen by <?php echo e($m["full_name"]); ?></footer>
+<?php } ?>
         </blockquote>
 <?php } ?>
       </div>
