@@ -28,6 +28,26 @@ $page_style = <<<'CSS'
     .job-tools form {
         flex: 1 1 22rem;
     }
+
+    .apply-help {
+        width: 100%;
+        max-width: 40rem;
+        margin: 0 0 2rem;
+        padding: 1.25rem 1.5rem;
+        border: 1px solid var(--border-strong);
+        border-left: 4px solid var(--brand);
+        border-radius: var(--radius);
+        background-color: var(--surface-alt);
+    }
+
+    .apply-help h2 {
+        margin-top: 0;
+        font-size: var(--step-1);
+    }
+
+    .apply-help ol {
+        margin-bottom: 0;
+    }
 CSS;
 
 include "header.inc";
@@ -45,6 +65,15 @@ include "header.inc";
         <!-- applied jobs button, goes to login page -->
         <a href="userlogin.php" class="btn-secondary">Check Application</a>
     </div>
+
+    <aside class="apply-help" aria-labelledby="apply-help-heading">
+        <h2 id="apply-help-heading">How to apply</h2>
+        <ol>
+            <li>Choose a job below and select Read More to see its responsibilities and requirements.</li>
+            <li>Fill in the <a href="apply.php">application form</a>. You will be given an application ID.</li>
+            <li>Use your application ID and password to <a href="userlogin.php">check your application</a> at any time.</li>
+        </ol>
+    </aside>
 
      <!-- group containing all job boxes -->
     <div class="group job-list">
