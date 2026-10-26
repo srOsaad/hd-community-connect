@@ -48,7 +48,7 @@ include "header.inc";
     <h1>Apply for a Position</h1>
     <p class="intro">Join our team and help us support community programs, volunteers and local services.</p>
     <h2>Application Form</h2>
-    <p><em>Fill in your details below. When you submit, you will receive an <span class="benefit">application ID</span> so you can <span class="benefit">check your application</span> later.</em></p>
+    <p><em>Fill in your details below. When you submit, you will receive an <span class="benefit">application ID</span> so you can <a href="userlogin.php">check your application</a> later.</em></p>
     <form action="process_eoi.php" method="post" novalidate="novalidate">
       <input type="hidden" name="token" value="<?= e(csrf_token()) ?>">
       <?php application_fields($old); ?>

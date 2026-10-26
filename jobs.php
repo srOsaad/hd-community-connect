@@ -56,7 +56,7 @@ include "header.inc";
     <main id="main">
 
     <h1>Jobs</h1>
-    <p class="intro">List of currently available positions at Community Connect.</p>
+    <p class="intro">Browse the positions currently open at Community Connect.</p>
 
     <div class="job-tools">
         <!-- search bar -->
