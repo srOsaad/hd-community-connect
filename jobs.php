@@ -9,6 +9,8 @@ if (!$conn) {
     show_database_error();
 }
 
+$jobs = find_jobs($conn); // retrieve all job listing
+
 $page_title = "Jobs";
 $page_description = "Browse current job openings at Community Connect and find a role that suits you.";
 $current_page = "jobs";
@@ -48,8 +50,6 @@ include "header.inc";
     <div class="group job-list">
 
         <?php
-        $jobs = find_jobs($conn); // retrieve all job listing
-
         if ($jobs) {
             foreach ($jobs as $row) {
                 job_card($row);

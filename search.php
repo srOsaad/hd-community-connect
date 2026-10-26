@@ -9,6 +9,9 @@ if (!$conn) {
     show_database_error();
 }
 
+$search = field($_GET, "search");
+$jobs = $search === "" ? [] : find_jobs($conn, $search); // retrieve job listings based on search from user
+
 $page_title = "Search Jobs";
 $page_description = "Search Community Connect job openings by title.";
 $current_page = "jobs";
@@ -26,18 +29,12 @@ include "header.inc";
 
     <h1>Search Jobs</h1>
 
-    <?php
-    $search = field($_GET, "search");
-    ?>
-
     <?php job_search_form($search); ?>
 
     <?php
     if ($search === "") {
         echo "<p>Enter a job title, keyword or reference to search.</p>";
     } else {
-        $jobs = find_jobs($conn, $search); // retrieve job listings based on search from user
-
         $found = count($jobs);
         echo "<p class='intro'>" . $found . ($found === 1 ? " job" : " jobs") . " found for &#34;" . $search . "&#34;</p>";
 
