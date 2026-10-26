@@ -69,7 +69,7 @@ include "header.inc";
         $name = $name . " (" . $m["nickname"] . ")";
     }
 ?>
-        <dt><?php echo e($name); ?> - <?php echo e($m["student_id"]); ?></dt>
+        <dt><?php echo e($name); ?> <span class="student-id"><?php echo e($m["student_id"]); ?></span></dt>
         <dd>
 <?php if (empty($contributions[$m["member_id"]])) { ?>
           <p>No contributions recorded yet.</p>

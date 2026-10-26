@@ -437,6 +437,19 @@ fieldset.field > label:first-of-type {
 
 /* Components */
 
+.student-id {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--radius);
+  background-color: var(--brand-light);
+  color: var(--brand-dark);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Turns links into a button */
 .btn,
 .btn-secondary {
