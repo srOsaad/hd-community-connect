@@ -19,10 +19,9 @@ applications online, and HR managers review and manage applications.
 | Declan Elliott | 106052926 | QA, jobs.html | jobs.php, job_details.php, search.php |
 
 ### Running the site locally
-1. Copy the project folder into XAMPP's `htdocs` folder and start Apache and MySQL.
-2. In phpMyAdmin, create a database named `hd_community_connect`.
-3. Open that database, go to the Import tab and import `hd_community_connect.sql`.
-4. Visit `http://localhost/hd-community-connect/`.
+1. Copy the project folder into XAMPP's `htdocs` folder, name it `project2`, and start Apache and MySQL.
+2. In phpMyAdmin, go to the Import tab and import `hd_community_connect.sql`. It creates the `hd_community_connect` database and all its tables, so nothing needs to be set up first. Importing it again resets the tables to the sample data.
+3. Visit `http://localhost/project2/`, which opens `index.php`.
 
 Database settings are in `settings.php` (XAMPP defaults: user `root`, no password).
 

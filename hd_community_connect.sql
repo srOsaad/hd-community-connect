@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS `hd_community_connect` DEFAULT CHARACTER SET utf8mb4;
+USE `hd_community_connect`;
+
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
