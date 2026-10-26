@@ -43,6 +43,7 @@ function sent_form_values() {
 
 function application_fields($values) {
 ?>
+      <p><strong>All fields are required unless marked optional.</strong></p>
       <!-- Form fields for user information -->
       <fieldset class="field">
         <legend>Personal details</legend>
