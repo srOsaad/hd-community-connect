@@ -23,6 +23,11 @@ For team: Add anything you didn't make yourself to the acknowledgements below.
     </ul>
 
     <p class="footer-note">
+      Community Connect acknowledges the Traditional Owners of the lands on which we work
+      and pays respect to Elders past and present.
+    </p>
+
+    <p class="footer-note">
       &copy; 2026 Community Connect. A student project by Group HD for
       Web Technology, Swinburne University of Technology.
       Community Connect is a fictional organisation created for assessment purposes.
