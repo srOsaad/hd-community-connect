@@ -108,8 +108,8 @@ function validate_application($f) {
         $errors[] = "Phone number must be 8 to 12 digits.";
     }
 
-    if (!$f["skills"] && $f["other_skills"] === "") {
-        $errors[] = "Please select at least one skill, or describe your skills in the other skills box.";
+    if (!$f["skills"]) {
+        $errors[] = "Please select at least one skill.";
     }
     if (text_length($f["other_skills"]) > 1000) {
         $errors[] = "Other skills must be 1000 characters or fewer.";

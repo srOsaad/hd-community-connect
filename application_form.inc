@@ -101,14 +101,15 @@ function skill_fields($values) {
     $chosen = isset($values["skills"]) && is_array($values["skills"]) ? $values["skills"] : [];
 ?>
       <!-- Form fields for user skills -->
-      <fieldset class="field">
+      <fieldset class="field" aria-describedby="skills_hint">
         <legend>Skills</legend>
+        <p class="hint" id="skills_hint">Select at least one skill. Other skills is optional.</p>
         <?php foreach (skill_options() as $i => $skill): ?>
         <label class="choice" for="skill<?= $i + 1 ?>">
           <input type="checkbox" name="skills[]" id="skill<?= $i + 1 ?>" value="<?= e($skill) ?>"<?= in_array($skill, $chosen, true) ? ' checked' : '' ?>> <?= e($skill) ?> </label>
         <?php endforeach; ?>
 
-        <label for="Other_skill">Other skills</label>
+        <label for="Other_skill">Other skills (optional)</label>
         <textarea name="Other_skill" id="Other_skill" rows="4" cols="50" placeholder="List any other relevant skills"><?= e(form_value($values, 'Other_skill')) ?></textarea>
       </fieldset>
 <?php
