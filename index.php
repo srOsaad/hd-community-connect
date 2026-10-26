@@ -105,7 +105,7 @@ include "header.inc";
     </section>
 
     <section aria-labelledby="focus-heading">
-      <h2 id="focus-heading">What we help with</h2>
+      <h2 id="focus-heading">What We Help With</h2>
       <ul class="grid">
         <li class="box">
           <span class="focus-icon" aria-hidden="true">C</span>

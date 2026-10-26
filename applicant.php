@@ -200,7 +200,7 @@ include 'header.inc';
         <dd><?= $job_title !== '' ? e($job_title) . ' (' . show($app['JobReference']) . ')' : show($app['JobReference']) ?></dd>
     </dl>
 
-    <h2>Your details</h2>
+    <h2>Your Details</h2>
     <dl class="details">
         <dt>Name</dt>
         <dd><?= show($app['FirstName'] . ' ' . $app['LastName']) ?></dd>

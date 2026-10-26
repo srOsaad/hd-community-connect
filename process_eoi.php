@@ -10,7 +10,7 @@ function keep_form_values() {
 }
 
 function show_application_error($messages, $status = 400) {
-    show_error_page("Please fix the following problems", $messages, "apply.php", "Return to Application Form", $status);
+    show_error_page("Please Fix the Following Problems", $messages, "apply.php", "Return to Application Form", $status);
 }
 
 function make_application_id() {
@@ -65,7 +65,7 @@ if (preg_match('/^[A-Z0-9]{6}$/D', $job_ref)) {
     $job_stmt = mysqli_prepare($conn, "SELECT 1 FROM jobs WHERE reference = ?");
     if (!$job_stmt) {
         keep_form_values();
-        show_error_page("Sorry, we could not process your application", ["Please try again later."], "apply.php", "Return to Application Form", 503);
+        show_error_page("We Could Not Process Your Application", ["Please try again later."], "apply.php", "Return to Application Form", 503);
     }
     mysqli_stmt_bind_param($job_stmt, "s", $job_ref);
     mysqli_stmt_execute($job_stmt);
@@ -121,7 +121,7 @@ $create_users_sql = "CREATE TABLE IF NOT EXISTS users (
     FOREIGN KEY (eoi_number) REFERENCES eoi(EOInumber) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 if (!mysqli_query($conn, $create_sql) || !mysqli_query($conn, $create_users_sql)) {
-    show_error_page("Sorry, we could not process your application", ["Please try again later."], "apply.php", "Return to Application Form", 503);
+    show_error_page("We Could Not Process Your Application", ["Please try again later."], "apply.php", "Return to Application Form", 503);
 }
 
 // Save the application
@@ -132,7 +132,7 @@ $stmt = mysqli_prepare($conn,
                       State, Postcode, Email, Phone, Skills, OtherSkills)
      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 if (!$stmt) {
-    show_error_page("Sorry, we could not process your application", ["Please try again later."], "apply.php", "Return to Application Form", 503);
+    show_error_page("We Could Not Process Your Application", ["Please try again later."], "apply.php", "Return to Application Form", 503);
 }
 
 $application_id = "";
@@ -206,7 +206,7 @@ if ($saved) {
 } else {
     mysqli_rollback($conn);
     keep_form_values();
-    show_error_page("Sorry, we could not process your application", ["Your application could not be saved. Please try again."], "apply.php", "Return to Application Form", 503);
+    show_error_page("We Could Not Process Your Application", ["Your application could not be saved. Please try again."], "apply.php", "Return to Application Form", 503);
 }
 
 ?>

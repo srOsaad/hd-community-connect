@@ -67,7 +67,7 @@ include "header.inc";
     </div>
 
     <aside class="apply-help" aria-labelledby="apply-help-heading">
-        <h2 id="apply-help-heading">How to apply</h2>
+        <h2 id="apply-help-heading">How to Apply</h2>
         <ol>
             <li>Choose a job below and select Read More to see its responsibilities and requirements.</li>
             <li>Fill in the <a href="apply.php">application form</a>. You will be given an application ID.</li>

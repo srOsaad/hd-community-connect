@@ -29,7 +29,7 @@ $facts = array_filter($members, function ($m) {
 });
 
 if (!$group || !$members) {
-    show_error_page("Team information unavailable", ["Team information is not available right now. Please try again later."]);
+    show_error_page("Team Information Unavailable", ["Team information is not available right now. Please try again later."]);
 }
 
 $page_title = "About the Team";
@@ -49,7 +49,7 @@ include "header.inc";
     <p class="intro"><?php echo e($group["intro"]); ?></p>
 
     <section>
-      <h2>Group details</h2>
+      <h2>Group Details</h2>
       <ul>
         <li>Group name: <strong class="group-name"><?php echo e($group["group_name"]); ?></strong>
           <ul>
@@ -61,7 +61,7 @@ include "header.inc";
     </section>
 
     <section class="box">
-      <h2>Member contributions</h2>
+      <h2>Member Contributions</h2>
       <dl>
 <?php foreach ($members as $m) {
     $name = $m["full_name"];
@@ -101,7 +101,7 @@ include "header.inc";
 <?php } ?>
 
     <section>
-      <h2>The team</h2>
+      <h2>The Team</h2>
       <figure class="box">
         <img src="<?php echo e($group["photo_path"]); ?>"
              alt="<?php echo e($group["photo_alt"]); ?>"
@@ -112,7 +112,7 @@ include "header.inc";
 
 <?php if ($facts) { ?>
     <section>
-      <h2>Fun facts</h2>
+      <h2>Fun Facts</h2>
       <table>
         <caption>A few things you might not know about us</caption>
         <thead>

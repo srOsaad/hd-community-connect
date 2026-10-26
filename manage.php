@@ -275,7 +275,7 @@ include "header.inc";
     </p>
 <?php if ($delete_job !== "") { ?>
     <section class="confirm-box" aria-labelledby="confirm-heading">
-      <h2 id="confirm-heading">Delete applications for job <?php echo e($delete_job); ?>?</h2>
+      <h2 id="confirm-heading">Delete Applications for Job <?php echo e($delete_job); ?>?</h2>
       <p>This will permanently delete <strong><?php echo $delete_count; ?></strong> application(s). It can't be undone.</p>
       <form method="post" action="<?php echo e($page_url); ?>">
         <input type="hidden" name="action" value="delete">
@@ -288,7 +288,7 @@ include "header.inc";
 <?php } ?>
 
     <section aria-labelledby="search-heading">
-      <h2 id="search-heading">Find and sort applications</h2>
+      <h2 id="search-heading">Find and Sort Applications</h2>
       <form class="search-form" method="get" action="manage.php">
         <div class="field">
           <label for="application_id">Application ID</label>
@@ -338,7 +338,7 @@ include "header.inc";
     </section>
 
     <section aria-labelledby="delete-heading">
-      <h2 id="delete-heading">Delete applications for a job</h2>
+      <h2 id="delete-heading">Delete Applications for a Job</h2>
       <form class="delete-form" method="post" action="<?php echo e($page_url); ?>">
         <input type="hidden" name="action" value="confirm_delete">
         <input type="hidden" name="token" value="<?php echo $token; ?>">
@@ -351,7 +351,7 @@ include "header.inc";
     </section>
 
     <section aria-labelledby="results-heading">
-      <h2 id="results-heading"><?php echo $is_filtered ? "Search results" : "All applications"; ?></h2>
+      <h2 id="results-heading"><?php echo $is_filtered ? "Search Results" : "All Applications"; ?></h2>
 <?php if (!$filter_invalid) { ?>
       <p><?php echo $match_count; ?> application(s) found.<?php if ($page_count > 1) { ?> Showing <?php echo ($page - 1) * $per_page + 1; ?> to <?php echo ($page - 1) * $per_page + count($eois); ?>.<?php } ?></p>
 <?php } ?>

@@ -6,7 +6,7 @@ For team: Add anything you didn't make yourself to the acknowledgements below.
 ?>
   <!-- Footer : project links, contact and acknowledgements -->
   <footer class="site-footer">
-    <h2 class="visually-hidden">Site information</h2>
+    <h2 class="visually-hidden">Site Information</h2>
 
     <ul class="footer-links">
       <li><a href="https://hd-community-connect.atlassian.net/jira/software/projects/CSW/boards/3"
