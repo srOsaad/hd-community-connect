@@ -732,4 +732,29 @@ legend + .hint {
   .site-nav .nav-staff button {
     border: none;
   }
+
+  .site-header:has(.staff-only) {
+    flex-wrap: nowrap;
+  }
+
+  .site-nav.staff-only ul {
+    display: flex;
+  }
+
+  .site-nav.staff-only .nav-staff {
+    align-self: center;
+  }
+
+  .site-nav.staff-only {
+    flex-shrink: 0;
+  }
+
+  .site-nav.staff-only .nav-staff button {
+    border: 1px solid var(--border-strong);
+    white-space: nowrap;
+  }
+
+  .site-nav.staff-only .nav-user {
+    display: none;
+  }
 }

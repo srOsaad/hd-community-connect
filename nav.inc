@@ -19,13 +19,20 @@ if ($is_logged_in) {
     $nav_links["manage"] = ["manage.php", "Manage"];
 }
 
+$staff_only = $is_logged_in && isset($current_page) && $current_page === "manage";
+if ($staff_only) {
+    $nav_links = [];
+}
+
 // Staff link, styled separately (class "nav-staff"): [file, link text, $current_page value]
 $staff_link = ["stafflogin.php", "Staff Login", "stafflogin"];
 ?>
-    <nav class="site-nav" aria-label="Main navigation">
+    <nav class="site-nav<?php if ($staff_only) { echo " staff-only"; } ?>" aria-label="Main navigation">
+<?php if (!$staff_only) { ?>
       <details>
         <summary aria-label="Menu"></summary>
       </details>
+<?php } ?>
       <ul>
 <?php foreach ($nav_links as $key => $link) {
     $is_current = isset($current_page) && $current_page === $key;
@@ -39,7 +46,7 @@ $staff_link = ["stafflogin.php", "Staff Login", "stafflogin"];
           <form method="post" action="logout.php">
             <input type="hidden" name="who" value="staff">
             <input type="hidden" name="token" value="<?php echo e($_SESSION["csrf_token"] ?? ""); ?>">
-            <button type="submit">Log Out (<?php echo e($_SESSION["username"]); ?>)</button>
+            <button type="submit">Log Out<span class="nav-user"> (<?php echo e($_SESSION["username"]); ?>)</span></button>
           </form>
         </li>
 <?php } ?>
