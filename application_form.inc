@@ -91,7 +91,8 @@ function application_fields($values) {
         <input type="email" name="email" id="email" pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" maxlength="150" placeholder="Enter your email address" title="Please enter your email address" value="<?= e(form_value($values, 'email')) ?>" required>
 
         <label for="phone">Phone</label>
-        <input type="tel" name="phone" id="phone" pattern="[0-9]{10}" maxlength="10" placeholder="Enter your phone number" title="Please enter your phone number" value="<?= e(form_value($values, 'phone')) ?>" required>
+        <input type="tel" name="phone" id="phone" pattern="[0-9]{8,12}" maxlength="12" placeholder="Enter your phone number" title="Please enter your phone number" value="<?= e(form_value($values, 'phone')) ?>" aria-describedby="phone_hint" required>
+        <p class="hint" id="phone_hint">8 to 12 digits, for example 0412345678.</p>
       </fieldset>
 <?php
 }

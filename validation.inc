@@ -104,8 +104,8 @@ function validate_application($f) {
         $errors[] = "Please enter a valid email address.";
     }
 
-    if (!preg_match('/^\d{10}$/D', $f["phone"])) {
-        $errors[] = "Phone number must be exactly 10 digits.";
+    if (!preg_match('/^\d{8,12}$/D', $f["phone"])) {
+        $errors[] = "Phone number must be 8 to 12 digits.";
     }
 
     if (!$f["skills"] && $f["other_skills"] === "") {

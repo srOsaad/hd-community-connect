@@ -103,7 +103,7 @@ $create_sql = "CREATE TABLE IF NOT EXISTS eoi (
     State         ENUM('VIC','NSW','QLD','NT','WA','SA','TAS','ACT') NOT NULL,
     Postcode      CHAR(4)      NOT NULL,
     Email         VARCHAR(150) NOT NULL,
-    Phone         VARCHAR(10)  NOT NULL,
+    Phone         VARCHAR(12)  NOT NULL,
     Skills        SET('Problem solving','Communication','Teamwork') NOT NULL,
     OtherSkills   TEXT NOT NULL,
     Status        ENUM('New','Current','Final') NOT NULL DEFAULT 'New',

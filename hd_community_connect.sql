@@ -48,7 +48,7 @@ CREATE TABLE `eoi` (
   `State` enum('VIC','NSW','QLD','NT','WA','SA','TAS','ACT') NOT NULL,
   `Postcode` char(4) NOT NULL,
   `Email` varchar(150) NOT NULL,
-  `Phone` varchar(10) NOT NULL,
+  `Phone` varchar(12) NOT NULL,
   `Skills` set('Problem solving','Communication','Teamwork') NOT NULL,
   `OtherSkills` text NOT NULL,
   `Status` enum('New','Current','Final') NOT NULL DEFAULT 'New',
